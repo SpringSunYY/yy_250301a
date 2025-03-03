@@ -65,7 +65,7 @@ public class ReplacementOrderInfo implements Serializable
     private BigDecimal totalPrice;
 
     /** 返款状态(0=已返 1=未返) */
-    @Excel(name = "返款状态(0=已返 1=未返)")
+    @Excel(name = "返款状态",readConverterExp = "1=已返,2=未返")
     private String returnStatus;
 
     /** 创建人 */

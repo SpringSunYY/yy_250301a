@@ -36,7 +36,7 @@ public class PurchaseOrderInfo implements Serializable
     private String orderNumber;
 
     /** 销售类型（0=其他 1=线上 2=线下） */
-    @Excel(name = "销售类型", readConverterExp = "0==其他,1==线上,2==线下")
+    @Excel(name = "销售类型", readConverterExp = "0=其他,1=线上,2=线下")
     private String orderType;
 
     /** 订单利润 */
