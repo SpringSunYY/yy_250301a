@@ -139,6 +139,6 @@ public class StoreInfoController extends BaseController
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
         ExcelUtil<StoreInfo> util = new ExcelUtil<StoreInfo>(StoreInfo.class);
-        util.importTemplateExcel(response, "合同数据");
+        util.importTemplateExcel(response, "店铺数据");
     }
 }

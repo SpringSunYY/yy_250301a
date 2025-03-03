@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.StoreInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
@@ -28,6 +29,7 @@ import com.lz.manage.model.dto.purchaseAccountInfo.PurchaseAccountInfoEdit;
 import com.lz.manage.service.IPurchaseAccountInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 采购账号信息Controller
@@ -122,5 +124,22 @@ public class PurchaseAccountInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(purchaseAccountInfoService.deletePurchaseAccountInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseAccountInfo:import')")
+    @Log(title = "导入店铺", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<PurchaseAccountInfo> util = new ExcelUtil<PurchaseAccountInfo>(PurchaseAccountInfo.class);
+        List<PurchaseAccountInfo> purchaseAccountInfoList = util.importExcel(file.getInputStream());
+        String message = purchaseAccountInfoService.importPurchaseAccountInfo(purchaseAccountInfoList);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseAccountInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<PurchaseAccountInfo> util = new ExcelUtil<PurchaseAccountInfo>(PurchaseAccountInfo.class);
+        util.importTemplateExcel(response, "采购账号数据");
     }
 }

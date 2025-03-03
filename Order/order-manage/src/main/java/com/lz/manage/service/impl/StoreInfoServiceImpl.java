@@ -384,6 +384,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             try {
                 return this.saveBatch(storeInfoList);
             } catch (Exception e) {
+                log.error("导入店铺数据失败，原因:", e);
                 throw new ServiceException("请检查数据是否正确，例如店铺名称是否相同！！！");
             }
         });

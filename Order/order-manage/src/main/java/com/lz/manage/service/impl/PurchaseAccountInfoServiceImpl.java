@@ -188,4 +188,36 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         return purchaseAccountInfoList.stream().map(PurchaseAccountInfoVo::objToVo).collect(Collectors.toList());
     }
 
+    @Override
+    public String importPurchaseAccountInfo(List<PurchaseAccountInfo> purchaseAccountInfoList) {
+        Date nowDate = DateUtils.getNowDate();
+        for (PurchaseAccountInfo info : purchaseAccountInfoList) {
+            SysUser user = userService.selectUserByUserName(info.getUserName());
+            if (StringUtils.isNull(user)) {
+                return "用户:" + info.getUserName() + "不存在！！！";
+            }
+            //查询账号是否存在
+            PurchaseAccountInfo purchaseAccountInfo = purchaseAccountInfoMapper.selectOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", info.getPurchaseAccount()));
+            if (StringUtils.isNotNull(purchaseAccountInfo)) {
+                return "账号：" + purchaseAccountInfo.getPurchaseAccount() + "已存在！！！";
+            }
+            info.setUserId(user.getUserId());
+            info.setCreateTime(nowDate);
+            info.setDeptId(user.getDeptId());
+        }
+        Boolean execute = transactionTemplate.execute(item -> {
+            try {
+                return this.saveBatch(purchaseAccountInfoList);
+            } catch (Exception e) {
+                log.error("导入采购账号数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确！！！");
+            }
+        });
+        if (Boolean.TRUE.equals(execute)) {
+            return "导入成功：" + purchaseAccountInfoList.size() + "条数据";
+        } else {
+            return "导入数据失败，请检查数据结构是否正确！！！";
+        }
+    }
+
 }
