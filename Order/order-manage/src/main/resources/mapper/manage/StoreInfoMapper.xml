@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lz.manage.mapper.StoreInfoMapper">
+    
+    <resultMap type="StoreInfo" id="StoreInfoResult">
+        <result property="id"    column="id"    />
+        <result property="principalId"    column="principal_id"    />
+        <result property="operationId"    column="operation_id"    />
+        <result property="serviceId"    column="service_id"    />
+        <result property="storeName"    column="store_name"    />
+        <result property="status"    column="status"    />
+        <result property="storePassword"    column="store_password"    />
+        <result property="storePhone"    column="store_phone"    />
+        <result property="alipayAccount"    column="alipay_account"    />
+        <result property="alipayPassword"    column="alipay_password"    />
+        <result property="alipayPayPassword"    column="alipay_pay_password"    />
+        <result property="alipayPhone"    column="alipay_phone"    />
+        <result property="alipayAuthenticator"    column="alipay_authenticator"    />
+        <result property="alipayProvider"    column="alipay_provider"    />
+        <result property="serverIp"    column="server_ip"    />
+        <result property="serverCost"    column="server_cost"    />
+        <result property="serverPassword"    column="server_password"    />
+        <result property="channels"    column="channels"    />
+        <result property="openPrice"    column="open_price"    />
+        <result property="isCommissionSettlement"    column="is_commission_settlement"    />
+        <result property="departureTime"    column="departure_time"    />
+        <result property="businessLicenseName"    column="business_license_name"    />
+        <result property="legalPerson"    column="legal_person"    />
+        <result property="expireTime"    column="expire_time"    />
+        <result property="isOrderAccomplish"    column="is_order_accomplish"    />
+        <result property="isBonaFideRedemption"    column="is_bona_fide_redemption"    />
+        <result property="isBail"    column="is_bail"    />
+        <result property="isAlipay"    column="is_alipay"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStoreInfoVo">
+        select id, principal_id, operation_id, service_id, store_name, status, store_password, store_phone, alipay_account, alipay_password, alipay_pay_password, alipay_phone, alipay_authenticator, alipay_provider, server_ip, server_cost, server_password, channels, open_price, is_commission_settlement, departure_time, business_license_name, legal_person, expire_time, is_order_accomplish, is_bona_fide_redemption, is_bail, is_alipay, dept_id, user_id, create_time, update_by, update_time, remark from tb_store_info
+    </sql>
+
+    <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
+        <include refid="selectStoreInfoVo"/>
+        <where>  
+            <if test="principalId != null "> and principal_id = #{principalId}</if>
+            <if test="operationId != null "> and operation_id = #{operationId}</if>
+            <if test="serviceId != null "> and service_id = #{serviceId}</if>
+            <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="storePhone != null  and storePhone != ''"> and store_phone = #{storePhone}</if>
+            <if test="alipayAccount != null  and alipayAccount != ''"> and alipay_account like concat('%', #{alipayAccount}, '%')</if>
+            <if test="alipayPhone != null  and alipayPhone != ''"> and alipay_phone = #{alipayPhone}</if>
+            <if test="alipayAuthenticator != null  and alipayAuthenticator != ''"> and alipay_authenticator like concat('%', #{alipayAuthenticator}, '%')</if>
+            <if test="alipayProvider != null  and alipayProvider != ''"> and alipay_provider like concat('%', #{alipayProvider}, '%')</if>
+            <if test="serverIp != null  and serverIp != ''"> and server_ip = #{serverIp}</if>
+            <if test="channels != null  and channels != ''"> and channels like concat('%', #{channels}, '%')</if>
+            <if test="isCommissionSettlement != null  and isCommissionSettlement != ''"> and is_commission_settlement = #{isCommissionSettlement}</if>
+            <if test="params.beginDepartureTime != null and params.beginDepartureTime != '' and params.endDepartureTime != null and params.endDepartureTime != ''"> and departure_time between #{params.beginDepartureTime} and #{params.endDepartureTime}</if>
+            <if test="businessLicenseName != null  and businessLicenseName != ''"> and business_license_name like concat('%', #{businessLicenseName}, '%')</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''"> and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}</if>
+            <if test="isOrderAccomplish != null  and isOrderAccomplish != ''"> and is_order_accomplish = #{isOrderAccomplish}</if>
+            <if test="isBonaFideRedemption != null  and isBonaFideRedemption != ''"> and is_bona_fide_redemption = #{isBonaFideRedemption}</if>
+            <if test="isBail != null  and isBail != ''"> and is_bail = #{isBail}</if>
+            <if test="isAlipay != null  and isAlipay != ''"> and is_alipay = #{isAlipay}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreInfoById" parameterType="Long" resultMap="StoreInfoResult">
+        <include refid="selectStoreInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStoreInfo" parameterType="StoreInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_store_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="principalId != null">principal_id,</if>
+            <if test="operationId != null">operation_id,</if>
+            <if test="serviceId != null">service_id,</if>
+            <if test="storeName != null and storeName != ''">store_name,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="storePassword != null">store_password,</if>
+            <if test="storePhone != null">store_phone,</if>
+            <if test="alipayAccount != null">alipay_account,</if>
+            <if test="alipayPassword != null">alipay_password,</if>
+            <if test="alipayPayPassword != null">alipay_pay_password,</if>
+            <if test="alipayPhone != null">alipay_phone,</if>
+            <if test="alipayAuthenticator != null">alipay_authenticator,</if>
+            <if test="alipayProvider != null">alipay_provider,</if>
+            <if test="serverIp != null">server_ip,</if>
+            <if test="serverCost != null">server_cost,</if>
+            <if test="serverPassword != null">server_password,</if>
+            <if test="channels != null and channels != ''">channels,</if>
+            <if test="openPrice != null">open_price,</if>
+            <if test="isCommissionSettlement != null">is_commission_settlement,</if>
+            <if test="departureTime != null">departure_time,</if>
+            <if test="businessLicenseName != null">business_license_name,</if>
+            <if test="legalPerson != null">legal_person,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="isOrderAccomplish != null">is_order_accomplish,</if>
+            <if test="isBonaFideRedemption != null">is_bona_fide_redemption,</if>
+            <if test="isBail != null">is_bail,</if>
+            <if test="isAlipay != null">is_alipay,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="principalId != null">#{principalId},</if>
+            <if test="operationId != null">#{operationId},</if>
+            <if test="serviceId != null">#{serviceId},</if>
+            <if test="storeName != null and storeName != ''">#{storeName},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="storePassword != null">#{storePassword},</if>
+            <if test="storePhone != null">#{storePhone},</if>
+            <if test="alipayAccount != null">#{alipayAccount},</if>
+            <if test="alipayPassword != null">#{alipayPassword},</if>
+            <if test="alipayPayPassword != null">#{alipayPayPassword},</if>
+            <if test="alipayPhone != null">#{alipayPhone},</if>
+            <if test="alipayAuthenticator != null">#{alipayAuthenticator},</if>
+            <if test="alipayProvider != null">#{alipayProvider},</if>
+            <if test="serverIp != null">#{serverIp},</if>
+            <if test="serverCost != null">#{serverCost},</if>
+            <if test="serverPassword != null">#{serverPassword},</if>
+            <if test="channels != null and channels != ''">#{channels},</if>
+            <if test="openPrice != null">#{openPrice},</if>
+            <if test="isCommissionSettlement != null">#{isCommissionSettlement},</if>
+            <if test="departureTime != null">#{departureTime},</if>
+            <if test="businessLicenseName != null">#{businessLicenseName},</if>
+            <if test="legalPerson != null">#{legalPerson},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="isOrderAccomplish != null">#{isOrderAccomplish},</if>
+            <if test="isBonaFideRedemption != null">#{isBonaFideRedemption},</if>
+            <if test="isBail != null">#{isBail},</if>
+            <if test="isAlipay != null">#{isAlipay},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreInfo" parameterType="StoreInfo">
+        update tb_store_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="principalId != null">principal_id = #{principalId},</if>
+            <if test="operationId != null">operation_id = #{operationId},</if>
+            <if test="serviceId != null">service_id = #{serviceId},</if>
+            <if test="storeName != null and storeName != ''">store_name = #{storeName},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="storePassword != null">store_password = #{storePassword},</if>
+            <if test="storePhone != null">store_phone = #{storePhone},</if>
+            <if test="alipayAccount != null">alipay_account = #{alipayAccount},</if>
+            <if test="alipayPassword != null">alipay_password = #{alipayPassword},</if>
+            <if test="alipayPayPassword != null">alipay_pay_password = #{alipayPayPassword},</if>
+            <if test="alipayPhone != null">alipay_phone = #{alipayPhone},</if>
+            <if test="alipayAuthenticator != null">alipay_authenticator = #{alipayAuthenticator},</if>
+            <if test="alipayProvider != null">alipay_provider = #{alipayProvider},</if>
+            <if test="serverIp != null">server_ip = #{serverIp},</if>
+            <if test="serverCost != null">server_cost = #{serverCost},</if>
+            <if test="serverPassword != null">server_password = #{serverPassword},</if>
+            <if test="channels != null and channels != ''">channels = #{channels},</if>
+            <if test="openPrice != null">open_price = #{openPrice},</if>
+            <if test="isCommissionSettlement != null">is_commission_settlement = #{isCommissionSettlement},</if>
+            <if test="departureTime != null">departure_time = #{departureTime},</if>
+            <if test="businessLicenseName != null">business_license_name = #{businessLicenseName},</if>
+            <if test="legalPerson != null">legal_person = #{legalPerson},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="isOrderAccomplish != null">is_order_accomplish = #{isOrderAccomplish},</if>
+            <if test="isBonaFideRedemption != null">is_bona_fide_redemption = #{isBonaFideRedemption},</if>
+            <if test="isBail != null">is_bail = #{isBail},</if>
+            <if test="isAlipay != null">is_alipay = #{isAlipay},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStoreInfoById" parameterType="Long">
+        delete from tb_store_info where id = #{id}
+    </delete>
+
+    <delete id="deleteStoreInfoByIds" parameterType="String">
+        delete from tb_store_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

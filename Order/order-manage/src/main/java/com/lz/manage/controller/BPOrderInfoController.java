@@ -1,0 +1,117 @@
+package com.lz.manage.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.lz.common.annotation.Log;
+import com.lz.common.core.controller.BaseController;
+import com.lz.common.core.domain.AjaxResult;
+import com.lz.common.enums.BusinessType;
+import com.lz.manage.model.domain.BPOrderInfo;
+import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
+import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoQuery;
+import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoInsert;
+import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoEdit;
+import com.lz.manage.service.IBPOrderInfoService;
+import com.lz.common.utils.poi.ExcelUtil;
+import com.lz.common.core.page.TableDataInfo;
+
+/**
+ * 白嫖订单信息Controller
+ *
+ * @author YY
+ * @date 2025-03-03
+ */
+@RestController
+@RequestMapping("/manage/bPOrderInfo")
+public class BPOrderInfoController extends BaseController
+{
+    @Resource
+    private IBPOrderInfoService bPOrderInfoService;
+
+    /**
+     * 查询白嫖订单信息列表
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:list')")
+    @GetMapping("/list")
+    public TableDataInfo list(BPOrderInfoQuery bPOrderInfoQuery)
+    {
+        BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
+        startPage();
+        List<BPOrderInfo> list = bPOrderInfoService.selectBPOrderInfoList(bPOrderInfo);
+        List<BPOrderInfoVo> listVo= list.stream().map(BPOrderInfoVo::objToVo).collect(Collectors.toList());
+        TableDataInfo table = getDataTable(list);
+        table.setRows(listVo);
+        return table;
+    }
+
+    /**
+     * 导出白嫖订单信息列表
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:export')")
+    @Log(title = "白嫖订单信息", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, BPOrderInfoQuery bPOrderInfoQuery)
+    {
+        BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
+        List<BPOrderInfo> list = bPOrderInfoService.selectBPOrderInfoList(bPOrderInfo);
+        ExcelUtil<BPOrderInfo> util = new ExcelUtil<BPOrderInfo>(BPOrderInfo.class);
+        util.exportExcel(response, list, "白嫖订单信息数据");
+    }
+
+    /**
+     * 获取白嫖订单信息详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:query')")
+    @GetMapping(value = "/{id}")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        BPOrderInfo bPOrderInfo = bPOrderInfoService.selectBPOrderInfoById(id);
+        return success(BPOrderInfoVo.objToVo(bPOrderInfo));
+    }
+
+    /**
+     * 新增白嫖订单信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:add')")
+    @Log(title = "白嫖订单信息", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@RequestBody BPOrderInfoInsert bPOrderInfoInsert)
+    {
+        BPOrderInfo bPOrderInfo = BPOrderInfoInsert.insertToObj(bPOrderInfoInsert);
+        return toAjax(bPOrderInfoService.insertBPOrderInfo(bPOrderInfo));
+    }
+
+    /**
+     * 修改白嫖订单信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:edit')")
+    @Log(title = "白嫖订单信息", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public AjaxResult edit(@RequestBody BPOrderInfoEdit bPOrderInfoEdit)
+    {
+        BPOrderInfo bPOrderInfo = BPOrderInfoEdit.editToObj(bPOrderInfoEdit);
+        return toAjax(bPOrderInfoService.updateBPOrderInfo(bPOrderInfo));
+    }
+
+    /**
+     * 删除白嫖订单信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:remove')")
+    @Log(title = "白嫖订单信息", businessType = BusinessType.DELETE)
+	@DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids)
+    {
+        return toAjax(bPOrderInfoService.deleteBPOrderInfoByIds(ids));
+    }
+}

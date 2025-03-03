@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lz.manage.mapper.PurchaseOrderInfoMapper">
+    
+    <resultMap type="PurchaseOrderInfo" id="PurchaseOrderInfoResult">
+        <result property="id"    column="id"    />
+        <result property="orderNumber"    column="order_number"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="orderProfit"    column="order_profit"    />
+        <result property="orderProfitRate"    column="order_profit_rate"    />
+        <result property="purchaseTime"    column="purchase_time"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="buyerNumber"    column="buyer_number"    />
+        <result property="salesNumber"    column="sales_number"    />
+        <result property="salesPrice"    column="sales_price"    />
+        <result property="purchaseChannelType"    column="purchase_channel_type"    />
+        <result property="purchaseChannelDetail"    column="purchase_channel_detail"    />
+        <result property="purchaseAccount"    column="purchase_account"    />
+        <result property="purchaseOrder"    column="purchase_order"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="purchasePrice"    column="purchase_price"    />
+        <result property="purchasePremium"    column="purchase_premium"    />
+        <result property="shipmentsOrder"    column="shipments_order"    />
+        <result property="hasReturn"    column="has_return"    />
+        <result property="hasBP"    column="has_b_p"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectPurchaseOrderInfoVo">
+        select id, order_number, order_type, order_profit, order_profit_rate, purchase_time, store_id, buyer_number, sales_number, sales_price, purchase_channel_type, purchase_channel_detail, purchase_account, purchase_order, supplier_name, purchase_price, purchase_premium, shipments_order, has_return, has_b_p, user_id, create_time, update_by, update_time, remark, dept_id from tb_purchase_order_info
+    </sql>
+
+    <select id="selectPurchaseOrderInfoList" parameterType="PurchaseOrderInfo" resultMap="PurchaseOrderInfoResult">
+        <include refid="selectPurchaseOrderInfoVo"/>
+        <where>  
+            <if test="orderNumber != null  and orderNumber != ''"> and order_number like concat('%', #{orderNumber}, '%')</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''"> and purchase_time between #{params.beginPurchaseTime} and #{params.endPurchaseTime}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="buyerNumber != null  and buyerNumber != ''"> and buyer_number like concat('%', #{buyerNumber}, '%')</if>
+            <if test="purchaseChannelType != null  and purchaseChannelType != ''"> and purchase_channel_type = #{purchaseChannelType}</if>
+            <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''"> and purchase_channel_detail = #{purchaseChannelDetail}</if>
+            <if test="purchaseAccount != null  and purchaseAccount != ''"> and purchase_account = #{purchaseAccount}</if>
+            <if test="purchaseOrder != null  and purchaseOrder != ''"> and purchase_order like concat('%', #{purchaseOrder}, '%')</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="shipmentsOrder != null  and shipmentsOrder != ''"> and shipments_order like concat('%', #{shipmentsOrder}, '%')</if>
+            <if test="hasReturn != null  and hasReturn != ''"> and has_return = #{hasReturn}</if>
+            <if test="hasBP != null  and hasBP != ''"> and has_b_p = #{hasBP}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectPurchaseOrderInfoById" parameterType="Long" resultMap="PurchaseOrderInfoResult">
+        <include refid="selectPurchaseOrderInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPurchaseOrderInfo" parameterType="PurchaseOrderInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_purchase_order_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">order_number,</if>
+            <if test="orderType != null and orderType != ''">order_type,</if>
+            <if test="orderProfit != null">order_profit,</if>
+            <if test="orderProfitRate != null">order_profit_rate,</if>
+            <if test="purchaseTime != null">purchase_time,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="buyerNumber != null">buyer_number,</if>
+            <if test="salesNumber != null">sales_number,</if>
+            <if test="salesPrice != null">sales_price,</if>
+            <if test="purchaseChannelType != null">purchase_channel_type,</if>
+            <if test="purchaseChannelDetail != null">purchase_channel_detail,</if>
+            <if test="purchaseAccount != null">purchase_account,</if>
+            <if test="purchaseOrder != null">purchase_order,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="purchasePrice != null">purchase_price,</if>
+            <if test="purchasePremium != null">purchase_premium,</if>
+            <if test="shipmentsOrder != null">shipments_order,</if>
+            <if test="hasReturn != null">has_return,</if>
+            <if test="hasBP != null">has_b_p,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">#{orderNumber},</if>
+            <if test="orderType != null and orderType != ''">#{orderType},</if>
+            <if test="orderProfit != null">#{orderProfit},</if>
+            <if test="orderProfitRate != null">#{orderProfitRate},</if>
+            <if test="purchaseTime != null">#{purchaseTime},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="buyerNumber != null">#{buyerNumber},</if>
+            <if test="salesNumber != null">#{salesNumber},</if>
+            <if test="salesPrice != null">#{salesPrice},</if>
+            <if test="purchaseChannelType != null">#{purchaseChannelType},</if>
+            <if test="purchaseChannelDetail != null">#{purchaseChannelDetail},</if>
+            <if test="purchaseAccount != null">#{purchaseAccount},</if>
+            <if test="purchaseOrder != null">#{purchaseOrder},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="purchasePrice != null">#{purchasePrice},</if>
+            <if test="purchasePremium != null">#{purchasePremium},</if>
+            <if test="shipmentsOrder != null">#{shipmentsOrder},</if>
+            <if test="hasReturn != null">#{hasReturn},</if>
+            <if test="hasBP != null">#{hasBP},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePurchaseOrderInfo" parameterType="PurchaseOrderInfo">
+        update tb_purchase_order_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">order_number = #{orderNumber},</if>
+            <if test="orderType != null and orderType != ''">order_type = #{orderType},</if>
+            <if test="orderProfit != null">order_profit = #{orderProfit},</if>
+            <if test="orderProfitRate != null">order_profit_rate = #{orderProfitRate},</if>
+            <if test="purchaseTime != null">purchase_time = #{purchaseTime},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="buyerNumber != null">buyer_number = #{buyerNumber},</if>
+            <if test="salesNumber != null">sales_number = #{salesNumber},</if>
+            <if test="salesPrice != null">sales_price = #{salesPrice},</if>
+            <if test="purchaseChannelType != null">purchase_channel_type = #{purchaseChannelType},</if>
+            <if test="purchaseChannelDetail != null">purchase_channel_detail = #{purchaseChannelDetail},</if>
+            <if test="purchaseAccount != null">purchase_account = #{purchaseAccount},</if>
+            <if test="purchaseOrder != null">purchase_order = #{purchaseOrder},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
+            <if test="purchasePremium != null">purchase_premium = #{purchasePremium},</if>
+            <if test="shipmentsOrder != null">shipments_order = #{shipmentsOrder},</if>
+            <if test="hasReturn != null">has_return = #{hasReturn},</if>
+            <if test="hasBP != null">has_b_p = #{hasBP},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseOrderInfoById" parameterType="Long">
+        delete from tb_purchase_order_info where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseOrderInfoByIds" parameterType="String">
+        delete from tb_purchase_order_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

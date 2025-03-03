@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lz.manage.mapper.PurchaseAccountInfoMapper">
+    
+    <resultMap type="PurchaseAccountInfo" id="PurchaseAccountInfoResult">
+        <result property="id"    column="id"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="purchaseAccount"    column="purchase_account"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectPurchaseAccountInfoVo">
+        select id, nick_name, purchase_account, user_id, create_time, update_by, update_time, remark, dept_id from tb_purchase_account_info
+    </sql>
+
+    <select id="selectPurchaseAccountInfoList" parameterType="PurchaseAccountInfo" resultMap="PurchaseAccountInfoResult">
+        <include refid="selectPurchaseAccountInfoVo"/>
+        <where>  
+            <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="purchaseAccount != null  and purchaseAccount != ''"> and purchase_account like concat('%', #{purchaseAccount}, '%')</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectPurchaseAccountInfoById" parameterType="Long" resultMap="PurchaseAccountInfoResult">
+        <include refid="selectPurchaseAccountInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPurchaseAccountInfo" parameterType="PurchaseAccountInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_purchase_account_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="nickName != null">nick_name,</if>
+            <if test="purchaseAccount != null and purchaseAccount != ''">purchase_account,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="nickName != null">#{nickName},</if>
+            <if test="purchaseAccount != null and purchaseAccount != ''">#{purchaseAccount},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePurchaseAccountInfo" parameterType="PurchaseAccountInfo">
+        update tb_purchase_account_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="purchaseAccount != null and purchaseAccount != ''">purchase_account = #{purchaseAccount},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseAccountInfoById" parameterType="Long">
+        delete from tb_purchase_account_info where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseAccountInfoByIds" parameterType="String">
+        delete from tb_purchase_account_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
