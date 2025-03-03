@@ -990,13 +990,13 @@ export default {
     this.getDeptList()
   },
   methods: {
-    /** 查询地区列表 */
+    /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {
         this.deptOptions = this.handleTree(response.data, 'deptId')
       })
     },
-    /** 转换地区数据结构 */
+    /** 转换部门数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
         delete node.children

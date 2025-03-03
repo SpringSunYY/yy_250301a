@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,9 @@ public class PurchaseAccountInfoController extends BaseController
     @Resource
     private IPurchaseAccountInfoService purchaseAccountInfoService;
 
+    @Resource
+    private ISysDeptService deptService;
+
     /**
      * 查询采购账号信息列表
      */
@@ -47,6 +53,9 @@ public class PurchaseAccountInfoController extends BaseController
     public TableDataInfo list(PurchaseAccountInfoQuery purchaseAccountInfoQuery)
     {
         PurchaseAccountInfo purchaseAccountInfo = PurchaseAccountInfoQuery.queryToObj(purchaseAccountInfoQuery);
+        if (StringUtils.isNotNull(purchaseAccountInfo.getDeptId())) {
+            purchaseAccountInfo.setDeptIds(deptService.selectDeptByIdReturnIds(purchaseAccountInfo.getDeptId()));
+        }
         startPage();
         List<PurchaseAccountInfo> list = purchaseAccountInfoService.selectPurchaseAccountInfoList(purchaseAccountInfo);
         List<PurchaseAccountInfoVo> listVo= list.stream().map(PurchaseAccountInfoVo::objToVo).collect(Collectors.toList());

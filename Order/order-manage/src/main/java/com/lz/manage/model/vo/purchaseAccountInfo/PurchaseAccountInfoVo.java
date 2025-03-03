@@ -34,6 +34,7 @@ public class PurchaseAccountInfoVo implements Serializable
 
     /** 创建人 */
     @Excel(name = "创建人")
+    private String userName;
     private Long userId;
 
     /** 创建时间 */
@@ -56,6 +57,7 @@ public class PurchaseAccountInfoVo implements Serializable
 
     /** 部门 */
     @Excel(name = "部门")
+    private String deptName;
     private Long deptId;
 
 

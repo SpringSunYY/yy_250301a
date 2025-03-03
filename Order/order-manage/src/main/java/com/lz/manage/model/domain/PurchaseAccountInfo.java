@@ -1,6 +1,7 @@
 package com.lz.manage.model.domain;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Date;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class PurchaseAccountInfo implements Serializable
     private static final long serialVersionUID = 1L;
 
     /** 编号 */
-    @Excel(name = "编号")
+//    @Excel(name = "编号")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -40,20 +41,22 @@ public class PurchaseAccountInfo implements Serializable
 
     /** 创建人 */
     @Excel(name = "创建人")
+    @TableField(exist = false)
+    private String userName;
     private Long userId;
 
     /** 创建时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd",type = Excel.Type.EXPORT)
     private Date createTime;
 
     /** 更新人 */
-    @Excel(name = "更新人")
+//    @Excel(name = "更新人")
     private String updateBy;
 
     /** 更新时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "更新时间", width = 30, dateFormat = "yyyy-MM-dd")
+//    @Excel(name = "更新时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date updateTime;
 
     /** 备注 */
@@ -61,11 +64,17 @@ public class PurchaseAccountInfo implements Serializable
     private String remark;
 
     /** 部门 */
-    @Excel(name = "部门")
+    @Excel(name = "部门",type = Excel.Type.EXPORT)
+    @TableField(exist = false)
+    private String deptName;
     private Long deptId;
 
     /** 请求参数 */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     private Map<String, Object> params;
+
+
+    @TableField(exist = false)
+    private List<Long> deptIds;
 }
