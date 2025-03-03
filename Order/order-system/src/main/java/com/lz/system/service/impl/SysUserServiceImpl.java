@@ -1,6 +1,7 @@
 package com.lz.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
@@ -546,5 +547,10 @@ public class SysUserServiceImpl implements ISysUserService
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    @Override
+    public List<SysUser> myAllocatedList(SysUser user) {
+        return userMapper.selectAllocatedList(user);
     }
 }

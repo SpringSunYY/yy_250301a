@@ -192,7 +192,7 @@ public class SysRoleController extends BaseController
     /**
      * 查询已分配用户角色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+//    @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/authUser/allocatedList")
     public TableDataInfo allocatedList(SysUser user)
     {
@@ -258,5 +258,17 @@ public class SysRoleController extends BaseController
         ajax.put("checkedKeys", deptService.selectDeptListByRoleId(roleId));
         ajax.put("depts", deptService.selectDeptTreeList(new SysDept()));
         return ajax;
+    }
+
+    /**
+     * 根据角色和用户信息查找用户并且不分权限过滤
+     * @param user
+     * @return
+     */
+    @GetMapping("/authUser/myAllocatedList")
+    public TableDataInfo myAllocatedList(SysUser user) {
+        startPage();
+        List<SysUser> list = userService.myAllocatedList(user);
+        return getDataTable(list);
     }
 }
