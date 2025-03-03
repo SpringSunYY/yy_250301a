@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -31,6 +32,8 @@ import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.service.IStoreInfoService;
 import com.lz.manage.model.dto.storeInfo.StoreInfoQuery;
 import com.lz.manage.model.vo.storeInfo.StoreInfoVo;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 店铺信息Service业务层处理
@@ -49,6 +52,9 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
 
     @Resource
     private ISysDeptService deptService;
+
+    @Resource
+    private TransactionTemplate transactionTemplate;
 
     //region mybatis代码
 
@@ -75,7 +81,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         for (StoreInfo info : storeInfos) {
             SysUser user = userService.selectUserById(info.getUserId());
             if (StringUtils.isNotNull(user)) {
-                info.setPrincipalName(user.getUserName());
+                info.setUserName(user.getUserName());
             }
             SysUser principalUser = userService.selectUserById(info.getPrincipalId());
             if (StringUtils.isNotNull(principalUser)) {
@@ -308,6 +314,11 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
                 throw new ServiceException("运营不在该部门内！！！");
             }
         }
+        //如果没有到期时间并且下店时间存在，则到期时间是下店时间加一年
+        if (StringUtils.isNull(storeInfo.getExpireTime()) && StringUtils.isNotNull(storeInfo.getDepartureTime())) {
+            //为到期时间加一年
+            storeInfo.setExpireTime(DateUtils.addYears(storeInfo.getDepartureTime(), 1));
+        }
     }
 
 
@@ -319,4 +330,67 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         return storeInfoList.stream().map(StoreInfoVo::objToVo).collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public String importStoreInfo(List<StoreInfo> storeInfoList) {
+        //获取创建人创建时间
+        Long userId = SecurityUtils.getUserId();
+        Date createTime = DateUtils.getNowDate();
+        storeInfoList.forEach(item -> {
+            //根据店铺名称查询店铺是否已经存在
+            StoreInfo storeInfo = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, item.getStoreName()));
+            if (StringUtils.isNotNull(storeInfo)) {
+                throw new ServiceException("店铺名称" + item.getStoreName() + "已经存在！！！");
+            }
+            //遍历获取所有的店铺、主管、客服、运营
+            if (StringUtils.isNotEmpty(item.getPrincipalName())) {
+                SysUser principalUser = userService.selectUserByUserName((item.getPrincipalName()));
+                if (StringUtils.isNull(principalUser)) {
+                    throw new ServiceException("主管" + item.getPrincipalName() + "不存在！！！");
+                } else {
+                    item.setPrincipalId(principalUser.getUserId());
+                }
+            }
+            if (StringUtils.isNotEmpty(item.getServiceName())) {
+                SysUser serviceUser = userService.selectUserByUserName(item.getServiceName());
+                if (StringUtils.isNull(serviceUser)) {
+                    throw new ServiceException("客服" + item.getServiceName() + "不存在！！！");
+                }
+                item.setServiceId(serviceUser.getUserId());
+            }
+            if (StringUtils.isNotEmpty(item.getOperationName())) {
+                SysUser operationUser = userService.selectUserByUserName(item.getOperationName());
+                if (StringUtils.isNull(operationUser)) {
+                    throw new ServiceException("运营:" + item.getOperationName() + "不存在！！！");
+                }
+                item.setOperationId(operationUser.getUserId());
+            }
+            //部门是必须的
+            SysDept dept = deptService.selectDeptById(item.getDeptId());
+            if (StringUtils.isNull(dept)) {
+                throw new ServiceException("部门编号:" + item.getDeptId() + "不存在！！！");
+            }
+
+            item.setUserId(userId);
+            item.setCreateTime(createTime);
+            //如果到期时间不存在，则设置到期时间为下店时间加一年
+            if (StringUtils.isNull(item.getExpireTime()) && StringUtils.isNotNull(item.getDepartureTime())) {
+                //为到期时间加一年
+                item.setExpireTime(DateUtils.addYears(item.getDepartureTime(), 1));
+            }
+        });
+
+        Boolean execute = transactionTemplate.execute(item -> {
+            try {
+                return this.saveBatch(storeInfoList);
+            } catch (Exception e) {
+                throw new ServiceException("请检查数据是否正确，例如店铺名称是否相同！！！");
+            }
+        });
+        if (Boolean.TRUE.equals(execute)) {
+            return "导入成功" + storeInfoList.size() + "条数据";
+        } else {
+            return "导入失败，请检查数据结构是否正确！！！";
+        }
+    }
 }

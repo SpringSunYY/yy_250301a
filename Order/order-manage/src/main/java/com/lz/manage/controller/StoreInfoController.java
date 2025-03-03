@@ -28,6 +28,7 @@ import com.lz.manage.model.dto.storeInfo.StoreInfoEdit;
 import com.lz.manage.service.IStoreInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 店铺信息Controller
@@ -122,5 +123,22 @@ public class StoreInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(storeInfoService.deleteStoreInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:storeInfo:import')")
+    @Log(title = "导入店铺", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<StoreInfo> util = new ExcelUtil<StoreInfo>(StoreInfo.class);
+        List<StoreInfo> storeInfoList = util.importExcel(file.getInputStream());
+        String message = storeInfoService.importStoreInfo(storeInfoList);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:storeInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<StoreInfo> util = new ExcelUtil<StoreInfo>(StoreInfo.class);
+        util.importTemplateExcel(response, "合同数据");
     }
 }
