@@ -115,4 +115,12 @@ public interface SysDeptMapper
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    /**
+     * 根据部门ID查询部门信息
+     *
+     * @param deptId 部门ID
+     * @return 部门信息
+     */
+    List<Long> selectDeptByIdReturnIds(@Param("deptId") Long deptId);
 }

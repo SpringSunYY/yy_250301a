@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,9 @@ public class StoreInfoController extends BaseController
     @Resource
     private IStoreInfoService storeInfoService;
 
+    @Resource
+    private ISysDeptService deptService;
+
     /**
      * 查询店铺信息列表
      */
@@ -47,6 +53,9 @@ public class StoreInfoController extends BaseController
     public TableDataInfo list(StoreInfoQuery storeInfoQuery)
     {
         StoreInfo storeInfo = StoreInfoQuery.queryToObj(storeInfoQuery);
+        if (StringUtils.isNotNull(storeInfo.getDeptId())) {
+            storeInfo.setDeptIds(deptService.selectDeptByIdReturnIds(storeInfo.getDeptId()));
+        }
         startPage();
         List<StoreInfo> list = storeInfoService.selectStoreInfoList(storeInfo);
         List<StoreInfoVo> listVo= list.stream().map(StoreInfoVo::objToVo).collect(Collectors.toList());

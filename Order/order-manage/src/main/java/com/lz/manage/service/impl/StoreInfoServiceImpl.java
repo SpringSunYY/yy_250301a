@@ -111,6 +111,9 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     @Override
     public int insertStoreInfo(StoreInfo storeInfo) {
+        // 校验用户和部门是否存在
+        checkUserAndDept(storeInfo);
+
         storeInfo.setUserId(SecurityUtils.getUserId());
         storeInfo.setCreateTime(DateUtils.getNowDate());
         try {
@@ -129,6 +132,8 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     @Override
     public int updateStoreInfo(StoreInfo storeInfo) {
+        // 校验用户和部门是否存在
+        checkUserAndDept(storeInfo);
         storeInfo.setUpdateBy(SecurityUtils.getUsername());
         storeInfo.setUpdateTime(DateUtils.getNowDate());
         try {
@@ -250,6 +255,61 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
 
         return queryWrapper;
     }
+
+    /**
+     * description: 校验主管、客服、运营、部门是否存在
+     * author: YY
+     * method: checkUserAndDept
+     * date: 2025/3/3 20:20
+     * param:
+     * param: storeInfo
+     * return: void
+     **/
+    private void checkUserAndDept(StoreInfo storeInfo) {
+        //校验主管、客服、运营、部门是否存在
+        //记录部门是否存在
+        Long deptId = storeInfo.getDeptId();
+        List<Long> deptIds = new ArrayList<>();
+        if (StringUtils.isNull(deptId)) {
+            throw new ServiceException("请选择部门！！！");
+        } else {
+            if (StringUtils.isNull(deptService.selectDeptById(deptId))) {
+                throw new ServiceException("部门不存在！！！");
+            }
+            //获取门包括下级部门
+            deptIds = deptService.selectDeptByIdReturnIds(deptId);
+        }
+        if (StringUtils.isNull(storeInfo.getPrincipalId())) {
+            throw new ServiceException("请选择主管！！！");
+        } else {
+            SysUser principalUser = userService.selectUserById(storeInfo.getPrincipalId());
+            if (StringUtils.isNull(principalUser)) {
+                throw new ServiceException("主管不存在！！！");
+            }
+            if (!deptIds.contains(principalUser.getDeptId())) {
+                throw new ServiceException("主管不在该部门内！！！");
+            }
+        }
+        if (StringUtils.isNotNull(storeInfo.getServiceId())) {
+            SysUser serviceUser = userService.selectUserById(storeInfo.getServiceId());
+            if (StringUtils.isNull(serviceUser)) {
+                throw new ServiceException("客服不存在！！！");
+            }
+            if (!deptIds.contains(serviceUser.getDeptId())) {
+                throw new ServiceException("客服不在该部门内！！！");
+            }
+        }
+        if (StringUtils.isNotNull(storeInfo.getOperationId())) {
+            SysUser operationUser = userService.selectUserById(storeInfo.getOperationId());
+            if (StringUtils.isNull(operationUser)) {
+                throw new ServiceException("运营不存在！！！");
+            }
+            if (!deptIds.contains(operationUser.getDeptId())) {
+                throw new ServiceException("运营不在该部门内！！！");
+            }
+        }
+    }
+
 
     @Override
     public List<StoreInfoVo> convertVoList(List<StoreInfo> storeInfoList) {

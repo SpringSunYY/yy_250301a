@@ -2,28 +2,61 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="主管" prop="principalId">
-        <el-input
+        <el-select
           v-model="queryParams.principalId"
-          placeholder="请输入主管"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectPrincipalUserInfoList"
+          :loading="principalUserLoading"
+        >
+          <el-option
+            v-for="item in principalUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="运营" prop="operationId">
-        <el-input
+        <el-select
           v-model="queryParams.operationId"
-          placeholder="请输入运营"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectOperationUserInfoList"
+          :loading="operationUserLoading"
+        >
+          <el-option
+            v-for="item in operationUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="客服" prop="serviceId">
-        <el-input
+        <el-select
           v-model="queryParams.serviceId"
-          placeholder="请输入客服"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectServiceUserInfoList"
+          :loading="serviceUserLoading"
+        >
+          <el-option
+            v-for="item in serviceUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeName">
         <el-input
@@ -170,7 +203,7 @@
       <el-form-item label="保证金" prop="isBail">
         <el-select v-model="queryParams.isBail" placeholder="请选择保证金是否退出" clearable>
           <el-option
-            v-for="dict in dict.type.sys_yes_no"
+            v-for="dict in dict.type.o_common_whether"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -180,20 +213,25 @@
       <el-form-item label="支付宝" prop="isAlipay">
         <el-select v-model="queryParams.isAlipay" placeholder="请选择支付宝是否解绑" clearable>
           <el-option
-            v-for="dict in dict.type.sys_yes_no"
+            v-for="dict in dict.type.o_common_whether"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="部门" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">所属部门</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.deptId"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+
+            />
+          </el-col>
+        </el-row>
       </el-form-item>
       <el-form-item label="创建人" prop="userId">
         <el-input
@@ -445,19 +483,76 @@
     <el-dialog :title="title" :visible.sync="open" width="1100px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
+            <el-form-item label="部门" prop="deptId">
+              <treeselect v-model="form.deptId"
+                          :options="deptOptions" :show-count="true" :normalizer="normalizer"
+                          placeholder="请选择所属位置"
+
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item label="主管" prop="principalId">
-              <el-input v-model="form.principalId" placeholder="请输入主管"/>
+              <el-select
+                v-model="form.principalId"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入用户账号"
+                :remote-method="selectPrincipalUserInfoList"
+                :loading="principalUserLoading"
+              >
+                <el-option
+                  v-for="item in principalUserInfoList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="运营" prop="operationId">
-              <el-input v-model="form.operationId" placeholder="请输入运营"/>
+              <el-select
+                v-model="form.operationId"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入用户账号"
+                :remote-method="selectOperationUserInfoList"
+                :loading="operationUserLoading"
+              >
+                <el-option
+                  v-for="item in operationUserInfoList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="客服" prop="serviceId">
-              <el-input v-model="form.serviceId" placeholder="请输入客服"/>
+              <el-select
+                v-model="form.serviceId"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入用户账号"
+                :remote-method="selectServiceUserInfoList"
+                :loading="serviceUserLoading"
+              >
+                <el-option
+                  v-for="item in serviceUserInfoList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -586,16 +681,11 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="部门" prop="deptId">
-              <el-input v-model="form.deptId" placeholder="请输入部门"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="创建人" prop="userId">
-              <el-input v-model="form.userId" placeholder="请输入创建人"/>
-            </el-form-item>
-          </el-col>
+          <!--          <el-col :span="12">-->
+          <!--            <el-form-item label="创建人" prop="userId">-->
+          <!--              <el-input v-model="form.userId" placeholder="请输入创建人"/>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
         </el-row>
         <el-row :gutter="10">
           <el-col :span="8">
@@ -677,12 +767,46 @@
 
 <script>
 import { listStoreInfo, getStoreInfo, delStoreInfo, addStoreInfo, updateStoreInfo } from '@/api/manage/storeInfo'
+import { myAllocatedUserList } from '@/api/system/role'
+import { listDept } from '@/api/system/dept'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
   name: 'StoreInfo',
   dicts: ['o_store_status', 'o_common_whether'],
+  components: { Treeselect },
   data() {
     return {
+      //部门相关信息
+      deptOptions: [],
+      //主管相关信息
+      principalUserInfoList: [],
+      principalUserLoading: false,
+      principalUserQueryParams: {
+        userName: '',
+        roleId: 100,
+        pageNum: 1,
+        pageSize: 10
+      },
+      //运营相关信息
+      operationUserInfoList: [],
+      operationUserLoading: false,
+      operationUserQueryParams: {
+        userName: '',
+        roleId: 101,
+        pageNum: 1,
+        pageSize: 10
+      },
+      //客服相关信息
+      serviceUserInfoList: [],
+      serviceUserLoading: false,
+      serviceUserQueryParams: {
+        userName: '',
+        roleId: 102,
+        pageNum: 1,
+        pageSize: 10
+      },
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },
@@ -801,14 +925,137 @@ export default {
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
+        ],
+        deptId: [
+          { required: true, message: '部门不能为空', trigger: 'blur' }
         ]
       }
     }
   },
   created() {
     this.getList()
+    this.getDeptList()
   },
   methods: {
+    /** 查询地区列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, 'deptId')
+      })
+    },
+    /** 转换地区数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      }
+    },
+    /**
+     * 获取主管用户列表推荐
+     * @param query
+     */
+    selectPrincipalUserInfoList(query) {
+      if (query !== '') {
+        this.principalUserLoading = true
+        this.principalUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getPrincipalUserInfoList()
+        }, 200)
+      } else {
+        this.principalUserInfoList = []
+        this.principalUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取主管用户信息列表
+     */
+    getPrincipalUserInfoList() {
+      //添加查询参数
+      if (this.form.principalId != null) {
+        this.principalUserQueryParams.userId = this.form.principalId
+      } else {
+        this.principalUserQueryParams.userId = null
+      }
+      if (this.principalUserQueryParams.userName !== '') {
+        this.principalUserQueryParams.userId = null
+      }
+      myAllocatedUserList(this.principalUserQueryParams).then(res => {
+        this.principalUserInfoList = res?.rows
+        this.principalUserLoading = false
+      })
+    },
+    /**
+     * 获取运营用户列表推荐
+     * @param query
+     */
+    selectOperationUserInfoList(query) {
+      if (query !== '') {
+        this.operationUserLoading = true
+        this.operationUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getOperationUserInfoList()
+        }, 200)
+      } else {
+        this.operationUserInfoList = []
+        this.operationUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取运营用户信息列表
+     */
+    getOperationUserInfoList() {
+      //添加查询参数
+      if (this.form.operationId != null) {
+        this.operationUserQueryParams.userId = this.form.operationId
+      } else {
+        this.operationUserQueryParams.userId = null
+      }
+      if (this.operationUserQueryParams.userName !== '') {
+        this.operationUserQueryParams.userId = null
+      }
+      myAllocatedUserList(this.operationUserQueryParams).then(res => {
+        this.operationUserInfoList = res?.rows
+        this.operationUserLoading = false
+      })
+    },
+    /**
+     * 获取客服用户列表推荐
+     * @param query
+     */
+    selectServiceUserInfoList(query) {
+      if (query !== '') {
+        this.serviceUserLoading = true
+        this.serviceUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getServiceUserInfoList()
+        }, 200)
+      } else {
+        this.serviceUserInfoList = []
+        this.serviceUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取客服用户信息列表
+     */
+    getServiceUserInfoList() {
+      //添加查询参数
+      if (this.form.serviceId != null) {
+        this.serviceUserQueryParams.userId = this.form.serviceId
+      } else {
+        this.serviceUserQueryParams.userId = null
+      }
+      if (this.serviceUserQueryParams.userName !== '') {
+        this.serviceUserQueryParams.userId = null
+      }
+      myAllocatedUserList(this.serviceUserQueryParams).then(res => {
+        this.serviceUserInfoList = res?.rows
+        this.serviceUserLoading = false
+      })
+    },
     /** 查询店铺信息列表 */
     getList() {
       this.loading = true
@@ -912,6 +1159,9 @@ export default {
       const id = row.id || this.ids
       getStoreInfo(id).then(response => {
         this.form = response.data
+        this.getServiceUserInfoList()
+        this.getOperationUserInfoList()
+        this.getPrincipalUserInfoList()
         this.open = true
         this.title = '修改店铺信息'
       })

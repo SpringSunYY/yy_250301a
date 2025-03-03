@@ -1,6 +1,7 @@
 package com.lz.manage.model.domain;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Date;
 import java.math.BigDecimal;
@@ -247,4 +248,7 @@ public class StoreInfo implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     private Map<String, Object> params;
+
+    @TableField(exist = false)
+    private List<Long> deptIds;
 }

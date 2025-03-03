@@ -121,4 +121,15 @@ public interface ISysDeptService
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    /**
+     * description: 根据部门id查询所有关于此部门的部门
+     * author: YY 
+     * method: selectDeptByIdReturnIds
+     * date: 2025/3/3 20:42
+     * param: 
+     * param: deptId
+     * return: java.lang.Long[]
+     **/
+    List<Long> selectDeptByIdReturnIds(Long deptId);
 }

@@ -47,33 +47,62 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
         <include refid="selectStoreInfoVo"/>
-        <where>  
-            <if test="principalId != null "> and principal_id = #{principalId}</if>
-            <if test="operationId != null "> and operation_id = #{operationId}</if>
-            <if test="serviceId != null "> and service_id = #{serviceId}</if>
-            <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
-            <if test="storePhone != null  and storePhone != ''"> and store_phone = #{storePhone}</if>
-            <if test="alipayAccount != null  and alipayAccount != ''"> and alipay_account like concat('%', #{alipayAccount}, '%')</if>
-            <if test="alipayPhone != null  and alipayPhone != ''"> and alipay_phone = #{alipayPhone}</if>
-            <if test="alipayAuthenticator != null  and alipayAuthenticator != ''"> and alipay_authenticator like concat('%', #{alipayAuthenticator}, '%')</if>
-            <if test="alipayProvider != null  and alipayProvider != ''"> and alipay_provider like concat('%', #{alipayProvider}, '%')</if>
-            <if test="serverIp != null  and serverIp != ''"> and server_ip = #{serverIp}</if>
-            <if test="channels != null  and channels != ''"> and channels like concat('%', #{channels}, '%')</if>
-            <if test="isCommissionSettlement != null  and isCommissionSettlement != ''"> and is_commission_settlement = #{isCommissionSettlement}</if>
-            <if test="params.beginDepartureTime != null and params.beginDepartureTime != '' and params.endDepartureTime != null and params.endDepartureTime != ''"> and departure_time between #{params.beginDepartureTime} and #{params.endDepartureTime}</if>
-            <if test="businessLicenseName != null  and businessLicenseName != ''"> and business_license_name like concat('%', #{businessLicenseName}, '%')</if>
-            <if test="legalPerson != null  and legalPerson != ''"> and legal_person like concat('%', #{legalPerson}, '%')</if>
-            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''"> and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}</if>
-            <if test="isOrderAccomplish != null  and isOrderAccomplish != ''"> and is_order_accomplish = #{isOrderAccomplish}</if>
-            <if test="isBonaFideRedemption != null  and isBonaFideRedemption != ''"> and is_bona_fide_redemption = #{isBonaFideRedemption}</if>
-            <if test="isBail != null  and isBail != ''"> and is_bail = #{isBail}</if>
-            <if test="isAlipay != null  and isAlipay != ''"> and is_alipay = #{isAlipay}</if>
-            <if test="deptId != null "> and dept_id = #{deptId}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
-            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
-            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+        <where>
+            <if test="principalId != null ">and principal_id = #{principalId}</if>
+            <if test="operationId != null ">and operation_id = #{operationId}</if>
+            <if test="serviceId != null ">and service_id = #{serviceId}</if>
+            <if test="storeName != null  and storeName != ''">and store_name like concat('%', #{storeName}, '%')</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="storePhone != null  and storePhone != ''">and store_phone = #{storePhone}</if>
+            <if test="alipayAccount != null  and alipayAccount != ''">and alipay_account like concat('%',
+                #{alipayAccount}, '%')
+            </if>
+            <if test="alipayPhone != null  and alipayPhone != ''">and alipay_phone = #{alipayPhone}</if>
+            <if test="alipayAuthenticator != null  and alipayAuthenticator != ''">and alipay_authenticator like
+                concat('%', #{alipayAuthenticator}, '%')
+            </if>
+            <if test="alipayProvider != null  and alipayProvider != ''">and alipay_provider like concat('%',
+                #{alipayProvider}, '%')
+            </if>
+            <if test="serverIp != null  and serverIp != ''">and server_ip = #{serverIp}</if>
+            <if test="channels != null  and channels != ''">and channels like concat('%', #{channels}, '%')</if>
+            <if test="isCommissionSettlement != null  and isCommissionSettlement != ''">and is_commission_settlement =
+                #{isCommissionSettlement}
+            </if>
+            <if test="params.beginDepartureTime != null and params.beginDepartureTime != '' and params.endDepartureTime != null and params.endDepartureTime != ''">
+                and departure_time between #{params.beginDepartureTime} and #{params.endDepartureTime}
+            </if>
+            <if test="businessLicenseName != null  and businessLicenseName != ''">and business_license_name like
+                concat('%', #{businessLicenseName}, '%')
+            </if>
+            <if test="legalPerson != null  and legalPerson != ''">and legal_person like concat('%', #{legalPerson},
+                '%')
+            </if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+                and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+            <if test="isOrderAccomplish != null  and isOrderAccomplish != ''">and is_order_accomplish =
+                #{isOrderAccomplish}
+            </if>
+            <if test="isBonaFideRedemption != null  and isBonaFideRedemption != ''">and is_bona_fide_redemption =
+                #{isBonaFideRedemption}
+            </if>
+            <if test="isBail != null  and isBail != ''">and is_bail = #{isBail}</if>
+            <if test="isAlipay != null  and isAlipay != ''">and is_alipay = #{isAlipay}</if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
         </where>
     </select>
     
