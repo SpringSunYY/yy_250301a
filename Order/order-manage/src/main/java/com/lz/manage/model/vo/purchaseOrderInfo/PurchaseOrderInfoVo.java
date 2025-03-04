@@ -73,6 +73,7 @@ public class PurchaseOrderInfoVo implements Serializable
     /** 采购账号 */
     @Excel(name = "采购账号")
     private String purchaseAccount;
+    private Long purchaseAccountId;
 
     /** 采购订单编号 */
     @Excel(name = "采购订单编号")

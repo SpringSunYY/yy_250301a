@@ -56,7 +56,7 @@ public class PurchaseOrderInfoInsert implements Serializable
     private String purchaseChannelDetail;
 
     /** 采购账号 */
-    private String purchaseAccount;
+    private Long purchaseAccountId;
 
     /** 采购订单编号 */
     private String purchaseOrder;

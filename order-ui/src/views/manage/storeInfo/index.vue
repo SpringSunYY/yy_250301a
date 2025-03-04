@@ -806,7 +806,7 @@
 
 <script>
 import { listStoreInfo, getStoreInfo, delStoreInfo, addStoreInfo, updateStoreInfo } from '@/api/manage/storeInfo'
-import { myAllocatedUserList } from '@/api/system/role'
+import { allocatedUserList } from '@/api/system/role'
 import { listDept } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -1036,7 +1036,7 @@ export default {
       if (this.principalUserQueryParams.userName !== '') {
         this.principalUserQueryParams.userId = null
       }
-      myAllocatedUserList(this.principalUserQueryParams).then(res => {
+      allocatedUserList(this.principalUserQueryParams).then(res => {
         this.principalUserInfoList = res?.rows
         this.principalUserLoading = false
       })
@@ -1070,7 +1070,7 @@ export default {
       if (this.operationUserQueryParams.userName !== '') {
         this.operationUserQueryParams.userId = null
       }
-      myAllocatedUserList(this.operationUserQueryParams).then(res => {
+      allocatedUserList(this.operationUserQueryParams).then(res => {
         this.operationUserInfoList = res?.rows
         this.operationUserLoading = false
       })
@@ -1104,7 +1104,7 @@ export default {
       if (this.serviceUserQueryParams.userName !== '') {
         this.serviceUserQueryParams.userId = null
       }
-      myAllocatedUserList(this.serviceUserQueryParams).then(res => {
+      allocatedUserList(this.serviceUserQueryParams).then(res => {
         this.serviceUserInfoList = res?.rows
         this.serviceUserLoading = false
       })

@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="salesPrice"    column="sales_price"    />
         <result property="purchaseChannelType"    column="purchase_channel_type"    />
         <result property="purchaseChannelDetail"    column="purchase_channel_detail"    />
-        <result property="purchaseAccount"    column="purchase_account"    />
+        <result property="purchaseAccountId"    column="purchase_account_id"    />
         <result property="purchaseOrder"    column="purchase_order"    />
         <result property="supplierName"    column="supplier_name"    />
         <result property="purchasePrice"    column="purchase_price"    />
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPurchaseOrderInfoVo">
-        select id, order_number, order_type, order_profit, order_profit_rate, purchase_time, store_id, buyer_number, sales_number, sales_price, purchase_channel_type, purchase_channel_detail, purchase_account, purchase_order, supplier_name, purchase_price, purchase_premium, shipments_order, has_return, has_b_p, user_id, create_time, update_by, update_time, remark, dept_id from tb_purchase_order_info
+        select id, order_number, order_type, order_profit, order_profit_rate, purchase_time, store_id, buyer_number, sales_number, sales_price, purchase_channel_type, purchase_channel_detail, purchase_account_id, purchase_order, supplier_name, purchase_price, purchase_premium, shipments_order, has_return, has_b_p, user_id, create_time, update_by, update_time, remark, dept_id from tb_purchase_order_info
     </sql>
 
     <select id="selectPurchaseOrderInfoList" parameterType="PurchaseOrderInfo" resultMap="PurchaseOrderInfoResult">
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="buyerNumber != null  and buyerNumber != ''"> and buyer_number like concat('%', #{buyerNumber}, '%')</if>
             <if test="purchaseChannelType != null  and purchaseChannelType != ''"> and purchase_channel_type = #{purchaseChannelType}</if>
             <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''"> and purchase_channel_detail = #{purchaseChannelDetail}</if>
-            <if test="purchaseAccount != null  and purchaseAccount != ''"> and purchase_account = #{purchaseAccount}</if>
+            <if test="purchaseAccountId != null  and purchaseAccountId != ''"> and purchase_account_id = #{purchaseAccountId}</if>
             <if test="purchaseOrder != null  and purchaseOrder != ''"> and purchase_order like concat('%', #{purchaseOrder}, '%')</if>
             <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
             <if test="shipmentsOrder != null  and shipmentsOrder != ''"> and shipments_order like concat('%', #{shipmentsOrder}, '%')</if>
@@ -80,7 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesPrice != null">sales_price,</if>
             <if test="purchaseChannelType != null">purchase_channel_type,</if>
             <if test="purchaseChannelDetail != null">purchase_channel_detail,</if>
-            <if test="purchaseAccount != null">purchase_account,</if>
+            <if test="purchaseAccountId != null">purchase_account_id,</if>
             <if test="purchaseOrder != null">purchase_order,</if>
             <if test="supplierName != null">supplier_name,</if>
             <if test="purchasePrice != null">purchase_price,</if>
@@ -107,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesPrice != null">#{salesPrice},</if>
             <if test="purchaseChannelType != null">#{purchaseChannelType},</if>
             <if test="purchaseChannelDetail != null">#{purchaseChannelDetail},</if>
-            <if test="purchaseAccount != null">#{purchaseAccount},</if>
+            <if test="purchaseAccountId != null">#{purchaseAccountId},</if>
             <if test="purchaseOrder != null">#{purchaseOrder},</if>
             <if test="supplierName != null">#{supplierName},</if>
             <if test="purchasePrice != null">#{purchasePrice},</if>
@@ -138,7 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesPrice != null">sales_price = #{salesPrice},</if>
             <if test="purchaseChannelType != null">purchase_channel_type = #{purchaseChannelType},</if>
             <if test="purchaseChannelDetail != null">purchase_channel_detail = #{purchaseChannelDetail},</if>
-            <if test="purchaseAccount != null">purchase_account = #{purchaseAccount},</if>
+            <if test="purchaseAccountId != null">purchase_account_id = #{purchaseAccountId},</if>
             <if test="purchaseOrder != null">purchase_order = #{purchaseOrder},</if>
             <if test="supplierName != null">supplier_name = #{supplierName},</if>
             <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
