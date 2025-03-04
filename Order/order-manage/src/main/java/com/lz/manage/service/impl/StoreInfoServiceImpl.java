@@ -330,19 +330,51 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         return storeInfoList.stream().map(StoreInfoVo::objToVo).collect(Collectors.toList());
     }
 
-    @Transactional
+
     @Override
     public String importStoreInfo(List<StoreInfo> storeInfoList) {
-        //获取创建人创建时间
+        // 获取创建人创建时间
         Long userId = SecurityUtils.getUserId();
         Date createTime = DateUtils.getNowDate();
-        storeInfoList.forEach(item -> {
-            //根据店铺名称查询店铺是否已经存在
-            StoreInfo storeInfo = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, item.getStoreName()));
-            if (StringUtils.isNotNull(storeInfo)) {
+
+        // 分离读操作和写操作
+        List<StoreInfo> validatedStoreInfoList = validateAndPrepareStoreInfo(storeInfoList, userId, createTime);
+
+        // 使用事务模板执行批量保存
+        Boolean execute = transactionTemplate.execute(item -> {
+            try {
+                return this.saveBatch(validatedStoreInfoList);
+            } catch (Exception e) {
+                log.error("导入店铺数据失败，原因:", e);
+                throw new ServiceException("请检查数据是否正确，例如店铺名称是否相同！！！");
+            }
+        });
+
+        if (Boolean.TRUE.equals(execute)) {
+            return "导入成功" + validatedStoreInfoList.size() + "条数据";
+        } else {
+            return "导入失败，请检查数据结构是否正确！！！";
+        }
+    }
+
+    /**
+     * 验证并准备店铺信息
+     *
+     * @param storeInfoList 店铺信息列表
+     * @param userId        创建用户ID
+     * @param createTime    创建时间
+     * @return 验证并准备好的店铺信息列表
+     */
+    private List<StoreInfo> validateAndPrepareStoreInfo(List<StoreInfo> storeInfoList, Long userId, Date createTime) {
+        List<StoreInfo> validatedList = new ArrayList<>();
+        for (StoreInfo item : storeInfoList) {
+            // 根据店铺名称查询店铺是否已经存在
+            StoreInfo existingStoreInfo = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, item.getStoreName()));
+            if (StringUtils.isNotNull(existingStoreInfo)) {
                 throw new ServiceException("店铺名称" + item.getStoreName() + "已经存在！！！");
             }
-            //遍历获取所有的店铺、主管、客服、运营
+
+            // 遍历获取所有的店铺、主管、客服、运营
             if (StringUtils.isNotEmpty(item.getPrincipalName())) {
                 SysUser principalUser = userService.selectUserByUserName((item.getPrincipalName()));
                 if (StringUtils.isNull(principalUser)) {
@@ -365,7 +397,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
                 }
                 item.setOperationId(operationUser.getUserId());
             }
-            //部门是必须的
+            // 部门是必须的
             SysDept dept = deptService.selectDeptById(item.getDeptId());
             if (StringUtils.isNull(dept)) {
                 throw new ServiceException("部门编号:" + item.getDeptId() + "不存在！！！");
@@ -373,25 +405,13 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
 
             item.setUserId(userId);
             item.setCreateTime(createTime);
-            //如果到期时间不存在，则设置到期时间为下店时间加一年
+            // 如果到期时间不存在，则设置到期时间为下店时间加一年
             if (StringUtils.isNull(item.getExpireTime()) && StringUtils.isNotNull(item.getDepartureTime())) {
-                //为到期时间加一年
                 item.setExpireTime(DateUtils.addYears(item.getDepartureTime(), 1));
             }
-        });
 
-        Boolean execute = transactionTemplate.execute(item -> {
-            try {
-                return this.saveBatch(storeInfoList);
-            } catch (Exception e) {
-                log.error("导入店铺数据失败，原因:", e);
-                throw new ServiceException("请检查数据是否正确，例如店铺名称是否相同！！！");
-            }
-        });
-        if (Boolean.TRUE.equals(execute)) {
-            return "导入成功" + storeInfoList.size() + "条数据";
-        } else {
-            return "导入失败，请检查数据结构是否正确！！！";
+            validatedList.add(item);
         }
+        return validatedList;
     }
 }
