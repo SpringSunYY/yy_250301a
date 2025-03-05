@@ -191,10 +191,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             bpOrderInfo = new BPOrderInfo();
         }
         if (StringUtils.isNotNull(bpOrderInfo.getAfterSalePrice())) {
-            orderProfit = orderProfit.add(bpOrderInfo.getAfterSalePrice());
+            orderProfit = orderProfit.subtract(bpOrderInfo.getAfterSalePrice());
         }
         if (StringUtils.isNotNull(bpOrderInfo.getBPPrice())) {
-            orderProfit = orderProfit.add(bpOrderInfo.getBPPrice());
+            orderProfit = orderProfit.subtract(bpOrderInfo.getBPPrice());
         }
         purchaseOrderInfo.setOrderProfit(orderProfit);
 
@@ -218,7 +218,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     @Override
     public int updatePurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
         checkOrder(purchaseOrderInfo);
-        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        BPOrderInfo bpOrderInfo = ibpOrderInfoService.selectBPOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
         ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(purchaseOrderInfo.getOrderNumber());
         getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
         purchaseOrderInfo.setUpdateBy(SecurityUtils.getUsername());

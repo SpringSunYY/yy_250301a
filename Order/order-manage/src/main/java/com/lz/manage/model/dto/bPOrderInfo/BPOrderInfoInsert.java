@@ -31,7 +31,7 @@ public class BPOrderInfoInsert implements Serializable
     private Long storeId;
 
     /** 白嫖退款金额 */
-    private BigDecimal bPPrice;
+    private BigDecimal bpprice;
 
     /** 白嫖退款日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -65,6 +65,7 @@ public class BPOrderInfoInsert implements Serializable
         }
         BPOrderInfo bPOrderInfo = new BPOrderInfo();
         BeanUtils.copyProperties(bPOrderInfoInsert, bPOrderInfo);
+        bPOrderInfo.setBPPrice(bPOrderInfoInsert.getBpprice());
         return bPOrderInfo;
     }
 }

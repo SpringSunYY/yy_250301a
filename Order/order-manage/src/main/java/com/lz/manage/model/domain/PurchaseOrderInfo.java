@@ -72,7 +72,7 @@ public class PurchaseOrderInfo implements Serializable {
      * 采购日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "采购日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd")
+    @Excel(name = "采购日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd 年-月-日")
     private Date purchaseTime;
 
     /**

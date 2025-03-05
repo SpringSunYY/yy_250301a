@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.lz.common.core.domain.entity.SysDept;
+import com.lz.common.core.domain.entity.SysUser;
+import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.StringUtils;
 
 import java.math.BigDecimal;
@@ -17,6 +20,14 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.model.domain.PurchaseOrderInfo;
+import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.service.IPurchaseOrderInfoService;
+import com.lz.manage.service.IStoreInfoService;
+import com.lz.system.service.ISysDeptService;
+import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,6 +36,7 @@ import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoQuery;
 import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 白嫖订单信息Service业务层处理
@@ -36,6 +48,18 @@ import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
 public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrderInfo> implements IBPOrderInfoService {
     @Resource
     private BPOrderInfoMapper bPOrderInfoMapper;
+
+    @Resource
+    private ISysUserService userService;
+
+    @Resource
+    private ISysDeptService deptService;
+
+    @Resource
+    private IPurchaseOrderInfoService orderInfoService;
+
+    @Resource
+    private IStoreInfoService storeInfoService;
 
     //region mybatis代码
 
@@ -58,7 +82,22 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      */
     @Override
     public List<BPOrderInfo> selectBPOrderInfoList(BPOrderInfo bPOrderInfo) {
-        return bPOrderInfoMapper.selectBPOrderInfoList(bPOrderInfo);
+        List<BPOrderInfo> bpOrderInfos = bPOrderInfoMapper.selectBPOrderInfoList(bPOrderInfo);
+        for (BPOrderInfo info : bpOrderInfos) {
+            SysUser user = userService.selectUserById(info.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                info.setUserName(user.getUserName());
+            }
+            SysDept dept = deptService.selectDeptById(info.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                info.setDeptName(dept.getDeptName());
+            }
+            StoreInfo storeInfo = storeInfoService.selectStoreInfoById(info.getStoreId());
+            if (StringUtils.isNotNull(storeInfo)) {
+                info.setStoreName(storeInfo.getStoreName());
+            }
+        }
+        return bpOrderInfos;
     }
 
     /**
@@ -67,10 +106,32 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      * @param bPOrderInfo 白嫖订单信息
      * @return 结果
      */
+    @Transactional
     @Override
     public int insertBPOrderInfo(BPOrderInfo bPOrderInfo) {
+        BPOrderInfo bpOrderInfo = this.selectBPOrderInfoByOrderNumber(bPOrderInfo.getOrderNumber());
+        if (StringUtils.isNotNull(bpOrderInfo)) {
+            throw new ServiceException("白嫖订单已存在" + bPOrderInfo.getOrderNumber());
+        }
+        PurchaseOrderInfo orderInfo = checkReturnOrder(bPOrderInfo);
+
         bPOrderInfo.setCreateTime(DateUtils.getNowDate());
-        return bPOrderInfoMapper.insertBPOrderInfo(bPOrderInfo);
+        int i = bPOrderInfoMapper.insertBPOrderInfo(bPOrderInfo);
+        orderInfoService.updatePurchaseOrderInfo(orderInfo);
+        return i;
+    }
+
+    private PurchaseOrderInfo checkReturnOrder(BPOrderInfo bpOrderInfo) {
+        PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(bpOrderInfo.getOrderNumber());
+        if (StringUtils.isNull(orderInfo)) {
+            throw new ServiceException("订单不存在" + bpOrderInfo.getOrderNumber());
+        }
+        orderInfo.setHasBP(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
+        bpOrderInfo.setStoreId(orderInfo.getStoreId());
+        bpOrderInfo.setDeptId(orderInfo.getDeptId());
+        bpOrderInfo.setUserId(orderInfo.getUserId());
+        bpOrderInfo.setOrderType(orderInfo.getOrderType());
+        return orderInfo;
     }
 
     /**
@@ -81,8 +142,19 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      */
     @Override
     public int updateBPOrderInfo(BPOrderInfo bPOrderInfo) {
+        BPOrderInfo old = this.selectBPOrderInfoByOrderNumber(bPOrderInfo.getOrderNumber());
+        if (StringUtils.isNull(old)) {
+            throw new ServiceException("白嫖订单不存在" + bPOrderInfo.getOrderNumber());
+        }
+        if (!old.getId().equals(bPOrderInfo.getId())) {
+            throw new ServiceException("不可以修改订单编号" + bPOrderInfo.getOrderNumber());
+        }
+        PurchaseOrderInfo orderInfo = checkReturnOrder(bPOrderInfo);
+        bPOrderInfo.setUpdateBy(bPOrderInfo.getUserName());
         bPOrderInfo.setUpdateTime(DateUtils.getNowDate());
-        return bPOrderInfoMapper.updateBPOrderInfo(bPOrderInfo);
+        int i = bPOrderInfoMapper.updateBPOrderInfo(bPOrderInfo);
+        orderInfoService.updatePurchaseOrderInfo(orderInfo);
+        return i;
     }
 
     /**

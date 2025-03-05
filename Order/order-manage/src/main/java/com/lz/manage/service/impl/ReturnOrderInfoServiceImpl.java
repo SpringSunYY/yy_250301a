@@ -119,7 +119,7 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         //根据订单编号查询退货订单是否存在
         ReturnOrderInfo old = selectReturnOrderByOrderNumber(returnOrderInfo.getOrderNumber());
         if (StringUtils.isNotNull(old)) {
-            throw new ServiceException("订单已存在");
+            throw new ServiceException("退货订单已存在" + old.getOrderNumber());
         }
         PurchaseOrderInfo orderInfo = checkReturnOrder(returnOrderInfo);
         //更新订单信息

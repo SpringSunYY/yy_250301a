@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,9 @@ public class BPOrderInfoController extends BaseController
     @Resource
     private IBPOrderInfoService bPOrderInfoService;
 
+    @Resource
+    private ISysDeptService deptService;
+
     /**
      * 查询白嫖订单信息列表
      */
@@ -47,6 +53,10 @@ public class BPOrderInfoController extends BaseController
     public TableDataInfo list(BPOrderInfoQuery bPOrderInfoQuery)
     {
         BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
+        if (StringUtils.isNotNull(bPOrderInfo.getDeptId())) {
+            List<Long> dept = deptService.selectDeptByIdReturnIds(bPOrderInfo.getDeptId());
+            bPOrderInfo.setDeptIds(dept);
+        }
         startPage();
         List<BPOrderInfo> list = bPOrderInfoService.selectBPOrderInfoList(bPOrderInfo);
         List<BPOrderInfoVo> listVo= list.stream().map(BPOrderInfoVo::objToVo).collect(Collectors.toList());
@@ -100,7 +110,9 @@ public class BPOrderInfoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody BPOrderInfoEdit bPOrderInfoEdit)
     {
+        System.out.println("bPOrderInfoEdit = " + bPOrderInfoEdit);
         BPOrderInfo bPOrderInfo = BPOrderInfoEdit.editToObj(bPOrderInfoEdit);
+        System.err.println(bPOrderInfo);
         return toAjax(bPOrderInfoService.updateBPOrderInfo(bPOrderInfo));
     }
 

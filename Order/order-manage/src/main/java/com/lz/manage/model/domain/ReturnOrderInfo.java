@@ -44,13 +44,13 @@ public class ReturnOrderInfo implements Serializable {
     /**
      * 类型
      */
-    @Excel(name = "类型", readConverterExp = "1=其他,2=线上,3=线下", prompt = "只能线上、线下",type = Excel.Type.EXPORT)
+    @Excel(name = "类型", readConverterExp = "1=其他,2=线上,3=线下", prompt = "只能线上、线下", type = Excel.Type.EXPORT)
     private String orderType;
 
     /**
      * 店铺名称
      */
-    @Excel(name = "店铺名称",type= Excel.Type.EXPORT)
+    @Excel(name = "店铺名称", type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String storeName;
     private Long storeId;
@@ -77,7 +77,7 @@ public class ReturnOrderInfo implements Serializable {
      * 退货完成日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "退货完成日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd")
+    @Excel(name = "退货完成日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd 年-月-日")
     private Date returnAccomplishTime;
 
     /**
