@@ -39,25 +39,52 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectPurchaseOrderInfoList" parameterType="PurchaseOrderInfo" resultMap="PurchaseOrderInfoResult">
         <include refid="selectPurchaseOrderInfoVo"/>
-        <where>  
-            <if test="orderNumber != null  and orderNumber != ''"> and order_number like concat('%', #{orderNumber}, '%')</if>
-            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
-            <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''"> and purchase_time between #{params.beginPurchaseTime} and #{params.endPurchaseTime}</if>
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="buyerNumber != null  and buyerNumber != ''"> and buyer_number like concat('%', #{buyerNumber}, '%')</if>
-            <if test="purchaseChannelType != null  and purchaseChannelType != ''"> and purchase_channel_type = #{purchaseChannelType}</if>
-            <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''"> and purchase_channel_detail = #{purchaseChannelDetail}</if>
-            <if test="purchaseAccountId != null  and purchaseAccountId != ''"> and purchase_account_id = #{purchaseAccountId}</if>
-            <if test="purchaseOrder != null  and purchaseOrder != ''"> and purchase_order like concat('%', #{purchaseOrder}, '%')</if>
-            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
-            <if test="shipmentsOrder != null  and shipmentsOrder != ''"> and shipments_order like concat('%', #{shipmentsOrder}, '%')</if>
-            <if test="hasReturn != null  and hasReturn != ''"> and has_return = #{hasReturn}</if>
-            <if test="hasBP != null  and hasBP != ''"> and has_b_p = #{hasBP}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
-            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
-            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
-            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        <where>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
+                '%')
+            </if>
+            <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
+            <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
+                and purchase_time between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
+            </if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
+                '%')
+            </if>
+            <if test="purchaseChannelType != null  and purchaseChannelType != ''">and purchase_channel_type =
+                #{purchaseChannelType}
+            </if>
+            <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''">and purchase_channel_detail =
+                #{purchaseChannelDetail}
+            </if>
+            <if test="purchaseAccountId != null  and purchaseAccountId != ''">and purchase_account_id =
+                #{purchaseAccountId}
+            </if>
+            <if test="purchaseOrder != null  and purchaseOrder != ''">and purchase_order like concat('%',
+                #{purchaseOrder}, '%')
+            </if>
+            <if test="supplierName != null  and supplierName != ''">and supplier_name like concat('%', #{supplierName},
+                '%')
+            </if>
+            <if test="shipmentsOrder != null  and shipmentsOrder != ''">and shipments_order like concat('%',
+                #{shipmentsOrder}, '%')
+            </if>
+            <if test="hasReturn != null  and hasReturn != ''">and has_return = #{hasReturn}</if>
+            <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
         </where>
     </select>
     

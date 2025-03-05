@@ -267,7 +267,8 @@
 
 <script>
 import { listReturnOrderInfo, getReturnOrderInfo, delReturnOrderInfo, addReturnOrderInfo, updateReturnOrderInfo } from "@/api/manage/returnOrderInfo";
-
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 export default {
   name: "ReturnOrderInfo",
   dicts: ['o_return_order_status', 'o_order_type'],
@@ -275,7 +276,7 @@ export default {
     return {
       //表格展示列
       columns: [
-        { key: 0, label: '编号', visible: true },
+        { key: 0, label: '编号', visible: false },
           { key: 1, label: '订单编号', visible: true },
           { key: 2, label: '类型', visible: true },
           { key: 3, label: '店铺名称', visible: true },
@@ -283,11 +284,11 @@ export default {
           { key: 5, label: '客户退货金额', visible: true },
           { key: 6, label: '上家退款金额', visible: true },
           { key: 7, label: '退货完成日期', visible: true },
-          { key: 8, label: '创建人', visible: true },
-          { key: 9, label: '创建时间', visible: true },
-          { key: 10, label: '更新人', visible: true },
-          { key: 11, label: '更新时间', visible: true },
-          { key: 12, label: '备注', visible: true },
+          { key: 8, label: '创建人', visible: false },
+          { key: 9, label: '创建时间', visible: false },
+          { key: 10, label: '更新人', visible: false },
+          { key: 11, label: '更新时间', visible: false },
+          { key: 12, label: '备注', visible: false },
           { key: 13, label: '部门', visible: true },
         ],
       // 遮罩层

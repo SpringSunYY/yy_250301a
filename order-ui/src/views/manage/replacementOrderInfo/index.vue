@@ -272,9 +272,12 @@
 
 <script>
 import { listReplacementOrderInfo, getReplacementOrderInfo, delReplacementOrderInfo, addReplacementOrderInfo, updateReplacementOrderInfo } from "@/api/manage/replacementOrderInfo";
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
   name: "ReplacementOrderInfo",
+  components: { Treeselect },
   dicts: ['o_replacement_status'],
   data() {
     return {

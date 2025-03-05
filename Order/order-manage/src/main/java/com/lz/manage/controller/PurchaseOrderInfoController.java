@@ -6,8 +6,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.PurchaseAccountInfo;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import javax.annotation.Resource;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,22 +41,27 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/manage/purchaseOrderInfo")
-public class PurchaseOrderInfoController extends BaseController
-{
+public class PurchaseOrderInfoController extends BaseController {
     @Resource
     private IPurchaseOrderInfoService purchaseOrderInfoService;
+
+    @Resource
+    private ISysDeptService deptService;
 
     /**
      * 查询采购发货信息列表
      */
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
     @GetMapping("/list")
-    public TableDataInfo list(PurchaseOrderInfoQuery purchaseOrderInfoQuery)
-    {
+    public TableDataInfo list(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
         PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
+            purchaseOrderInfo.setDeptIds(deptIds);
+        }
         startPage();
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
-        List<PurchaseOrderInfoVo> listVo= list.stream().map(PurchaseOrderInfoVo::objToVo).collect(Collectors.toList());
+        List<PurchaseOrderInfoVo> listVo = list.stream().map(PurchaseOrderInfoVo::objToVo).collect(Collectors.toList());
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
@@ -65,8 +73,7 @@ public class PurchaseOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:export')")
     @Log(title = "采购发货信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, PurchaseOrderInfoQuery purchaseOrderInfoQuery)
-    {
+    public void export(HttpServletResponse response, PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
         PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
         ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
@@ -78,8 +85,7 @@ public class PurchaseOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         PurchaseOrderInfo purchaseOrderInfo = purchaseOrderInfoService.selectPurchaseOrderInfoById(id);
         return success(PurchaseOrderInfoVo.objToVo(purchaseOrderInfo));
     }
@@ -90,8 +96,7 @@ public class PurchaseOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:add')")
     @Log(title = "采购发货信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody PurchaseOrderInfoInsert purchaseOrderInfoInsert)
-    {
+    public AjaxResult add(@RequestBody PurchaseOrderInfoInsert purchaseOrderInfoInsert) {
         PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoInsert.insertToObj(purchaseOrderInfoInsert);
         return toAjax(purchaseOrderInfoService.insertPurchaseOrderInfo(purchaseOrderInfo));
     }
@@ -102,8 +107,7 @@ public class PurchaseOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:edit')")
     @Log(title = "采购发货信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody PurchaseOrderInfoEdit purchaseOrderInfoEdit)
-    {
+    public AjaxResult edit(@RequestBody PurchaseOrderInfoEdit purchaseOrderInfoEdit) {
         PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoEdit.editToObj(purchaseOrderInfoEdit);
         return toAjax(purchaseOrderInfoService.updatePurchaseOrderInfo(purchaseOrderInfo));
     }
@@ -113,9 +117,8 @@ public class PurchaseOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:remove')")
     @Log(title = "采购发货信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(purchaseOrderInfoService.deletePurchaseOrderInfoByIds(ids));
     }
 

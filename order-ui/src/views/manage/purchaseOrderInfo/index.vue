@@ -189,13 +189,18 @@
       <!--          end-placeholder="结束日期"-->
       <!--        ></el-date-picker>-->
       <!--      </el-form-item>-->
-      <el-form-item label="部门" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">所属部门</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.deptId"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+
+            />
+          </el-col>
+        </el-row>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -552,17 +557,23 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="销售价" prop="salesPrice">
-              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.salesPrice" placeholder="请输入销售价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.salesPrice"
+                               placeholder="请输入销售价"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="采购进价" prop="purchasePrice">
-              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePrice" placeholder="请输入采购进价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePrice"
+                               placeholder="请输入采购进价"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="采购补价" prop="purchasePremium">
-              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePremium" placeholder="请输入采购补价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePremium"
+                               placeholder="请输入采购补价"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -650,12 +661,18 @@ import { listStoreInfo } from '@/api/manage/storeInfo'
 import { listPurchaseAccountInfo } from '@/api/manage/purchaseAccountInfo'
 import { toPercentage } from '../../../utils/common'
 import { getToken } from '@/utils/auth'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { listDept } from '@/api/system/dept'
 
 export default {
   name: 'PurchaseOrderInfo',
+  components: { Treeselect },
   dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether'],
   data() {
     return {
+      //部门相关信息
+      deptOptions: [],
       //采购账号信息
       purchaseAccountInfoList: [],
       purchaseAccountInfoLoading: false,
@@ -792,9 +809,27 @@ export default {
   created() {
     this.getList()
     this.getStoreInfoList()
+    this.getDeptList()
   },
   methods: {
     toPercentage,
+    /** 查询部门列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, 'deptId')
+      })
+    },
+    /** 转换部门数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      }
+    },
     /**
      * 获取采购账号推荐列表
      */

@@ -118,6 +118,16 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int insertPurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
+        checkOrder(purchaseOrderInfo);
+        //查询白嫖和退货订单
+        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
+        purchaseOrderInfo.setCreateTime(DateUtils.getNowDate());
+        return purchaseOrderInfoMapper.insertPurchaseOrderInfo(purchaseOrderInfo);
+    }
+
+    private void checkOrder(PurchaseOrderInfo purchaseOrderInfo) {
         //如果用户id为空，则默认为当前用户
         if (StringUtils.isNull(purchaseOrderInfo.getUserId())) {
             purchaseOrderInfo.setUserId(SecurityUtils.getUserId());
@@ -138,12 +148,6 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
                 throw new ServiceException("采购账号不存在！！！");
             }
         }
-        //查询白嫖和退货订单
-        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
-        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
-        getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
-        purchaseOrderInfo.setCreateTime(DateUtils.getNowDate());
-        return purchaseOrderInfoMapper.insertPurchaseOrderInfo(purchaseOrderInfo);
     }
 
 
@@ -208,6 +212,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int updatePurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
+        checkOrder(purchaseOrderInfo);
         BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
         ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
         getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
