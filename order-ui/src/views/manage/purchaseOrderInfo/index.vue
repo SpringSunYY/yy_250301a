@@ -90,8 +90,8 @@
           <el-option
             v-for="item in purchaseAccountInfoList"
             :key="item.id"
-            :label="item.purchaseAccountId"
-            :value="item.purchaseAccountId"
+            :label="item.purchaseAccount"
+            :value="item.id"
           >
           </el-option>
         </el-select>
@@ -276,7 +276,7 @@
         </template>
       </el-table-column>
       <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
-                       prop="storeId"
+                       prop="storeName"
       />
       <el-table-column label="买家" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
                        prop="buyerNumber"
@@ -298,7 +298,7 @@
         </template>
       </el-table-column>
       <el-table-column label="采购账号" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible"
-                       prop="purchaseAccountId"
+                       prop="purchaseAccount"
       />
       <el-table-column label="采购订单编号" :show-overflow-tooltip="true" align="center" v-if="columns[13].visible"
                        prop="purchaseOrder"
@@ -326,7 +326,7 @@
         </template>
       </el-table-column>
       <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[20].visible"
-                       prop="userId"
+                       prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[21].visible" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -345,7 +345,7 @@
                        prop="remark"
       />
       <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[25].visible"
-                       prop="deptId"
+                       prop="deptName"
       />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -458,8 +458,8 @@
                 <el-option
                   v-for="item in purchaseAccountInfoList"
                   :key="item.id"
-                  :label="item.purchaseAccountId"
-                  :value="item.purchaseAccountId"
+                  :label="item.purchaseAccount"
+                  :value="item.id"
                 >
                 </el-option>
               </el-select>
@@ -617,7 +617,7 @@ export default {
       purchaseAccountInfoQueryParams: {
         pageNum: 1,
         pageSize: 10,
-        purchaseAccountId: ''
+        purchaseAccount: ''
       },
       //店铺信息
       storeInfoList: [],
@@ -704,8 +704,8 @@ export default {
         purchaseOrder: null,
         supplierName: null,
         shipmentsOrder: null,
-        hasReturn: null,
-        hasBP: null,
+        hasReturn: '2',
+        hasBP: '2',
         userId: null,
         createTime: null,
         updateBy: null,
@@ -742,7 +742,7 @@ export default {
     selectPurchaseAccountInfoList(query) {
       if (query !== '') {
         this.purchaseAccountInfoLoading = true
-        this.purchaseAccountInfoQueryParams.purchaseAccountId = query
+        this.purchaseAccountInfoQueryParams.purchaseAccount = query
         setTimeout(() => {
           this.getPurchaseAccountInfoList()
         }, 200)
@@ -754,10 +754,10 @@ export default {
     getPurchaseAccountInfoList() {
       //添加查询参数
       if (this.form.purchaseAccountId != null) {
-        this.purchaseAccountInfoQueryParams.purchaseAccountId = this.form.purchaseAccountId
+        this.purchaseAccountInfoQueryParams.id = this.form.purchaseAccountId
       }
       if (this.purchaseAccountInfoQueryParams.purchaseAccountId !== '') {
-        this.purchaseAccountInfoQueryParams.purchaseAccountId = null
+        this.purchaseAccountInfoQueryParams.id = null
       }
       listPurchaseAccountInfo(this.purchaseAccountInfoQueryParams).then(res => {
         this.purchaseAccountInfoList = res?.rows
@@ -881,8 +881,8 @@ export default {
         purchasePrice: null,
         purchasePremium: null,
         shipmentsOrder: null,
-        hasReturn: null,
-        hasBP: null,
+        hasReturn: '2',
+        hasBP: '2',
         userId: null,
         createTime: null,
         updateBy: null,
@@ -925,6 +925,7 @@ export default {
         this.form = response.data
         this.getStoreInfoList()
         this.getServiceUserInfoList()
+        this.getPrincipalUserInfoList()
         this.open = true
         this.title = '修改采购发货信息'
       })
