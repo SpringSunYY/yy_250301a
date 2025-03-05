@@ -243,7 +243,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <!-- 店铺导入对话框 -->
+    <!-- 采购账号导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px">
       <el-upload
         ref="upload"
@@ -548,7 +548,7 @@ export default {
     },
     /** 导入按钮操作 */
     handleImport() {
-      this.upload.title = '店铺导入'
+      this.upload.title = '采购账号导入'
       this.upload.open = true
     },
     /** 下载模板操作 */

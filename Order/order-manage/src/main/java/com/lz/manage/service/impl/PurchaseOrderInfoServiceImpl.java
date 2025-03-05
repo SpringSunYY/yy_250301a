@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.PurchaseOrderInfoMapper;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 采购发货信息Service业务层处理
@@ -63,6 +65,8 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     @Lazy
     private IReturnOrderInfoService returnOrderInfoService;
 
+    @Resource
+    private TransactionTemplate transactionTemplate;
     //region mybatis代码
 
     /**
@@ -156,8 +160,16 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     public PurchaseOrderInfo getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo) {
         //计算订单利润 销售价格-采购进价-客户退货金额-客户白仅退款金额-售后补偿金额-采购补价+上家退款金额
         //先计算本实体拥有的内容 销售价格-采购进价-采购补价
-        BigDecimal orderProfit = purchaseOrderInfo.getSalesPrice().subtract(purchaseOrderInfo.getPurchasePrice())
-                .subtract(purchaseOrderInfo.getPurchasePremium());
+        BigDecimal orderProfit = new BigDecimal(BigInteger.ZERO);
+        if (StringUtils.isNotNull(purchaseOrderInfo.getSalesPrice())) {
+            orderProfit = purchaseOrderInfo.getSalesPrice();
+        }
+        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchasePrice())) {
+            orderProfit = orderProfit.subtract(purchaseOrderInfo.getPurchasePrice());
+        }
+        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchasePremium())) {
+            orderProfit = orderProfit.subtract(purchaseOrderInfo.getPurchasePremium());
+        }
         //退款
         returnOrderInfo = new ReturnOrderInfo();
         if (StringUtils.isNotNull(returnOrderInfo.getReturnPrice())) {
@@ -298,6 +310,69 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             return Collections.emptyList();
         }
         return purchaseOrderInfoList.stream().map(PurchaseOrderInfoVo::objToVo).collect(Collectors.toList());
+    }
+
+    @Override
+    public String importPurchaseOrderInfo(List<PurchaseOrderInfo> purchaseOrderInfoList) {
+        Date nowDate = DateUtils.getNowDate();
+        //遍历 判断店铺、账号、创建人是否存在
+        for (int i = 0; i < purchaseOrderInfoList.size(); i++) {
+            PurchaseOrderInfo info = purchaseOrderInfoList.get(i);
+            //订单类型不能为空
+            int index = i + 1;
+            if (StringUtils.isEmpty(info.getOrderType())) {
+                return StringUtils.format("第{}行订单类型不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getOrderNumber())) {
+                return StringUtils.format("第{}行订单编号不能为空", index);
+            }
+            if (StringUtils.isNull(info.getStoreName())) {
+                return StringUtils.format("第{}行店铺名称不能为空", index);
+            }
+            //填入默认值
+            if (StringUtils.isEmpty(info.getHasBP())) {
+                info.setHasBP("2");
+            }
+            if (StringUtils.isEmpty(info.getHasReturn())) {
+                info.setHasReturn("2");
+            }
+            info.setCreateTime(nowDate);
+
+            //数据库查询校验
+            //查询店铺是否存在 存在则给订单赋值部门信息，不存在抛出店铺不存在
+            StoreInfo storeInfo = storeInfoService.selectStoreInfoByStoreName(info.getStoreName());
+            if (StringUtils.isNull(storeInfo)) {
+                return StringUtils.format("第{}行店铺不存在", index);
+            }
+            info.setStoreId(storeInfo.getId());
+            info.setDeptId(storeInfo.getDeptId());
+
+            if (StringUtils.isEmpty(info.getUserName())) {
+                return StringUtils.format("第{}行创建人不能为空", index);
+            }
+            SysUser user = userService.selectUserByUserName(info.getUserName());
+            if (StringUtils.isNull(user)) {
+                return StringUtils.format("第{}行创建人不存在", index);
+            }
+            info.setUserId(user.getUserId());
+            if (StringUtils.isNotEmpty(info.getPurchaseAccount())) {
+                PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoByAccount(info.getPurchaseAccount());
+                if (StringUtils.isNull(purchaseAccountInfo)) {
+                    return StringUtils.format("第{}行填入了采购账号信息，但是账号不存在", index);
+                }
+                info.setPurchaseAccountId(purchaseAccountInfo.getId());
+            }
+            this.getOrderProfit(info, new ReturnOrderInfo(), new BPOrderInfo());
+        }
+        Boolean execute = transactionTemplate.execute(item -> {
+            try {
+                return this.saveBatch(purchaseOrderInfoList);
+            } catch (Exception e) {
+                log.error("导入采购订单数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确，或者查看是否有相同的采购编号！！！");
+            }
+        });
+        return StringUtils.format("导入成功。成功导入{}条数据！！！", purchaseOrderInfoList.size());
     }
 
 }

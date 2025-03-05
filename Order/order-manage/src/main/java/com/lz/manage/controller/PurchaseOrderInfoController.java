@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.PurchaseAccountInfo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,7 @@ import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoEdit;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 采购发货信息Controller
@@ -113,5 +117,22 @@ public class PurchaseOrderInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(purchaseOrderInfoService.deletePurchaseOrderInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:import')")
+    @Log(title = "导入采购订单", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
+        List<PurchaseOrderInfo> list = util.importExcel(file.getInputStream());
+        String message = purchaseOrderInfoService.importPurchaseOrderInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
+        util.importTemplateExcel(response, "采购订单数据");
     }
 }

@@ -95,4 +95,15 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * @return PurchaseOrderInfoVO集合
      */
     List<PurchaseOrderInfoVo> convertVoList(List<PurchaseOrderInfo> purchaseOrderInfoList);
+
+    /**
+     * description: 采购订单导入
+     * author: YY
+     * method: importPurchaseOrderInfo
+     * date: 2025/3/5 17:11
+     * param:
+     * param: purchaseOrderInfoList
+     * return: java.lang.String
+     **/
+    String importPurchaseOrderInfo(List<PurchaseOrderInfo> purchaseOrderInfoList);
 }

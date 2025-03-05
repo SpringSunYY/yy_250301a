@@ -30,7 +30,7 @@ public class PurchaseOrderInfo implements Serializable {
     /**
      * 编号
      */
-    @Excel(name = "编号")
+//    @Excel(name = "编号")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -53,7 +53,8 @@ public class PurchaseOrderInfo implements Serializable {
      */
     @Excel(name = "订单利润",
             prompt = "精确到两位小数",
-            scale = 20
+            scale = 20,
+            type = Excel.Type.EXPORT
     )
     private BigDecimal orderProfit;
 
@@ -62,14 +63,15 @@ public class PurchaseOrderInfo implements Serializable {
      */
     @Excel(name = "利润率",
             prompt = "精确到两位小数",
-            scale = 20)
+            scale = 20,
+            type = Excel.Type.EXPORT)
     private BigDecimal orderProfitRate;
 
     /**
      * 采购日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "采购日期", width = 30, dateFormat = "yyyy-MM-dd",prompt = "时间格式：yyyy-MM-dd")
+    @Excel(name = "采购日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd")
     private Date purchaseTime;
 
     /**
@@ -104,7 +106,9 @@ public class PurchaseOrderInfo implements Serializable {
     /**
      * 采购渠道分类
      */
-    @Excel(name = "采购渠道分类")
+    @Excel(name = "采购渠道分类",
+            readConverterExp = "0=其他,1=线上,2=线下",
+            prompt = "只能线上、线下")
     private String purchaseChannelType;
 
     /**
@@ -116,7 +120,7 @@ public class PurchaseOrderInfo implements Serializable {
     /**
      * 采购账号
      */
-    @Excel(name = "采购账号")
+    @Excel(name = "采购账号", prompt = "采购账号")
     @TableField(exist = false)
     private String purchaseAccount;
     private Long purchaseAccountId;
@@ -160,7 +164,8 @@ public class PurchaseOrderInfo implements Serializable {
      */
     @Excel(name = "是否退货",
             readConverterExp = "1=是,2=否",
-            prompt = "只能填入：是、否")
+            prompt = "只能填入：是、否",
+            type = Excel.Type.EXPORT)
     private String hasReturn;
 
     /**
@@ -168,13 +173,14 @@ public class PurchaseOrderInfo implements Serializable {
      */
     @Excel(name = "是否白嫖",
             readConverterExp = "1=是,2=否",
-            prompt = "只能填入：是、否")
+            prompt = "只能填入：是、否",
+            type = Excel.Type.EXPORT)
     private String hasBP;
 
     /**
      * 创建人
      */
-    @Excel(name = "创建人")
+    @Excel(name = "创建人", prompt = "客服账号")
     @TableField(exist = false)
     private String userName;
     private Long userId;
@@ -189,7 +195,7 @@ public class PurchaseOrderInfo implements Serializable {
     /**
      * 更新人
      */
-    @Excel(name = "更新人")
+//    @Excel(name = "更新人")
     private String updateBy;
 
     /**
@@ -208,7 +214,7 @@ public class PurchaseOrderInfo implements Serializable {
     /**
      * 部门
      */
-    @Excel(name = "部门")
+    @Excel(name = "部门", type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String deptName;
     private Long deptId;

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -218,6 +219,11 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         } else {
             return "导入数据失败，请检查数据结构是否正确！！！";
         }
+    }
+
+    @Override
+    public PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount) {
+        return this.getOne(new LambdaQueryWrapper<PurchaseAccountInfo>().eq(PurchaseAccountInfo::getPurchaseAccount, purchaseAccount));
     }
 
 }

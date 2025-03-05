@@ -127,7 +127,7 @@ public class PurchaseAccountInfoController extends BaseController
     }
 
     @PreAuthorize("@ss.hasPermi('manage:purchaseAccountInfo:import')")
-    @Log(title = "导入店铺", businessType = BusinessType.IMPORT)
+    @Log(title = "导入采购账号", businessType = BusinessType.IMPORT)
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file) throws Exception {
         ExcelUtil<PurchaseAccountInfo> util = new ExcelUtil<PurchaseAccountInfo>(PurchaseAccountInfo.class);

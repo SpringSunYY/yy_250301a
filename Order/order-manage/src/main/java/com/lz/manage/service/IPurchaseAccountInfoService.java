@@ -93,4 +93,15 @@ public interface IPurchaseAccountInfoService extends IService<PurchaseAccountInf
      * return: java.lang.String
      **/
     String importPurchaseAccountInfo(List<PurchaseAccountInfo> purchaseAccountInfoList);
+
+    /**
+     * description: 根据账号查询采购账号信息
+     * author: YY
+     * method: selectPurchaseAccountInfoByAccount
+     * date: 2025/3/5 17:32
+     * param:
+     * param: purchaseAccount
+     * return: com.lz.manage.model.domain.PurchaseAccountInfo
+     **/
+    PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount);
 }

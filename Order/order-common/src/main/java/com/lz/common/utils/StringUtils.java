@@ -681,4 +681,19 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         }
         return sb.toString();
     }
+
+    /**
+     * 将小数转换为百分比字符串
+     * @param value 小数值，例如 0.8 或 1
+     * @param decimalPlaces 可选参数，保留的小数位数，默认为 0
+     * @return 转换后的百分比字符串，例如 "80%" 或 "100%"
+     */
+    public static String toPercentage(double value, int decimalPlaces) {
+        if (decimalPlaces < 0) {
+            throw new IllegalArgumentException("小数位数不能为负数");
+        }
+        double percentage = value * 100;
+        String format = "%." + decimalPlaces + "f%%";
+        return String.format(format, percentage);
+    }
 }

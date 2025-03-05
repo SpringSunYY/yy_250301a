@@ -363,6 +363,11 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         }
     }
 
+    @Override
+    public StoreInfo selectStoreInfoByStoreName(String storeName) {
+        return this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, storeName));
+    }
+
     /**
      * 验证并准备店铺信息
      *
