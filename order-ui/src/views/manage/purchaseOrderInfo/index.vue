@@ -533,22 +533,22 @@
         <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="销售量" prop="salesNumber">
-              <el-input v-model="form.salesNumber" placeholder="请输入销售量"/>
+              <el-input-number :min="0" v-model="form.salesNumber" placeholder="请输入销售量"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="销售价" prop="salesPrice">
-              <el-input v-model="form.salesPrice" placeholder="请输入销售价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.salesPrice" placeholder="请输入销售价"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="采购进价" prop="purchasePrice">
-              <el-input v-model="form.purchasePrice" placeholder="请输入采购进价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePrice" placeholder="请输入采购进价"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="采购补价" prop="purchasePremium">
-              <el-input v-model="form.purchasePremium" placeholder="请输入采购补价"/>
+              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePremium" placeholder="请输入采购补价"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -925,7 +925,7 @@ export default {
         this.form = response.data
         this.getStoreInfoList()
         this.getServiceUserInfoList()
-        this.getPrincipalUserInfoList()
+        this.getPurchaseAccountInfoList()
         this.open = true
         this.title = '修改采购发货信息'
       })

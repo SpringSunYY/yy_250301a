@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
@@ -15,23 +16,19 @@ import com.lz.common.utils.StringUtils;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
-import com.lz.manage.model.domain.PurchaseAccountInfo;
-import com.lz.manage.model.domain.StoreInfo;
-import com.lz.manage.service.IPurchaseAccountInfoService;
-import com.lz.manage.service.IStoreInfoService;
+import com.lz.manage.model.domain.*;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.PurchaseOrderInfoMapper;
-import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
 
@@ -57,6 +54,14 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
     @Resource
     private ISysDeptService deptService;
+
+    @Resource
+    @Lazy
+    private IBPOrderInfoService ibpOrderInfoService;
+
+    @Resource
+    @Lazy
+    private IReturnOrderInfoService returnOrderInfoService;
 
     //region mybatis代码
 
@@ -129,8 +134,55 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
                 throw new ServiceException("采购账号不存在！！！");
             }
         }
+        //查询白嫖和退货订单
+        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        BigDecimal orderProfit = this.getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
+        purchaseOrderInfo.setOrderProfit(orderProfit);
+        if (StringUtils.isNotNull(returnOrderInfo)) {
+            //利润率（利润/销售价格）
+            BigDecimal orderProfitRate = purchaseOrderInfo.getOrderProfit().divide(purchaseOrderInfo.getSalesPrice(), 2, RoundingMode.HALF_UP);
+            purchaseOrderInfo.setOrderProfitRate(orderProfitRate);
+        }
+
         purchaseOrderInfo.setCreateTime(DateUtils.getNowDate());
         return purchaseOrderInfoMapper.insertPurchaseOrderInfo(purchaseOrderInfo);
+    }
+
+
+    /**
+     * description: 获取采购订单利润
+     * author: YY
+     * method: getOrderProfit
+     * date: 2025/3/5 11:47
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.math.BigDecimal
+     **/
+    @Override
+    public BigDecimal getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo) {
+        //计算订单利润 销售价格-采购进价-客户退货金额-客户白仅退款金额-售后补偿金额-采购补价+上家退款金额
+        //先计算本实体拥有的内容 销售价格-采购进价-采购补价
+        BigDecimal orderProfit = purchaseOrderInfo.getSalesPrice().subtract(purchaseOrderInfo.getPurchasePrice())
+                .subtract(purchaseOrderInfo.getPurchasePremium());
+        //退款
+        returnOrderInfo = new ReturnOrderInfo();
+        if (StringUtils.isNotNull(returnOrderInfo.getReturnPrice())) {
+            orderProfit = orderProfit.subtract(returnOrderInfo.getReturnPrice());
+        }
+        //加上上家退款
+        if (StringUtils.isNotNull(returnOrderInfo.getLastReturnPrice())) {
+            orderProfit = orderProfit.add(returnOrderInfo.getLastReturnPrice());
+        }
+        //白嫖
+        bpOrderInfo = new BPOrderInfo();
+        if (StringUtils.isNotNull(bpOrderInfo.getAfterSalePrice())) {
+            orderProfit = orderProfit.add(bpOrderInfo.getAfterSalePrice());
+        }
+        if (StringUtils.isNotNull(bpOrderInfo.getBPPrice())) {
+            orderProfit = orderProfit.add(bpOrderInfo.getBPPrice());
+        }
+        return orderProfit;
     }
 
     /**
