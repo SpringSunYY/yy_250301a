@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,11 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
 import com.lz.system.service.ISysDeptService;
@@ -58,6 +61,9 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
 
     @Resource
     private IStoreInfoService storeInfoService;
+
+    @Resource
+    private IBPOrderInfoService bpOrderInfoService;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -118,7 +124,6 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         returnOrderInfo.setCreateTime(DateUtils.getNowDate());
         PurchaseOrderInfo orderInfo = checkReturnOrder(returnOrderInfo);
         //更新订单信息
-        orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
         int i = returnOrderInfoMapper.insertReturnOrderInfo(returnOrderInfo);
         orderInfoService.updatePurchaseOrderInfo(orderInfo);
         return i;
@@ -128,8 +133,9 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
     private PurchaseOrderInfo checkReturnOrder(ReturnOrderInfo returnOrderInfo) {
         PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(returnOrderInfo.getOrderNumber());
         if (StringUtils.isNull(orderInfo)) {
-            throw new ServiceException("订单不存在");
+            throw new ServiceException("订单不存在" + returnOrderInfo.getOrderNumber());
         }
+        orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
         returnOrderInfo.setStoreId(orderInfo.getStoreId());
         returnOrderInfo.setDeptId(orderInfo.getDeptId());
         returnOrderInfo.setUserId(orderInfo.getUserId());
@@ -154,7 +160,6 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         returnOrderInfo.setUpdateBy(returnOrderInfo.getUserName());
         returnOrderInfo.setUpdateTime(DateUtils.getNowDate());
         //更新订单信息
-        orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
         int i = returnOrderInfoMapper.updateReturnOrderInfo(returnOrderInfo);
         orderInfoService.updatePurchaseOrderInfo(orderInfo);
         return i;
@@ -185,6 +190,58 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
     @Override
     public ReturnOrderInfo selectReturnOrderByOrderNumber(String orderNumber) {
         return this.getOne(new LambdaQueryWrapper<ReturnOrderInfo>().eq(ReturnOrderInfo::getOrderNumber, orderNumber));
+    }
+
+    @Override
+    public String importReturnOrderInfo(List<ReturnOrderInfo> list) {
+        if (StringUtils.isEmpty(list)) {
+            return "导入的文件没有数据";
+        }
+        //先校验是否已经存在订单了
+        // 获取所有的订单编号 然后根据订单编号校验是否已经有存在的订单
+        List<String> orderNumbers = new ArrayList<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            ReturnOrderInfo info = list.get(i);
+            if (StringUtils.isEmpty(info.getOrderNumber())) {
+                return StringUtils.format("第{}行订单编号不能为空", i + 1);
+            }
+            if (StringUtils.isNull(info.getReturnPrice())) {
+                info.setReturnPrice(BigDecimal.ZERO);
+            }
+            if (StringUtils.isNull(info.getLastReturnPrice())) {
+                info.setLastReturnPrice(BigDecimal.ZERO);
+            }
+            orderNumbers.add(info.getOrderNumber());
+        }
+        //根据订单编号列表查询退货订单
+        List<ReturnOrderInfo> returnOrderInfos = this.list(new LambdaQueryWrapper<ReturnOrderInfo>().in(ReturnOrderInfo::getOrderNumber, orderNumbers));
+        //如果有则提示订单已存在
+        if (StringUtils.isNotEmpty(returnOrderInfos)) {
+            return StringUtils.format("订单编号{}已存在", returnOrderInfos.get(0).getOrderNumber());
+        }
+        List<PurchaseOrderInfo> orderInfos = new ArrayList<>(list.size());
+        Date nowDate = DateUtils.getNowDate();
+        //如果都通过，根据订单重新赋值
+        for (int i = 0; i < list.size(); i++) {
+            ReturnOrderInfo info = list.get(i);
+            info.setCreateTime(nowDate);
+
+            //未退货订单赋值并查询订单信息
+            PurchaseOrderInfo orderInfo = checkReturnOrder(info);
+            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(orderInfo.getOrderNumber());
+            orderInfo = orderInfoService.getOrderProfit(orderInfo, info, bpOrderInfo);
+            orderInfos.add(orderInfo);
+        }
+        transactionTemplate.execute(item -> {
+            try {
+                this.saveBatch(list);
+                return orderInfoService.updateBatchById(orderInfos);
+            } catch (Exception e) {
+                log.error("导入退货订单数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确！！！");
+            }
+        });
+        return StringUtils.format("导入成功，成功导入{}条数据", list.size());
     }
 
     //endregion

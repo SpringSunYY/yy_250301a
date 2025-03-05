@@ -94,5 +94,16 @@ public interface IReturnOrderInfoService extends IService<ReturnOrderInfo> {
      * return: com.lz.manage.model.domain.ReturnOrderInfo
      **/
     ReturnOrderInfo selectReturnOrderByOrderNumber(String orderNumber);
+
+    /**
+     * description:  导入退货订单信息
+     * author: YY
+     * method: importReturnOrderInfo
+     * date: 2025/3/5 21:05
+     * param:
+     * param: list 退货订单信息集合
+     * return: java.lang.String
+     **/
+    String importReturnOrderInfo(List<ReturnOrderInfo> list);
 }
 

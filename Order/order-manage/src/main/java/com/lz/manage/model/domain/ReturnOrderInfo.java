@@ -44,13 +44,13 @@ public class ReturnOrderInfo implements Serializable {
     /**
      * 类型
      */
-    @Excel(name = "类型", readConverterExp = "1=其他,2=线上,3=线下", prompt = "只能线上、线下")
+    @Excel(name = "类型", readConverterExp = "1=其他,2=线上,3=线下", prompt = "只能线上、线下",type = Excel.Type.EXPORT)
     private String orderType;
 
     /**
      * 店铺名称
      */
-    @Excel(name = "店铺名称")
+    @Excel(name = "店铺名称",type= Excel.Type.EXPORT)
     @TableField(exist = false)
     private String storeName;
     private Long storeId;

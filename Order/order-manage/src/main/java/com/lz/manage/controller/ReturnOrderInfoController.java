@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.PurchaseAccountInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -30,6 +31,7 @@ import com.lz.manage.model.dto.returnOrderInfo.ReturnOrderInfoEdit;
 import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 退货订单信息Controller
@@ -118,5 +120,22 @@ public class ReturnOrderInfoController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(returnOrderInfoService.deleteReturnOrderInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:import')")
+    @Log(title = "导入退货信息", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<ReturnOrderInfo> util = new ExcelUtil<ReturnOrderInfo>(ReturnOrderInfo.class);
+        List<ReturnOrderInfo> list = util.importExcel(file.getInputStream());
+        String message = returnOrderInfoService.importReturnOrderInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<ReturnOrderInfo> util = new ExcelUtil<ReturnOrderInfo>(ReturnOrderInfo.class);
+        util.importTemplateExcel(response, "退货订单数据");
     }
 }

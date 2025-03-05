@@ -79,4 +79,15 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
      * @return BPOrderInfoVO集合
      */
     List<BPOrderInfoVo> convertVoList(List<BPOrderInfo> bPOrderInfoList);
+
+    /**
+     * description:  根据订单号查询白嫖订单
+     * author: YY
+     * method: selectBPOrderInfoByOrderNumber
+     * date: 2025/3/5 21:39
+     * param:
+     * param: orderNumber
+     * return: com.lz.manage.model.domain.BPOrderInfo
+     **/
+    BPOrderInfo selectBPOrderInfoByOrderNumber(String orderNumber);
 }
