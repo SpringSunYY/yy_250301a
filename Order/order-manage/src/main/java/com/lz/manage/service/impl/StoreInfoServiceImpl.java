@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
@@ -105,6 +106,11 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             if (StringUtils.isNotNull(dept)) {
                 info.setDeptName(dept.getDeptName());
             }
+            //密码加密处理
+            info.setStorePassword(DesensitizedUtil.password(info.getStorePassword()));
+            info.setAlipayPassword(DesensitizedUtil.password(info.getAlipayPassword()));
+            info.setAlipayPayPassword(DesensitizedUtil.password(info.getAlipayPayPassword()));
+            info.setServerPassword(DesensitizedUtil.password(info.getServerPassword()));
         }
         return storeInfos;
     }
