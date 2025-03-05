@@ -11,6 +11,9 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lz.common.utils.DateUtils;
 import javax.annotation.Resource;
+
+import com.lz.system.service.ISysDeptService;
+import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -19,6 +22,7 @@ import com.lz.manage.model.domain.ReplacementOrderInfo;
 import com.lz.manage.service.IReplacementOrderInfoService;
 import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoQuery;
 import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderInfoVo;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 补单明细Service业务层处理
@@ -31,6 +35,15 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
 {
     @Resource
     private ReplacementOrderInfoMapper replacementOrderInfoMapper;
+
+    @Resource
+    private ISysUserService userService;
+
+    @Resource
+    private ISysDeptService deptService;
+
+    @Resource
+    private TransactionTemplate transactionTemplate;
 
     //region mybatis代码
     /**
@@ -54,7 +67,11 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
     @Override
     public List<ReplacementOrderInfo> selectReplacementOrderInfoList(ReplacementOrderInfo replacementOrderInfo)
     {
-        return replacementOrderInfoMapper.selectReplacementOrderInfoList(replacementOrderInfo);
+        List<ReplacementOrderInfo> orderInfos = replacementOrderInfoMapper.selectReplacementOrderInfoList(replacementOrderInfo);
+        for (ReplacementOrderInfo info : orderInfos) {
+
+        }
+        return orderInfos;
     }
 
     /**

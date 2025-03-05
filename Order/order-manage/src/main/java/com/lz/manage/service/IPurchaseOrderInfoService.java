@@ -106,4 +106,12 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * return: java.lang.String
      **/
     String importPurchaseOrderInfo(List<PurchaseOrderInfo> purchaseOrderInfoList);
+
+    /**
+     * 根据订单编号查询订单信息
+     *
+     * @param orderNumber 订单编号
+     * @return 订单信息
+     */
+    PurchaseOrderInfo selectPurchaseOrderInfoByOrderNumber(String orderNumber);
 }

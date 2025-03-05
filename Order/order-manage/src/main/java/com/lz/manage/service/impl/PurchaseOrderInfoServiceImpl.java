@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -175,7 +176,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             orderProfit = orderProfit.subtract(purchaseOrderInfo.getPurchasePremium());
         }
         //退款
-        returnOrderInfo = new ReturnOrderInfo();
+        if (StringUtils.isNull(returnOrderInfo)) {
+            returnOrderInfo = new ReturnOrderInfo();
+        }
         if (StringUtils.isNotNull(returnOrderInfo.getReturnPrice())) {
             orderProfit = orderProfit.subtract(returnOrderInfo.getReturnPrice());
         }
@@ -184,7 +187,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             orderProfit = orderProfit.add(returnOrderInfo.getLastReturnPrice());
         }
         //白嫖
-        bpOrderInfo = new BPOrderInfo();
+        if (StringUtils.isNull(bpOrderInfo)) {
+            bpOrderInfo = new BPOrderInfo();
+        }
         if (StringUtils.isNotNull(bpOrderInfo.getAfterSalePrice())) {
             orderProfit = orderProfit.add(bpOrderInfo.getAfterSalePrice());
         }
@@ -214,7 +219,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     public int updatePurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
         checkOrder(purchaseOrderInfo);
         BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
-        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(purchaseOrderInfo.getOrderNumber());
         getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
         purchaseOrderInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseOrderInfo.setUpdateTime(DateUtils.getNowDate());
@@ -378,6 +383,11 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             }
         });
         return StringUtils.format("导入成功。成功导入{}条数据！！！", purchaseOrderInfoList.size());
+    }
+
+    @Override
+    public PurchaseOrderInfo selectPurchaseOrderInfoByOrderNumber(String orderNumber) {
+        return this.getOne(Wrappers.<PurchaseOrderInfo>lambdaQuery().eq(PurchaseOrderInfo::getOrderNumber, orderNumber));
     }
 
 }

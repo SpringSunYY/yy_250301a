@@ -3,8 +3,13 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import javax.annotation.Resource;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,22 +39,27 @@ import com.lz.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/manage/returnOrderInfo")
-public class ReturnOrderInfoController extends BaseController
-{
+public class ReturnOrderInfoController extends BaseController {
     @Resource
     private IReturnOrderInfoService returnOrderInfoService;
+
+    @Resource
+    private ISysDeptService deptService;
 
     /**
      * 查询退货订单信息列表
      */
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:list')")
     @GetMapping("/list")
-    public TableDataInfo list(ReturnOrderInfoQuery returnOrderInfoQuery)
-    {
+    public TableDataInfo list(ReturnOrderInfoQuery returnOrderInfoQuery) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoQuery.queryToObj(returnOrderInfoQuery);
+        if (StringUtils.isNotNull(returnOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(returnOrderInfo.getDeptId());
+            returnOrderInfo.setDeptIds(deptIds);
+        }
         startPage();
         List<ReturnOrderInfo> list = returnOrderInfoService.selectReturnOrderInfoList(returnOrderInfo);
-        List<ReturnOrderInfoVo> listVo= list.stream().map(ReturnOrderInfoVo::objToVo).collect(Collectors.toList());
+        List<ReturnOrderInfoVo> listVo = list.stream().map(ReturnOrderInfoVo::objToVo).collect(Collectors.toList());
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
@@ -61,8 +71,7 @@ public class ReturnOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:export')")
     @Log(title = "退货订单信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, ReturnOrderInfoQuery returnOrderInfoQuery)
-    {
+    public void export(HttpServletResponse response, ReturnOrderInfoQuery returnOrderInfoQuery) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoQuery.queryToObj(returnOrderInfoQuery);
         List<ReturnOrderInfo> list = returnOrderInfoService.selectReturnOrderInfoList(returnOrderInfo);
         ExcelUtil<ReturnOrderInfo> util = new ExcelUtil<ReturnOrderInfo>(ReturnOrderInfo.class);
@@ -74,8 +83,7 @@ public class ReturnOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderInfoById(id);
         return success(ReturnOrderInfoVo.objToVo(returnOrderInfo));
     }
@@ -86,8 +94,7 @@ public class ReturnOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:add')")
     @Log(title = "退货订单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert)
-    {
+    public AjaxResult add(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoInsert.insertToObj(returnOrderInfoInsert);
         return toAjax(returnOrderInfoService.insertReturnOrderInfo(returnOrderInfo));
     }
@@ -98,8 +105,7 @@ public class ReturnOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:edit')")
     @Log(title = "退货订单信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody ReturnOrderInfoEdit returnOrderInfoEdit)
-    {
+    public AjaxResult edit(@RequestBody ReturnOrderInfoEdit returnOrderInfoEdit) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoEdit.editToObj(returnOrderInfoEdit);
         return toAjax(returnOrderInfoService.updateReturnOrderInfo(returnOrderInfo));
     }
@@ -109,9 +115,8 @@ public class ReturnOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:remove')")
     @Log(title = "退货订单信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(returnOrderInfoService.deleteReturnOrderInfoByIds(ids));
     }
 }
