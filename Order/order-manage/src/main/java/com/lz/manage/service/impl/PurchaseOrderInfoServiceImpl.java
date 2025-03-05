@@ -137,14 +137,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         //查询白嫖和退货订单
         BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
         ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
-        BigDecimal orderProfit = this.getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
-        purchaseOrderInfo.setOrderProfit(orderProfit);
-        if (StringUtils.isNotNull(returnOrderInfo)) {
-            //利润率（利润/销售价格）
-            BigDecimal orderProfitRate = purchaseOrderInfo.getOrderProfit().divide(purchaseOrderInfo.getSalesPrice(), 2, RoundingMode.HALF_UP);
-            purchaseOrderInfo.setOrderProfitRate(orderProfitRate);
-        }
-
+        getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
         purchaseOrderInfo.setCreateTime(DateUtils.getNowDate());
         return purchaseOrderInfoMapper.insertPurchaseOrderInfo(purchaseOrderInfo);
     }
@@ -160,7 +153,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      * return: java.math.BigDecimal
      **/
     @Override
-    public BigDecimal getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo) {
+    public PurchaseOrderInfo getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo) {
         //计算订单利润 销售价格-采购进价-客户退货金额-客户白仅退款金额-售后补偿金额-采购补价+上家退款金额
         //先计算本实体拥有的内容 销售价格-采购进价-采购补价
         BigDecimal orderProfit = purchaseOrderInfo.getSalesPrice().subtract(purchaseOrderInfo.getPurchasePrice())
@@ -182,7 +175,17 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         if (StringUtils.isNotNull(bpOrderInfo.getBPPrice())) {
             orderProfit = orderProfit.add(bpOrderInfo.getBPPrice());
         }
-        return orderProfit;
+        purchaseOrderInfo.setOrderProfit(orderProfit);
+
+        //利润率（利润/销售价格）
+        if (orderProfit.equals(BigDecimal.ZERO) && purchaseOrderInfo.getSalesPrice().equals(BigDecimal.ZERO)) {
+            purchaseOrderInfo.setOrderProfitRate(BigDecimal.ZERO);
+        } else {
+            BigDecimal orderProfitRate = orderProfit.divide(purchaseOrderInfo.getSalesPrice(), 2, RoundingMode.HALF_UP);
+            purchaseOrderInfo.setOrderProfitRate(orderProfitRate);
+        }
+
+        return purchaseOrderInfo;
     }
 
     /**
@@ -193,6 +196,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int updatePurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
+        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
+        purchaseOrderInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseOrderInfo.setUpdateTime(DateUtils.getNowDate());
         return purchaseOrderInfoMapper.updatePurchaseOrderInfo(purchaseOrderInfo);
     }

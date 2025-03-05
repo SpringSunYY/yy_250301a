@@ -269,7 +269,11 @@
       />
       <el-table-column label="利润率" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
                        prop="orderProfitRate"
-      />
+      >
+        <template slot-scope="scope">
+          <span>{{ toPercentage(scope.row.orderProfitRate) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="采购日期" align="center" v-if="columns[5].visible" prop="purchaseTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.purchaseTime, '{y}-{m}-{d}') }}</span>
@@ -378,7 +382,7 @@
     />
 
     <!-- 添加或修改采购发货信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1280px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -605,6 +609,7 @@ import {
 import { allocatedUserList } from '@/api/system/role'
 import { listStoreInfo } from '@/api/manage/storeInfo'
 import { listPurchaseAccountInfo } from '@/api/manage/purchaseAccountInfo'
+import { toPercentage } from '../../../utils/common'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -736,6 +741,7 @@ export default {
     this.getStoreInfoList()
   },
   methods: {
+    toPercentage,
     /**
      * 获取采购账号推荐列表
      */
