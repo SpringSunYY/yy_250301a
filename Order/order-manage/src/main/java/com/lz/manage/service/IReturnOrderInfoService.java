@@ -105,5 +105,16 @@ public interface IReturnOrderInfoService extends IService<ReturnOrderInfo> {
      * return: java.lang.String
      **/
     String importReturnOrderInfo(List<ReturnOrderInfo> list);
+
+    /**
+     * description: 跟新或者修改退货订单信息
+     * author: YY
+     * method: mySaveOrUpdate
+     * date: 2025/3/5 22:14
+     * param:
+     * param: returnOrderInfo
+     * return: int
+     **/
+    int mySaveOrUpdate(ReturnOrderInfo returnOrderInfo);
 }
 

@@ -121,7 +121,6 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         if (StringUtils.isNotNull(old)) {
             throw new ServiceException("订单已存在");
         }
-        returnOrderInfo.setCreateTime(DateUtils.getNowDate());
         PurchaseOrderInfo orderInfo = checkReturnOrder(returnOrderInfo);
         //更新订单信息
         int i = returnOrderInfoMapper.insertReturnOrderInfo(returnOrderInfo);
@@ -173,7 +172,25 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
      */
     @Override
     public int deleteReturnOrderInfoByIds(Long[] ids) {
-        return returnOrderInfoMapper.deleteReturnOrderInfoByIds(ids);
+        List<PurchaseOrderInfo> orderInfos = new ArrayList<>(ids.length);
+        for (Long id : ids) {
+            ReturnOrderInfo returnOrderInfo = this.selectReturnOrderInfoById(id);
+            if (StringUtils.isNotNull(returnOrderInfo)) {
+                PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(returnOrderInfo.getOrderNumber());
+                if (StringUtils.isNotNull(orderInfo)) {
+                    orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
+                    orderInfos.add(orderInfo);
+                }
+            }
+        }
+        transactionTemplate.execute(item -> {
+            returnOrderInfoMapper.deleteReturnOrderInfoByIds(ids);
+            for (PurchaseOrderInfo orderInfo : orderInfos) {
+                orderInfoService.updatePurchaseOrderInfo(orderInfo);
+            }
+            return 1;
+        });
+        return 1;
     }
 
     /**
@@ -242,6 +259,17 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
             }
         });
         return StringUtils.format("导入成功，成功导入{}条数据", list.size());
+    }
+
+    @Transactional
+    @Override
+    public int mySaveOrUpdate(ReturnOrderInfo returnOrderInfo) {
+        PurchaseOrderInfo orderInfo = checkReturnOrder(returnOrderInfo);
+//        if (StringUtils.isNull(this.selectReturnOrderByOrderNumber(returnOrderInfo.getOrderNumber()))) {
+//            returnOrderInfo.setCreateTime(DateUtils.getNowDate());
+//        }
+        this.saveOrUpdate(returnOrderInfo);
+        return orderInfoService.updatePurchaseOrderInfo(orderInfo);
     }
 
     //endregion

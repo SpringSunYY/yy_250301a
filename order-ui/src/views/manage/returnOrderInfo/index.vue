@@ -20,12 +20,23 @@
         </el-select>
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
-        <el-input
+        <el-select
           v-model="queryParams.storeId"
+          filterable
+          remote
+          reserve-keyword
           placeholder="请输入店铺名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          :remote-method="selectStoreInfoList"
+          :loading="storeInfoLoading"
+        >
+          <el-option
+            v-for="item in storeInfoList"
+            :key="item.id"
+            :label="item.storeName"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="退货状态" prop="returnStatus">
         <el-select v-model="queryParams.returnStatus" placeholder="请选择退货状态" clearable>
@@ -48,14 +59,6 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入创建人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -66,23 +69,6 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新人" prop="updateBy">
-        <el-input
-          v-model="queryParams.updateBy"
-          placeholder="请输入更新人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="更新时间" prop="updateTime">
-        <el-date-picker clearable
-                        v-model="queryParams.updateTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择更新时间"
-        >
-        </el-date-picker>
       </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
         <el-row :gutter="24">
@@ -253,19 +239,6 @@
         <el-form-item label="订单编号" prop="orderNumber">
           <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
-        <!--        <el-form-item label="类型" prop="orderType">-->
-        <!--          <el-select v-model="form.orderType" placeholder="请选择类型">-->
-        <!--            <el-option-->
-        <!--              v-for="dict in dict.type.o_order_type"-->
-        <!--              :key="dict.value"-->
-        <!--              :label="dict.label"-->
-        <!--              :value="dict.value"-->
-        <!--            ></el-option>-->
-        <!--          </el-select>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="店铺名称" prop="storeId">-->
-        <!--          <el-input v-model="form.storeId" placeholder="请输入店铺名称" />-->
-        <!--        </el-form-item>-->
         <el-form-item label="退货状态" prop="returnStatus">
           <el-select v-model="form.returnStatus" placeholder="请选择退货状态">
             <el-option
@@ -295,9 +268,6 @@
           >
           </el-date-picker>
         </el-form-item>
-        <!--        <el-form-item label="创建人" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入创建人" />-->
-        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -351,6 +321,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { getToken } from '@/utils/auth'
+import { listStoreInfo } from '@/api/manage/storeInfo'
 
 export default {
   name: 'ReturnOrderInfo',
@@ -358,6 +329,14 @@ export default {
   dicts: ['o_return_order_status', 'o_order_type'],
   data() {
     return {
+      //店铺信息
+      storeInfoList: [],
+      storeInfoLoading: false,
+      storeInfoQueryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        storeName: ''
+      },
       //部门相关信息
       deptOptions: [],
       //表格展示列
@@ -446,7 +425,7 @@ export default {
         headers: { Authorization: 'Bearer ' + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + '/manage/returnOrderInfo/importData'
-      },
+      }
     }
   },
   created() {
@@ -454,6 +433,40 @@ export default {
     this.getDeptList()
   },
   methods: {
+    /**
+     * 获取店铺列表推荐
+     * @param query
+     */
+    selectStoreInfoList(query) {
+      if (query !== '') {
+        this.storeInfoLoading = true
+        this.storeInfoQueryParams.storeName = query
+        setTimeout(() => {
+          this.getStoreInfoList()
+        }, 200)
+      } else {
+        this.storeInfoList = []
+        this.storeInfoQueryParams.storeId = null
+      }
+    },
+    /**
+     * 获取店铺信息列表
+     */
+    getStoreInfoList() {
+      //添加查询参数
+      if (this.form.storeId != null) {
+        this.storeInfoQueryParams.storeId = this.form.storeId
+      } else {
+        this.storeInfoQueryParams.storeId = null
+      }
+      if (this.storeInfoQueryParams.storeName !== '') {
+        this.storeInfoQueryParams.storeId = null
+      }
+      listStoreInfo(this.storeInfoQueryParams).then(res => {
+        this.storeInfoList = res?.rows
+        this.storeInfoLoading = false
+      })
+    },
     /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {
@@ -609,7 +622,7 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()
-    },
+    }
   }
 }
 </script>

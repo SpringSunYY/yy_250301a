@@ -91,6 +91,16 @@ public class ReturnOrderInfoController extends BaseController {
     }
 
     /**
+     * 获取退货订单信息详细信息 根据订单编号
+     */
+    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:query')")
+    @GetMapping(value = "/orderNumber/{orderNumber}")
+    public AjaxResult getInfoByOrderNumber(@PathVariable("orderNumber") String orderNumber) {
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(orderNumber);
+        return success(ReturnOrderInfoVo.objToVo(returnOrderInfo));
+    }
+
+    /**
      * 新增退货订单信息
      */
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:add')")
@@ -99,6 +109,17 @@ public class ReturnOrderInfoController extends BaseController {
     public AjaxResult add(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoInsert.insertToObj(returnOrderInfoInsert);
         return toAjax(returnOrderInfoService.insertReturnOrderInfo(returnOrderInfo));
+    }
+
+    /**
+     * 新增或修改退货订单信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:add')")
+    @Log(title = "新增或修改退货订单信息", businessType = BusinessType.INSERT)
+    @PostMapping("/addOrUpdate")
+    public AjaxResult addOrUpdate(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert) {
+        ReturnOrderInfo returnOrderInfo = ReturnOrderInfoInsert.insertToObj(returnOrderInfoInsert);
+        return toAjax(returnOrderInfoService.mySaveOrUpdate(returnOrderInfo));
     }
 
     /**

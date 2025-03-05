@@ -16,7 +16,22 @@ export function getReturnOrderInfo(id) {
     method: 'get'
   })
 }
+// 查询退货订单信息详细 根据订单号
+export function getReturnOrderInfoByOrderNumber(orderNumber) {
+  return request({
+    url: '/manage/returnOrderInfo/orderNumber/' +orderNumber,
+    method: 'get'
+  })
+}
 
+// 新增退货订单信息
+export function addOrUpdateReturnOrderInfo(data) {
+  return request({
+    url: '/manage/returnOrderInfo/addOrUpdate',
+    method: 'post',
+    data: data
+  })
+}
 // 新增退货订单信息
 export function addReturnOrderInfo(data) {
   return request({

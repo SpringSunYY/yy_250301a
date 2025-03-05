@@ -384,6 +384,17 @@
             v-hasPermi="['manage:purchaseOrderInfo:remove']"
           >删除
           </el-button>
+          <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
+                       v-hasPermi="['manage:returnOrderInfo:add']"
+          >
+            <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="handleReturnOrder" icon="el-icon-key"
+                                v-hasPermi="['manage:returnOrderInfo:add']"
+              >退货
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -645,6 +656,50 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 添加或修改退货订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="returnOrderOpen" width="600px" append-to-body>
+      <el-form ref="form" :model="form" label-width="100px">
+        <el-form-item label="订单编号" prop="orderNumber">
+          <el-input :readonly="true" v-model="form.orderNumber" placeholder="请输入订单编号"/>
+        </el-form-item>
+        <el-form-item label="退货状态" prop="returnStatus">
+          <el-select v-model="form.returnStatus" placeholder="请选择退货状态">
+            <el-option
+              v-for="dict in dict.type.o_return_order_status"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="客户退货金额" prop="returnPrice">
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.returnPrice"
+                           placeholder="请输入客户退货金额"
+          />
+        </el-form-item>
+        <el-form-item label="上家退款金额" prop="lastReturnPrice">
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.lastReturnPrice"
+                           placeholder="请输入上家退款金额"
+          />
+        </el-form-item>
+        <el-form-item label="退货完成日期" prop="returnAccomplishTime">
+          <el-date-picker clearable
+                          v-model="form.returnAccomplishTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择退货完成日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitReturnForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -664,13 +719,15 @@ import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
+import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/api/manage/returnOrderInfo'
 
 export default {
   name: 'PurchaseOrderInfo',
   components: { Treeselect },
-  dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether'],
+  dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
     return {
+      returnOrderOpen: false,
       //部门相关信息
       deptOptions: [],
       //采购账号信息
@@ -766,8 +823,8 @@ export default {
         purchaseOrder: null,
         supplierName: null,
         shipmentsOrder: null,
-        hasReturn: '2',
-        hasBP: '2',
+        hasReturn: null,
+        hasBP: null,
         userId: null,
         createTime: null,
         updateBy: null,
@@ -813,6 +870,38 @@ export default {
   },
   methods: {
     toPercentage,
+    // 更多操作触发
+    handleCommand(command, row) {
+      switch (command) {
+        case 'handleReturnOrder':
+          this.handleReturnOrder(row)
+          break
+        default:
+          break
+      }
+    },
+    /** 打开退货操作 */
+    handleReturnOrder(row) {
+      this.reset()
+      getReturnOrderInfoByOrderNumber(row.orderNumber).then(res => {
+        this.title = '新增或者修改退货信息'
+        this.returnOrderOpen = true
+        if (res.data) {
+          this.form = res.data
+        }
+        this.form.orderNumber = row.orderNumber
+      })
+    },
+    /**
+     * 提交退货订单信息
+     */
+    submitReturnForm() {
+      addOrUpdateReturnOrderInfo(this.form).then(res => {
+        this.returnOrderOpen = false
+        this.getList()
+      })
+    },
+
     /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {
@@ -952,6 +1041,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false
+      this.returnOrderOpen = false
       this.reset()
     },
     // 表单重置
