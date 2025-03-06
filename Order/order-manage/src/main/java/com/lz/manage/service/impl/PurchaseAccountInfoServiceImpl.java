@@ -25,6 +25,7 @@ import com.lz.manage.mapper.PurchaseOrderInfoMapper;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -41,6 +42,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author YY
  * @date 2025-03-03
  */
+@Slf4j
 @Service
 public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountInfoMapper, PurchaseAccountInfo> implements IPurchaseAccountInfoService {
     @Resource
@@ -227,7 +229,7 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
                 return this.saveBatch(purchaseAccountInfoList);
             } catch (Exception e) {
                 log.error("导入采购账号数据失败，原因：", e);
-                throw new ServiceException("导入数据失败，请检查数据结构是否正确！！！");
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,数据格式是否和描述相同！！！");
             }
         });
         if (Boolean.TRUE.equals(execute)) {

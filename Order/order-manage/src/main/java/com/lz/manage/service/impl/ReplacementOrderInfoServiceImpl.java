@@ -1,50 +1,42 @@
 package com.lz.manage.service.impl;
 
-import java.math.BigInteger;
-import java.util.*;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
+import com.lz.common.utils.DateUtils;
 import com.lz.common.utils.SecurityUtils;
 import com.lz.common.utils.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lz.common.utils.DateUtils;
-
-import javax.annotation.Resource;
-
+import com.lz.manage.mapper.ReplacementOrderInfoMapper;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
+import com.lz.manage.model.domain.ReplacementOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoQuery;
+import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderInfoVo;
 import com.lz.manage.service.IPurchaseOrderInfoService;
+import com.lz.manage.service.IReplacementOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.lz.manage.mapper.ReplacementOrderInfoMapper;
-import com.lz.manage.model.domain.ReplacementOrderInfo;
-import com.lz.manage.service.IReplacementOrderInfoService;
-import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoQuery;
-import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderInfoVo;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 补单明细Service业务层处理
  *
  * @author YY
- * @date 2025-03-03
+ * date 2025-03-03
  */
+@Slf4j
 @Service
 public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrderInfoMapper, ReplacementOrderInfo> implements IReplacementOrderInfoService {
     @Resource
@@ -144,7 +136,7 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
         if (StringUtils.isNull(replacementOrderInfo.getCommission())) {
             replacementOrderInfo.setCommission(BigDecimal.ZERO);
         }
-        BigDecimal totalPrice = new BigDecimal(BigInteger.ZERO);
+        BigDecimal totalPrice;
         totalPrice = replacementOrderInfo.getActuallyPrice().add(replacementOrderInfo.getCommission());
         replacementOrderInfo.setTotalPrice(totalPrice);
     }
@@ -165,7 +157,7 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
     /**
      * 批量删除补单明细
      *
-     * @param ids 需要删除的补单明细主键
+     * @param ids 需要删除的 补单明细主键
      * @return 结果
      */
     @Override
@@ -285,7 +277,32 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
         if (StringUtils.isNotEmpty(replacementOrderInfos)) {
             return StringUtils.format("订单编号{}已在补货订单内,不可添加", replacementOrderInfos.get(0).getOrderNumber());
         }
-        return "";
+        //遍历补单集合，为每个补单设置店铺id和用户信息
+        for (int i = 0; i < replacementOrderInfoList.size(); i++) {
+            ReplacementOrderInfo info = replacementOrderInfoList.get(i);
+            int index = i + 1;
+            StoreInfo storeInfo = storeInfoService.selectStoreInfoByStoreName(info.getStoreName());
+            if (StringUtils.isNull(storeInfo)) {
+                return StringUtils.format("第{}行店铺名称{}不存在", index, info.getStoreName());
+            }
+            info.setStoreId(storeInfo.getId());
+            info.setDeptId(storeInfo.getDeptId());
+
+            SysUser user = userService.selectUserByUserName(info.getUserName());
+            if (StringUtils.isNull(user)) {
+                return StringUtils.format("第{}行创建人{}不存在", index, info.getUserName());
+            }
+            info.setUserId(user.getUserId());
+        }
+        transactionTemplate.execute(item -> {
+            try {
+                return this.saveBatch(replacementOrderInfoList);
+            } catch (Exception e) {
+                log.error("导入补单信息失败，原因", e);
+                throw new ServiceException("导入信息失败，请检查数据格式，例如是否有相同的订单编号,数据格式是否和描述相同");
+            }
+        });
+        return StringUtils.format("导入成功。成功导入{}条数据！！！", replacementOrderInfoList.size() );
     }
 
 }

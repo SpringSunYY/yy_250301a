@@ -44,7 +44,7 @@ public class ReplacementOrderInfo implements Serializable {
     /**
      * 店铺名称
      */
-    @Excel(name = "店铺名称",type = Excel.Type.EXPORT)
+    @Excel(name = "店铺名称")
     @TableField(exist = false)
     private String storeName;
     private Long storeId;
@@ -83,7 +83,7 @@ public class ReplacementOrderInfo implements Serializable {
     /**
      * 合计金额
      */
-    @Excel(name = "合计金额", prompt = "精确到两位小数",scale = 20)
+    @Excel(name = "合计金额", prompt = "精确到两位小数",scale = 20,type = Excel.Type.EXPORT)
     private BigDecimal totalPrice;
 
     /**

@@ -327,7 +327,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
                 return orderInfoService.updateBatchById(orderInfos);
             } catch (Exception e) {
                 log.error("导入白嫖订单数据失败，原因：", e);
-                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如是否导入了重复的订单编号！！！");
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如是否导入了重复的订单编号,数据格式是否和描述相同！！！");
             }
         });
         return StringUtils.format("导入成功，成功导入{}条数据", bpOrderInfoList.size());
