@@ -188,4 +188,39 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+
+    /**
+     * 将Date类型转换为指定格式的字符串
+     *
+     * @param date   要转换的日期
+     * @param format 目标格式，例如 "yyyy-MM-dd"
+     * @return 格式化后的字符串
+     */
+    public static String formatDate(Date date, String format) {
+        if (date == null || format == null || format.isEmpty()) {
+            throw new IllegalArgumentException("Date and format must not be null or empty");
+        }
+        return new SimpleDateFormat(format).format(date);
+    }
+    /**
+     * 将Date类型按照指定格式转换为字符串，然后再解析回Date类型
+     *
+     * @param date   要转换的日期
+     * @param format 目标格式，例如 "yyyy-MM-dd"
+     * @return 格式化后的Date类型
+     */
+    public static Date formatDateToDate(Date date, String format) {
+        if (date == null || format == null || format.isEmpty()) {
+            throw new IllegalArgumentException("Date and format must not be null or empty");
+        }
+        String formattedDateStr = new SimpleDateFormat(format).format(date);
+        try {
+            return new SimpleDateFormat(format).parse(formattedDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

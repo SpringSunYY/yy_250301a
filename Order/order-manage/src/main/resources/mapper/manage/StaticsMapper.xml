@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lz.manage.mapper.StaticsMapper">
+
+    <select id="getPurchaseOrderCount" resultType="com.lz.manage.model.statics.StaticsBaseRo">
+        WITH RECURSIVE DateRange AS (SELECT CAST(#{startTime} AS DATE) AS date
+        UNION ALL
+        SELECT
+            date + INTERVAL 1 DAY
+        FROM
+            DateRange
+        WHERE
+            date
+         &lt; #{endTime}
+            )
+        SELECT dr.date       AS name,
+               COUNT(poi.order_profit) AS value
+        FROM DateRange dr
+                 LEFT JOIN
+             tb_purchase_order_info poi
+             ON dr.date = DATE (poi.purchase_time) and poi.order_type = #{orderType}
+             and poi.dept_id in
+                 <foreach collection="deptIds" item="deptId" separator="," open="(" close=")">
+                     #{deptId}
+                 </foreach>
+        GROUP BY
+            dr.date
+        ORDER BY
+            dr.date;
+    </select>
+</mapper>

@@ -1,6 +1,7 @@
 package com.lz.manage.model.enums;
 
 import com.lz.common.utils.StringUtils;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -12,39 +13,39 @@ import java.util.stream.Collectors;
 
 /**
  * Project: config
- * Description: CCommonWhetherEnum
- * 通用是否状态枚举
+ * Description: OrderTypeEnum
+ * 订单类型枚举
  * Version: 1.0
  */
 @Getter
-public enum CommonWhetherEnum {
+public enum OrderTypeEnum {
 
-    COMMON_WHETHER_1("是", "1"),
-    COMMON_WHETHER_2("否", "2");
+    ORDER_TYPE_1("线上", "1"),
+    ORDER_TYPE_2("线下", "2");
 
     private final String text; // 字典描述（label）
     private final String value; // 字典值
 
-    private static final Map<String, CommonWhetherEnum> VALUE_TO_ENUM = new ConcurrentHashMap<>();
+    private static final Map<String, OrderTypeEnum> VALUE_TO_ENUM = new ConcurrentHashMap<>();
 
     static {
-        for (CommonWhetherEnum enumValue : CommonWhetherEnum.values()) {
+        for (OrderTypeEnum enumValue : OrderTypeEnum.values()) {
             VALUE_TO_ENUM.put(enumValue.value, enumValue);
         }
     }
 
-    CommonWhetherEnum(String text, String value) {
+    OrderTypeEnum(String text, String value) {
         this.text = text;
         this.value = value;
     }
 
     public static List<String> getValues() {
         return Arrays.stream(values())
-                .map(CommonWhetherEnum::getValue)
+                .map(OrderTypeEnum::getValue)
                 .collect(Collectors.toList());
     }
 
-    public static Optional<CommonWhetherEnum> getEnumByValue(String value) {
+    public static Optional<OrderTypeEnum> getEnumByValue(String value) {
         if (StringUtils.isEmpty(value)) {
             return Optional.empty();
         }

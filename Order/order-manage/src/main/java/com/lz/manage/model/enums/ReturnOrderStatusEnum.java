@@ -1,6 +1,8 @@
 package com.lz.manage.model.enums;
 
 import com.lz.common.utils.StringUtils;
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * 退货订单状态枚举
  * Version: 1.0
  */
+@Getter
 public enum ReturnOrderStatusEnum {
 
     RETURN_ORDER_STATUS_1("未退货", "1"),
@@ -48,11 +51,4 @@ public enum ReturnOrderStatusEnum {
         return Optional.ofNullable(VALUE_TO_ENUM.get(value));
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getText() {
-        return text;
-    }
 }
