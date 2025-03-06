@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.EmptyBagCourierHistoryInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo;
 
 /**
  * 空包/快递充值记录Mapper接口
@@ -59,4 +60,15 @@ public interface EmptyBagCourierHistoryInfoMapper extends BaseMapper<EmptyBagCou
      * @return 结果
      */
     public int deleteEmptyBagCourierHistoryInfoByIds(Long[] ids);
+
+    /**
+     * description: 统计总数
+     * author: YY
+     * method: getEmptyBagCourierHistoryCount
+     * date: 2025/3/6 21:13
+     * param:
+     * param: emptyBagCourierHistoryInfo
+     * return: com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo
+     **/
+    EmptyBagCourierHistoryCountVo getEmptyBagCourierHistoryCount(EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo);
 }

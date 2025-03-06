@@ -147,6 +147,28 @@
         >导入
         </el-button>
       </el-col>
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ bpOrderCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >退款金额：{{ bpOrderCount.bppriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >售后金额：{{ bpOrderCount.afterSalePriceCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -320,7 +342,7 @@ import {
   getBPOrderInfo,
   delBPOrderInfo,
   addBPOrderInfo,
-  updateBPOrderInfo
+  updateBPOrderInfo, getBpOrderCount
 } from '@/api/manage/bPOrderInfo'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -334,6 +356,11 @@ export default {
   dicts: ['o_order_type'],
   data() {
     return {
+      bpOrderCount: {
+        orderCount: 0,
+        bppriceCount: 0,
+        afterSalePriceCount: 0
+      },
       //店铺信息
       storeInfoList: [],
       storeInfoLoading: false,
@@ -515,6 +542,12 @@ export default {
         this.bPOrderInfoList = response.rows
         this.total = response.total
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getBpOrderCount(this.queryParams).then(response => {
+        this.bpOrderCount = response.data
       })
     },
     // 取消按钮

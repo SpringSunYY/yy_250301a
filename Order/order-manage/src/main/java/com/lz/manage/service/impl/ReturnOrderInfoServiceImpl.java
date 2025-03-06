@@ -24,6 +24,7 @@ import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo;
 import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
@@ -271,6 +272,12 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
 //        }
         this.saveOrUpdate(returnOrderInfo);
         return orderInfoService.updatePurchaseOrderInfo(orderInfo);
+    }
+
+    @DataScope(userAlias = "tb_return_order_info", deptAlias = "tb_return_order_info")
+    @Override
+    public ReturnOrderCountVo getReturnOrderCount(ReturnOrderInfo returnOrderInfo) {
+        return returnOrderInfoMapper.getReturnOrderCount(returnOrderInfo);
     }
 
     //endregion

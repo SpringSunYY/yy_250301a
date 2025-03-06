@@ -9,6 +9,15 @@ export function listReplacementOrderInfo(query) {
   })
 }
 
+// 统计总数
+export function getReplacementOrderCount(query) {
+  return request({
+    url: '/manage/replacementOrderInfo/getReplacementOrderCount',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询补单明细详细
 export function getReplacementOrderInfo(id) {
   return request({

@@ -3,6 +3,7 @@ package com.lz.manage.service;
 import java.util.List;
 
 import com.lz.manage.model.domain.EmptyBagCourierHistoryInfo;
+import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo;
 import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryInfoVo;
 import com.lz.manage.model.dto.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryInfoQuery;
 
@@ -93,4 +94,15 @@ public interface IEmptyBagCourierHistoryInfoService extends IService<EmptyBagCou
      * return: java.lang.String
      **/
     String importEmptyCourierHistoryInfo(List<EmptyBagCourierHistoryInfo> emptyBagCourierHistoryInfos);
+
+    /**
+     * description: 获取空包/快递充值记录数量
+     * author: YY
+     * method: getEmptyBagCourierHistoryCount
+     * date: 2025/3/6 15:48
+     * param:
+     * param: emptyBagCourierHistoryInfo
+     * return: com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo
+     **/
+    EmptyBagCourierHistoryCountVo getEmptyBagCourierHistoryCount(EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo);
 }

@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo;
 
 /**
  * 白嫖订单信息Mapper接口
@@ -59,4 +60,15 @@ public interface BPOrderInfoMapper extends BaseMapper<BPOrderInfo>
      * @return 结果
      */
     public int deleteBPOrderInfoByIds(Long[] ids);
+
+    /**
+     * description: 获取白嫖订单统计信息
+     * author: YY
+     * method: getBpOrderCount
+     * date: 2025/3/6 21:18
+     * param:
+     * param: bPOrderInfo
+     * return: com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo
+     **/
+    BPOrderCountVo getBpOrderCount(BPOrderInfo bPOrderInfo);
 }

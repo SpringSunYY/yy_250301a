@@ -3,6 +3,7 @@ package com.lz.manage.service;
 import java.util.List;
 
 import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo;
 import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderInfoVo;
 import com.lz.manage.model.dto.returnOrderInfo.ReturnOrderInfoQuery;
 
@@ -116,5 +117,16 @@ public interface IReturnOrderInfoService extends IService<ReturnOrderInfo> {
      * return: int
      **/
     int mySaveOrUpdate(ReturnOrderInfo returnOrderInfo);
+
+    /**
+     * description: 获取退货订单信息统计
+     * author: YY
+     * method: getReturnOrderCount
+     * date: 2025/3/5 22:14
+     * param:
+     * param: returnOrderInfo
+     * return: com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo
+     **/
+    ReturnOrderCountVo getReturnOrderCount(ReturnOrderInfo returnOrderInfo);
 }
 

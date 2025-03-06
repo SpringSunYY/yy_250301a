@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.PurchaseAccountInfo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -137,5 +138,16 @@ public class PurchaseOrderInfoController extends BaseController {
     public void importTemplate(HttpServletResponse response) {
         ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
         util.importTemplateExcel(response, "采购订单数据");
+    }
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
+    @GetMapping("/getPurchaseOrderInfoCount")
+    public AjaxResult getPurchaseOrderInfoCount(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
+        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
+            purchaseOrderInfo.setDeptIds(deptIds);
+        }
+        PurchaseOrderInfoCountVo purchaseOrderInfoCountVo = purchaseOrderInfoService.getPurchaseOrderInfoCount(purchaseOrderInfo);
+        return success(purchaseOrderInfoCountVo);
     }
 }

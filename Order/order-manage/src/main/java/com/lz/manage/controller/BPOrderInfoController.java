@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -65,6 +66,18 @@ public class BPOrderInfoController extends BaseController {
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:list')")
+    @GetMapping("/getBpOrderCount")
+    public AjaxResult getBpOrderCount(BPOrderInfoQuery bPOrderInfoQuery) {
+        BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
+        if (StringUtils.isNotNull(bPOrderInfo.getDeptId())) {
+            List<Long> dept = deptService.selectDeptByIdReturnIds(bPOrderInfo.getDeptId());
+            bPOrderInfo.setDeptIds(dept);
+        }
+        BPOrderCountVo bpOrderCountVo= bPOrderInfoService.getBpOrderCount(bPOrderInfo);
+        return success(bpOrderCountVo);
     }
 
     /**

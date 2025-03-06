@@ -6,6 +6,7 @@ import java.util.List;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 
@@ -114,4 +115,15 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * @return 订单信息
      */
     PurchaseOrderInfo selectPurchaseOrderInfoByOrderNumber(String orderNumber);
+
+    /**
+     * description: 计算总数
+     * author: YY
+     * method: getPurchaseOrderInfoCount
+     * date: 2025/3/6 20:37
+     * param:
+     * param: purchaseOrderInfo
+     * return: com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo
+     **/
+    PurchaseOrderInfoCountVo getPurchaseOrderInfoCount(PurchaseOrderInfo purchaseOrderInfo);
 }

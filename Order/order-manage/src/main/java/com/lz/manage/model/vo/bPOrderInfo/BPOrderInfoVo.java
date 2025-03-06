@@ -46,7 +46,6 @@ public class BPOrderInfoVo implements Serializable
     private Date bPTime;
 
     /** 售后金额 */
-    @Excel(name = "售后金额")
     private BigDecimal afterSalePrice;
 
     /** 售后日期 */

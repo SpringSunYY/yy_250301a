@@ -52,6 +52,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectReturnOrderInfoVo"/>
         where id = #{id}
     </select>
+    <select id="getReturnOrderCount" resultType="com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo">
+        select
+        count(id) as orderCount,
+        sum(return_price) as returnPriceCount,
+        sum(last_return_price) as lastReturnPriceCount
+        from tb_return_order_info
+        <where>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
+                '%')
+            </if>
+            <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="returnStatus != null  and returnStatus != ''">and return_status = #{returnStatus}</if>
+            <if test="params.beginReturnAccomplishTime != null and params.beginReturnAccomplishTime != '' and params.endReturnAccomplishTime != null and params.endReturnAccomplishTime != ''">
+                and return_accomplish_time between #{params.beginReturnAccomplishTime} and
+                #{params.endReturnAccomplishTime}
+            </if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
 
     <insert id="insertReturnOrderInfo" parameterType="ReturnOrderInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_return_order_info

@@ -3,6 +3,7 @@ package com.lz.manage.service;
 import java.util.List;
 
 import com.lz.manage.model.domain.ReplacementOrderInfo;
+import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo;
 import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderInfoVo;
 import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoQuery;
 
@@ -104,4 +105,15 @@ public interface IReplacementOrderInfoService extends IService<ReplacementOrderI
      * return: java.lang.String
      **/
     String importReplacementOrderInfo(List<ReplacementOrderInfo> replacementOrderInfoList);
+
+    /**
+     * description: 获取总数
+     * author: YY
+     * method: getReplacementOrderCount
+     * date: 2025/3/6 20:56
+     * param:
+     * param: replacementOrderInfo
+     * return: com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo
+     **/
+    ReplacementOrderCountVo getReplacementOrderCount(ReplacementOrderInfo replacementOrderInfo);
 }

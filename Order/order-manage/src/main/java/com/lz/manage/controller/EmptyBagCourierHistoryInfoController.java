@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.BPOrderInfo;
+import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
@@ -63,6 +64,17 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:emptyBagCourierHistoryInfo:list')")
+    @GetMapping("/getEmptyBagCourierHistoryCount")
+    public AjaxResult getEmptyBagCourierHistoryCount(EmptyBagCourierHistoryInfoQuery emptyBagCourierHistoryInfoQuery) {
+        EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo = EmptyBagCourierHistoryInfoQuery.queryToObj(emptyBagCourierHistoryInfoQuery);
+        if (StringUtils.isNotNull(emptyBagCourierHistoryInfo.getDeptId())) {
+            emptyBagCourierHistoryInfo.setDeptIds(deptService.selectDeptByIdReturnIds(emptyBagCourierHistoryInfo.getDeptId()));
+        }
+        EmptyBagCourierHistoryCountVo emptyBagCourierHistoryCountVo = emptyBagCourierHistoryInfoService.getEmptyBagCourierHistoryCount(emptyBagCourierHistoryInfo);
+        return success(emptyBagCourierHistoryCountVo);
     }
 
     /**

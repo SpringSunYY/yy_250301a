@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.ReplacementOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo;
 
 /**
  * 补单明细Mapper接口
@@ -59,4 +60,15 @@ public interface ReplacementOrderInfoMapper extends BaseMapper<ReplacementOrderI
      * @return 结果
      */
     public int deleteReplacementOrderInfoByIds(Long[] ids);
+
+    /**
+     * description: 获取总数
+     * author: YY
+     * method: getReplacementOrderCount
+     * date: 2025/3/6 20:56
+     * param:
+     * param: replacementOrderInfo
+     * return: com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo
+     **/
+    ReplacementOrderCountVo getReplacementOrderCount(ReplacementOrderInfo replacementOrderInfo);
 }

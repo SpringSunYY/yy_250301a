@@ -21,6 +21,7 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryCountVo;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
@@ -230,6 +231,12 @@ public class EmptyBagCourierHistoryInfoServiceImpl extends ServiceImpl<EmptyBagC
             }
         });
         return StringUtils.format("导入成功。成功导入{}条数据！！！", emptyBagCourierHistoryInfos.size());
+    }
+
+    @DataScope(userAlias = "tb_empty_bag_courier_history_info", deptAlias = "tb_empty_bag_courier_history_info")
+    @Override
+    public EmptyBagCourierHistoryCountVo getEmptyBagCourierHistoryCount(EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo) {
+        return emptyBagCourierHistoryInfoMapper.getEmptyBagCourierHistoryCount(emptyBagCourierHistoryInfo);
     }
 
 }

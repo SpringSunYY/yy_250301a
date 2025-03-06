@@ -118,6 +118,22 @@
         >导入
         </el-button>
       </el-col>
+
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ emptyBagCourierHistoryCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >金额：{{ emptyBagCourierHistoryCount.priceCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -272,18 +288,23 @@ import {
   getEmptyBagCourierHistoryInfo,
   delEmptyBagCourierHistoryInfo,
   addEmptyBagCourierHistoryInfo,
-  updateEmptyBagCourierHistoryInfo
+  updateEmptyBagCourierHistoryInfo, getEmptyBagCourierHistoryCount
 } from '@/api/manage/emptyBagCourierHistoryInfo'
 import { allocatedUserList } from '@/api/system/role'
 import { listDept } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getToken } from '@/utils/auth'
+
 export default {
   name: 'EmptyBagCourierHistoryInfo',
   components: { Treeselect },
   data() {
     return {
+      emptyBagCourierHistoryCount: {
+        orderCount: 0,
+        priceCount: 0
+      },
       //用户相关信息
       userInfoList: [],
       userLoading: false,
@@ -452,6 +473,12 @@ export default {
         this.emptyBagCourierHistoryInfoList = response.rows
         this.total = response.total
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getEmptyBagCourierHistoryCount().then(response => {
+        this.emptyBagCourierHistoryCount = response.data
       })
     },
     // 取消按钮

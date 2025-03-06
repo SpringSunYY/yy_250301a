@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
@@ -432,6 +433,12 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     @Override
     public PurchaseOrderInfo selectPurchaseOrderInfoByOrderNumber(String orderNumber) {
         return this.getOne(Wrappers.<PurchaseOrderInfo>lambdaQuery().eq(PurchaseOrderInfo::getOrderNumber, orderNumber));
+    }
+
+    @Override
+    @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
+    public PurchaseOrderInfoCountVo getPurchaseOrderInfoCount(PurchaseOrderInfo purchaseOrderInfo) {
+        return purchaseOrderInfoMapper.getPurchaseOrderInfoCount(purchaseOrderInfo);
     }
 
 }

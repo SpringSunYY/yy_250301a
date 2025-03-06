@@ -55,6 +55,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectReplacementOrderInfoVo"/>
         where id = #{id}
     </select>
+    <select id="getReplacementOrderCount"
+            resultType="com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo">
+        select
+        count(id) orderCount,
+        sum(actually_price) actuallyPriceCount,
+        sum(commission) commissionCount,
+        sum(total_price) totalPriceCount
+        from tb_replacement_order_info
+        <where>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
+                '%')
+            </if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
+                and date_time between #{params.beginDateTime} and #{params.endDateTime}
+            </if>
+            <if test="wxNumber != null  and wxNumber != ''">and wx_number like concat('%', #{wxNumber}, '%')</if>
+            <if test="tbNumber != null  and tbNumber != ''">and tb_number like concat('%', #{tbNumber}, '%')</if>
+            <if test="returnStatus != null  and returnStatus != ''">and return_status = #{returnStatus}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
 
     <insert id="insertReplacementOrderInfo" parameterType="ReplacementOrderInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_replacement_order_info

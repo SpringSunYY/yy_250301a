@@ -146,6 +146,29 @@
         >导入
         </el-button>
       </el-col>
+
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ returnOrderCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >退款金额：{{ returnOrderCount.returnPriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >上家退款金额：{{ returnOrderCount.lastReturnPriceCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -315,7 +338,7 @@ import {
   getReturnOrderInfo,
   delReturnOrderInfo,
   addReturnOrderInfo,
-  updateReturnOrderInfo
+  updateReturnOrderInfo, getReturnOrderCount
 } from '@/api/manage/returnOrderInfo'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -329,6 +352,11 @@ export default {
   dicts: ['o_return_order_status', 'o_order_type'],
   data() {
     return {
+      returnOrderCount: {
+        orderCount: 0,
+        returnPriceCount: 0,
+        lastReturnPriceCount: 0
+      },
       //店铺信息
       storeInfoList: [],
       storeInfoLoading: false,
@@ -500,6 +528,12 @@ export default {
         this.returnOrderInfoList = response.rows
         this.total = response.total
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getReturnOrderCount(this.queryParams).then(response => {
+        this.returnOrderCount = response.data
       })
     },
     // 取消按钮

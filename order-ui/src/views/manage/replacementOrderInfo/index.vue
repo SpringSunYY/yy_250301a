@@ -171,6 +171,35 @@
         >导入
         </el-button>
       </el-col>
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ replacementOrderCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >实付金额：{{ replacementOrderCount.actuallyPriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >佣金：{{ replacementOrderCount.commissionCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >合计金额：{{ replacementOrderCount.totalPriceCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -308,9 +337,9 @@
         <el-form-item label="佣金" prop="commission">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.commission" placeholder="请输入佣金"/>
         </el-form-item>
-<!--        <el-form-item label="合计金额" prop="totalPrice">-->
-<!--          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="合计金额" prop="totalPrice">-->
+        <!--          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="返款状态" prop="returnStatus">
           <el-radio-group v-model="form.returnStatus">
             <el-radio
@@ -388,7 +417,7 @@ import {
   getReplacementOrderInfo,
   delReplacementOrderInfo,
   addReplacementOrderInfo,
-  updateReplacementOrderInfo
+  updateReplacementOrderInfo, getReplacementOrderCount
 } from '@/api/manage/replacementOrderInfo'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -403,6 +432,12 @@ export default {
   dicts: ['o_replacement_status'],
   data() {
     return {
+      replacementOrderCount: {
+        orderCount: 0,
+        actuallyPriceCount: 0,
+        commissionCount: 0,
+        totalPriceCount: 0
+      },
       //店铺信息
       storeInfoList: [],
       storeInfoLoading: false,
@@ -620,6 +655,12 @@ export default {
         this.replacementOrderInfoList = response.rows
         this.total = response.total
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getReplacementOrderCount(this.queryParams).then(res => {
+        this.replacementOrderCount = res.data
       })
     },
     // 取消按钮

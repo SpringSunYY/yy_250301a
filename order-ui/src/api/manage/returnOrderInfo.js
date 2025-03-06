@@ -9,6 +9,14 @@ export function listReturnOrderInfo(query) {
   })
 }
 
+export function getReturnOrderCount(query) {
+  return request({
+    url: '/manage/returnOrderInfo/getReturnOrderCount',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询退货订单信息详细
 export function getReturnOrderInfo(id) {
   return request({

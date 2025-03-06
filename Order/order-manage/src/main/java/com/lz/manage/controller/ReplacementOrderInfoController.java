@@ -5,10 +5,11 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
-import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import javax.annotation.Resource;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,8 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/manage/replacementOrderInfo")
-public class ReplacementOrderInfoController extends BaseController
-{
+public class ReplacementOrderInfoController extends BaseController {
     @Resource
     private IReplacementOrderInfoService replacementOrderInfoService;
 
@@ -52,8 +52,7 @@ public class ReplacementOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:list')")
     @GetMapping("/list")
-    public TableDataInfo list(ReplacementOrderInfoQuery replacementOrderInfoQuery)
-    {
+    public TableDataInfo list(ReplacementOrderInfoQuery replacementOrderInfoQuery) {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoQuery.queryToObj(replacementOrderInfoQuery);
         if (StringUtils.isNotNull(replacementOrderInfo.getDeptId())) {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(replacementOrderInfo.getDeptId());
@@ -61,7 +60,7 @@ public class ReplacementOrderInfoController extends BaseController
         }
         startPage();
         List<ReplacementOrderInfo> list = replacementOrderInfoService.selectReplacementOrderInfoList(replacementOrderInfo);
-        List<ReplacementOrderInfoVo> listVo= list.stream().map(ReplacementOrderInfoVo::objToVo).collect(Collectors.toList());
+        List<ReplacementOrderInfoVo> listVo = list.stream().map(ReplacementOrderInfoVo::objToVo).collect(Collectors.toList());
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
@@ -73,8 +72,7 @@ public class ReplacementOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:export')")
     @Log(title = "补单明细", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, ReplacementOrderInfoQuery replacementOrderInfoQuery)
-    {
+    public void export(HttpServletResponse response, ReplacementOrderInfoQuery replacementOrderInfoQuery) {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoQuery.queryToObj(replacementOrderInfoQuery);
         List<ReplacementOrderInfo> list = replacementOrderInfoService.selectReplacementOrderInfoList(replacementOrderInfo);
         ExcelUtil<ReplacementOrderInfo> util = new ExcelUtil<ReplacementOrderInfo>(ReplacementOrderInfo.class);
@@ -86,8 +84,7 @@ public class ReplacementOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         ReplacementOrderInfo replacementOrderInfo = replacementOrderInfoService.selectReplacementOrderInfoById(id);
         return success(ReplacementOrderInfoVo.objToVo(replacementOrderInfo));
     }
@@ -98,8 +95,7 @@ public class ReplacementOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:add')")
     @Log(title = "补单明细", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ReplacementOrderInfoInsert replacementOrderInfoInsert)
-    {
+    public AjaxResult add(@RequestBody ReplacementOrderInfoInsert replacementOrderInfoInsert) {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoInsert.insertToObj(replacementOrderInfoInsert);
         return toAjax(replacementOrderInfoService.insertReplacementOrderInfo(replacementOrderInfo));
     }
@@ -110,8 +106,7 @@ public class ReplacementOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:edit')")
     @Log(title = "补单明细", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody ReplacementOrderInfoEdit replacementOrderInfoEdit)
-    {
+    public AjaxResult edit(@RequestBody ReplacementOrderInfoEdit replacementOrderInfoEdit) {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoEdit.editToObj(replacementOrderInfoEdit);
         return toAjax(replacementOrderInfoService.updateReplacementOrderInfo(replacementOrderInfo));
     }
@@ -121,9 +116,8 @@ public class ReplacementOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:remove')")
     @Log(title = "补单明细", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(replacementOrderInfoService.deleteReplacementOrderInfoByIds(ids));
     }
 
@@ -142,5 +136,16 @@ public class ReplacementOrderInfoController extends BaseController
     public void importTemplate(HttpServletResponse response) {
         ExcelUtil<ReplacementOrderInfo> util = new ExcelUtil<ReplacementOrderInfo>(ReplacementOrderInfo.class);
         util.importTemplateExcel(response, "补单数据");
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:list')")
+    @GetMapping("/getReplacementOrderCount")
+    public AjaxResult getReplacementOrderCount(ReplacementOrderInfoQuery replacementOrderInfoQuery) {
+        ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoQuery.queryToObj(replacementOrderInfoQuery);
+        if (StringUtils.isNotNull(replacementOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(replacementOrderInfo.getDeptId());
+            replacementOrderInfo.setDeptIds(deptIds);
+        }
+        return success(replacementOrderInfoService.getReplacementOrderCount(replacementOrderInfo));
     }
 }

@@ -265,6 +265,49 @@
         >导入
         </el-button>
       </el-col>
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ purchaseOrderInfoCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >订单利润：{{ purchaseOrderInfoCount.orderProfitCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >采购进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >采购补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -755,7 +798,7 @@
 import {
   addPurchaseOrderInfo,
   delPurchaseOrderInfo,
-  getPurchaseOrderInfo,
+  getPurchaseOrderInfo, getPurchaseOrderInfoCount,
   listPurchaseOrderInfo,
   updatePurchaseOrderInfo
 } from '@/api/manage/purchaseOrderInfo'
@@ -776,6 +819,15 @@ export default {
   dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
     return {
+      //统计信息
+      purchaseOrderInfoCount: {
+        orderCount: 0,
+        orderProfitCount: 0,
+        salesNumberCount: 0,
+        salesPriceCount: 0,
+        purchasePriceCount: 0,
+        purchasePremiumCount: 0
+      },
       returnOrderOpen: false,
       bpOrderOpen: false,
       //部门相关信息
@@ -1110,6 +1162,12 @@ export default {
         this.purchaseOrderInfoList = response.rows
         this.total = response.total
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getPurchaseOrderInfoCount(this.queryParams).then(response => {
+        this.purchaseOrderInfoCount = response.data
       })
     },
     // 取消按钮

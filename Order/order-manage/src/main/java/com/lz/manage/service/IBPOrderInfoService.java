@@ -1,24 +1,27 @@
 package com.lz.manage.service;
 
 import java.util.List;
+
 import com.lz.manage.model.domain.BPOrderInfo;
+import com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo;
 import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
 import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoQuery;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 /**
  * 白嫖订单信息Service接口
- * 
+ *
  * @author YY
  * @date 2025-03-03
  */
-public interface IBPOrderInfoService extends IService<BPOrderInfo>
-{
+public interface IBPOrderInfoService extends IService<BPOrderInfo> {
     //region mybatis代码
+
     /**
      * 查询白嫖订单信息
-     * 
+     *
      * @param id 白嫖订单信息主键
      * @return 白嫖订单信息
      */
@@ -26,7 +29,7 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
 
     /**
      * 查询白嫖订单信息列表
-     * 
+     *
      * @param bPOrderInfo 白嫖订单信息
      * @return 白嫖订单信息集合
      */
@@ -34,7 +37,7 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
 
     /**
      * 新增白嫖订单信息
-     * 
+     *
      * @param bPOrderInfo 白嫖订单信息
      * @return 结果
      */
@@ -42,7 +45,7 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
 
     /**
      * 修改白嫖订单信息
-     * 
+     *
      * @param bPOrderInfo 白嫖订单信息
      * @return 结果
      */
@@ -50,7 +53,7 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
 
     /**
      * 批量删除白嫖订单信息
-     * 
+     *
      * @param ids 需要删除的白嫖订单信息主键集合
      * @return 结果
      */
@@ -58,12 +61,13 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
 
     /**
      * 删除白嫖订单信息信息
-     * 
+     *
      * @param id 白嫖订单信息主键
      * @return 结果
      */
     public int deleteBPOrderInfoById(Long id);
     //endregion
+
     /**
      * 获取查询条件
      *
@@ -112,4 +116,15 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
      * return: java.lang.String
      **/
     String importBPOrderInfo(List<BPOrderInfo> bpOrderInfoList);
+
+    /**
+     * description:  查询白嫖订单信息
+     * author: YY
+     * method: getBpOrderCount
+     * date: 2025/3/6 21:17
+     * param:
+     * param: bPOrderInfo
+     * return: com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo
+     **/
+    BPOrderCountVo getBpOrderCount(BPOrderInfo bPOrderInfo);
 }

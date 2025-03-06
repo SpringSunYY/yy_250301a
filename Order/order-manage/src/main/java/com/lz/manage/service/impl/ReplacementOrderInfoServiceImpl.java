@@ -15,6 +15,7 @@ import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReplacementOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoQuery;
+import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderCountVo;
 import com.lz.manage.model.vo.replacementOrderInfo.ReplacementOrderInfoVo;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IReplacementOrderInfoService;
@@ -308,6 +309,12 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
             }
         });
         return StringUtils.format("导入成功。成功导入{}条数据！！！", replacementOrderInfoList.size());
+    }
+
+    @DataScope(userAlias = "tb_replacement_order_info", deptAlias = "tb_replacement_order_info")
+    @Override
+    public ReplacementOrderCountVo getReplacementOrderCount(ReplacementOrderInfo replacementOrderInfo) {
+        return replacementOrderInfoMapper.getReplacementOrderCount(replacementOrderInfo);
     }
 
 }

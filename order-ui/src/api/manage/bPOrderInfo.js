@@ -9,6 +9,14 @@ export function listBPOrderInfo(query) {
   })
 }
 
+export function getBpOrderCount(query) {
+  return request({
+    url: '/manage/bPOrderInfo/getBpOrderCount',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询白嫖订单信息详细
 export function getBPOrderInfo(id) {
   return request({

@@ -9,6 +9,14 @@ export function listEmptyBagCourierHistoryInfo(query) {
   })
 }
 
+export function getEmptyBagCourierHistoryCount(query) {
+  return request({
+    url: '/manage/emptyBagCourierHistoryInfo/getEmptyBagCourierHistoryCount',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询空包/快递充值记录详细
 export function getEmptyBagCourierHistoryInfo(id) {
   return request({

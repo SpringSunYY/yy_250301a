@@ -24,6 +24,7 @@ import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
@@ -333,6 +334,12 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
             }
         });
         return StringUtils.format("导入成功，成功导入{}条数据", bpOrderInfoList.size());
+    }
+
+    @Override
+    @DataScope(userAlias = "tb_b_p_order_info", deptAlias = "tb_b_p_order_info")
+    public BPOrderCountVo getBpOrderCount(BPOrderInfo bPOrderInfo) {
+        return bPOrderInfoMapper.getBpOrderCount(bPOrderInfo);
     }
 
 }

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.PurchaseAccountInfo;
+import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -65,6 +66,18 @@ public class ReturnOrderInfoController extends BaseController {
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:list')")
+    @GetMapping("/getReturnOrderCount")
+    public AjaxResult getReturnOrderCount(ReturnOrderInfoQuery returnOrderInfoQuery) {
+        ReturnOrderInfo returnOrderInfo = ReturnOrderInfoQuery.queryToObj(returnOrderInfoQuery);
+        if (StringUtils.isNotNull(returnOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(returnOrderInfo.getDeptId());
+            returnOrderInfo.setDeptIds(deptIds);
+        }
+        ReturnOrderCountVo returnOrderCountVo= returnOrderInfoService.getReturnOrderCount(returnOrderInfo);
+        return success(returnOrderCountVo);
     }
 
     /**

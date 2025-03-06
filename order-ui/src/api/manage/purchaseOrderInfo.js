@@ -8,6 +8,14 @@ export function listPurchaseOrderInfo(query) {
     params: query
   })
 }
+// 查询采购发货信息列表
+export function getPurchaseOrderInfoCount(query) {
+  return request({
+    url: '/manage/purchaseOrderInfo/getPurchaseOrderInfoCount',
+    method: 'get',
+    params: query
+  })
+}
 
 // 查询采购发货信息详细
 export function getPurchaseOrderInfo(id) {
