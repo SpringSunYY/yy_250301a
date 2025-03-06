@@ -298,15 +298,12 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         //校验主管、客服、运营、部门是否存在
         //记录部门是否存在
         Long deptId = storeInfo.getDeptId();
-        List<Long> deptIds = new ArrayList<>();
         if (StringUtils.isNull(deptId)) {
             throw new ServiceException("请选择部门！！！");
         } else {
             if (StringUtils.isNull(deptService.selectDeptById(deptId))) {
                 throw new ServiceException("部门不存在！！！");
             }
-            //获取门包括下级部门
-            deptIds = deptService.selectDeptByIdReturnIds(deptId);
         }
         if (StringUtils.isNull(storeInfo.getPrincipalId())) {
             throw new ServiceException("请选择主管！！！");
@@ -315,7 +312,13 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             if (StringUtils.isNull(principalUser)) {
                 throw new ServiceException("主管不存在！！！");
             }
-            if (!deptIds.contains(principalUser.getDeptId())) {
+            List<Long> deptIds = new ArrayList<>();
+            //查询用户下面所有部门+自己所在部门
+            deptIds = deptService.selectChildrenDeptById(principalUser.getDeptId())
+                    .stream().map(SysDept::getDeptId).collect(Collectors.toList());
+            deptIds.add(principalUser.getDeptId());
+            //判断是否包含店铺部门
+            if (!deptIds.contains(deptId)) {
                 throw new ServiceException("主管不在该部门内！！！");
             }
         }
@@ -324,7 +327,11 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             if (StringUtils.isNull(serviceUser)) {
                 throw new ServiceException("客服不存在！！！");
             }
-            if (!deptIds.contains(serviceUser.getDeptId())) {
+            List<Long> deptIds = new ArrayList<>();
+            deptIds = deptService.selectChildrenDeptById(serviceUser.getDeptId())
+                    .stream().map(SysDept::getDeptId).collect(Collectors.toList());
+            deptIds.add(serviceUser.getDeptId());
+            if (!deptIds.contains(deptId)) {
                 throw new ServiceException("客服不在该部门内！！！");
             }
         }
@@ -333,7 +340,11 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             if (StringUtils.isNull(operationUser)) {
                 throw new ServiceException("运营不存在！！！");
             }
-            if (!deptIds.contains(operationUser.getDeptId())) {
+            List<Long> deptIds = new ArrayList<>();
+            deptIds = deptService.selectChildrenDeptById(operationUser.getDeptId())
+                    .stream().map(SysDept::getDeptId).collect(Collectors.toList());
+            deptIds.add(operationUser.getDeptId());
+            if (!deptIds.contains(deptId)) {
                 throw new ServiceException("运营不在该部门内！！！");
             }
         }

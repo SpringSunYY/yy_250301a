@@ -385,7 +385,7 @@
           >删除
           </el-button>
           <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
-                       v-hasPermi="['manage:returnOrderInfo:add']"
+                       v-hasPermi="['manage:returnOrderInfo:add','manage:bPOrderInfo:add']"
           >
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -394,7 +394,7 @@
               >退货订单
               </el-dropdown-item>
               <el-dropdown-item command="handleBPOrder"
-                                v-hasPermi="['manage:handleBPOrder:add']"
+                                v-hasPermi="['manage:bPOrderInfo:add']"
               >白嫖订单
               </el-dropdown-item>
             </el-dropdown-menu>

@@ -308,9 +308,9 @@
         <el-form-item label="佣金" prop="commission">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.commission" placeholder="请输入佣金"/>
         </el-form-item>
-        <el-form-item label="合计金额" prop="totalPrice">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>
-        </el-form-item>
+<!--        <el-form-item label="合计金额" prop="totalPrice">-->
+<!--          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="返款状态" prop="returnStatus">
           <el-radio-group v-model="form.returnStatus">
             <el-radio

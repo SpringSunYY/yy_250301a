@@ -132,4 +132,15 @@ public interface ISysDeptService
      * return: java.lang.Long[]
      **/
     List<Long> selectDeptByIdReturnIds(Long deptId);
+
+    /**
+     * description: 查询所有子集
+     * author: YY
+     * method: selectChildrenDeptById
+     * date: 2025/3/6 19:58
+     * param:
+     * param: deptId
+     * return: java.util.List<com.lz.common.core.domain.entity.SysDept>
+     **/
+    List<SysDept> selectChildrenDeptById(Long deptId);
 }

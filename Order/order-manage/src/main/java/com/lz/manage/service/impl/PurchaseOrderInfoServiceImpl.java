@@ -97,7 +97,6 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     @Override
     public List<PurchaseOrderInfo> selectPurchaseOrderInfoList(PurchaseOrderInfo purchaseOrderInfo) {
-        System.out.println("purchaseOrderInfo = " + purchaseOrderInfo);
         List<PurchaseOrderInfo> purchaseOrderInfos = purchaseOrderInfoMapper.selectPurchaseOrderInfoList(purchaseOrderInfo);
         for (PurchaseOrderInfo info : purchaseOrderInfos) {
             StoreInfo storeInfo = storeInfoService.selectStoreInfoById(info.getStoreId());

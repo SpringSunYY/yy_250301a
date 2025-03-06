@@ -340,4 +340,9 @@ public class SysDeptServiceImpl implements ISysDeptService
     {
         return getChildList(list, t).size() > 0;
     }
+
+    @Override
+    public List<SysDept> selectChildrenDeptById(Long deptId){
+        return deptMapper.selectChildrenDeptById(deptId);
+    }
 }
