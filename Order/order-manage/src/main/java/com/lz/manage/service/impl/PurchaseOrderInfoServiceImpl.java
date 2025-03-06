@@ -121,8 +121,8 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     public int insertPurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
         checkOrder(purchaseOrderInfo);
         //查询白嫖和退货订单
-        BPOrderInfo bpOrderInfo = ibpOrderInfoService.getOne(new QueryWrapper<BPOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
-        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.getOne(new QueryWrapper<ReturnOrderInfo>().eq("order_number", purchaseOrderInfo.getOrderNumber()));
+        BPOrderInfo bpOrderInfo = ibpOrderInfoService.selectBPOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
+        ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(purchaseOrderInfo.getOrderNumber());
         getOrderProfit(purchaseOrderInfo, returnOrderInfo, bpOrderInfo);
         purchaseOrderInfo.setCreateTime(DateUtils.getNowDate());
         return purchaseOrderInfoMapper.insertPurchaseOrderInfo(purchaseOrderInfo);

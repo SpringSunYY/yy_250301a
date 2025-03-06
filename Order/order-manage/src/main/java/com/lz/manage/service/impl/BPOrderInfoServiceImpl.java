@@ -12,16 +12,13 @@ import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.model.domain.ReturnOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.service.IPurchaseOrderInfoService;
@@ -113,7 +110,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
         if (StringUtils.isNotNull(bpOrderInfo)) {
             throw new ServiceException("白嫖订单已存在" + bPOrderInfo.getOrderNumber());
         }
-        PurchaseOrderInfo orderInfo = checkReturnOrder(bPOrderInfo);
+        PurchaseOrderInfo orderInfo = checkBPOrder(bPOrderInfo);
 
         bPOrderInfo.setCreateTime(DateUtils.getNowDate());
         int i = bPOrderInfoMapper.insertBPOrderInfo(bPOrderInfo);
@@ -121,7 +118,16 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
         return i;
     }
 
-    private PurchaseOrderInfo checkReturnOrder(BPOrderInfo bpOrderInfo) {
+    /**
+     * description: 校验白嫖订单
+     * author: YY
+     * method: checkBPOrder
+     * date: 2025/3/6 09:15
+     * param:
+     * param: bpOrderInfo
+     * return: com.lz.manage.model.domain.PurchaseOrderInfo
+     **/
+    private PurchaseOrderInfo checkBPOrder(BPOrderInfo bpOrderInfo) {
         PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(bpOrderInfo.getOrderNumber());
         if (StringUtils.isNull(orderInfo)) {
             throw new ServiceException("订单不存在" + bpOrderInfo.getOrderNumber());
@@ -149,7 +155,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
         if (!old.getId().equals(bPOrderInfo.getId())) {
             throw new ServiceException("不可以修改订单编号" + bPOrderInfo.getOrderNumber());
         }
-        PurchaseOrderInfo orderInfo = checkReturnOrder(bPOrderInfo);
+        PurchaseOrderInfo orderInfo = checkBPOrder(bPOrderInfo);
         bPOrderInfo.setUpdateBy(bPOrderInfo.getUserName());
         bPOrderInfo.setUpdateTime(DateUtils.getNowDate());
         int i = bPOrderInfoMapper.updateBPOrderInfo(bPOrderInfo);
@@ -232,6 +238,14 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
     @Override
     public BPOrderInfo selectBPOrderInfoByOrderNumber(String orderNumber) {
         return this.getOne(new LambdaQueryWrapper<BPOrderInfo>().eq(BPOrderInfo::getOrderNumber, orderNumber));
+    }
+
+    @Transactional
+    @Override
+    public int addOrUpdateBPOrderInfo(BPOrderInfo bPOrderInfo) {
+        PurchaseOrderInfo orderInfo = checkBPOrder(bPOrderInfo);
+        this.saveOrUpdate(bPOrderInfo);
+        return orderInfoService.updatePurchaseOrderInfo(orderInfo);
     }
 
 }

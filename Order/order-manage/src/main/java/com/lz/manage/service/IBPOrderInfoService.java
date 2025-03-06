@@ -90,4 +90,15 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
      * return: com.lz.manage.model.domain.BPOrderInfo
      **/
     BPOrderInfo selectBPOrderInfoByOrderNumber(String orderNumber);
+
+    /**
+     * description: 新增或者修改白嫖订单
+     * author: YY
+     * method: addOrUpdate
+     * date: 2025/3/6 09:12
+     * param:
+     * param: bPOrderInfo
+     * return: int
+     **/
+    int addOrUpdateBPOrderInfo(BPOrderInfo bPOrderInfo);
 }

@@ -389,9 +389,13 @@
           >
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="handleReturnOrder" icon="el-icon-key"
+              <el-dropdown-item command="handleReturnOrder"
                                 v-hasPermi="['manage:returnOrderInfo:add']"
-              >退货
+              >退货订单
+              </el-dropdown-item>
+              <el-dropdown-item command="handleBPOrder"
+                                v-hasPermi="['manage:handleBPOrder:add']"
+              >白嫖订单
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -700,6 +704,50 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 添加或修改白嫖订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="bpOrderOpen" width="600px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="采购编号" prop="orderNumber">
+          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        </el-form-item>
+        <el-form-item label="白嫖退款金额" prop="bpprice">
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.bpprice" placeholder="请输入白嫖退款金额"/>
+        </el-form-item>
+        <el-form-item label="白嫖退款日期" prop="bPTime">
+          <el-date-picker clearable
+                          v-model="form.bPTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择白嫖退款日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="售后金额" prop="afterSalePrice">
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
+                           placeholder="请输入售后金额"
+          />
+        </el-form-item>
+        <el-form-item label="售后日期" prop="afterSaleTime">
+          <el-date-picker clearable
+                          v-model="form.afterSaleTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择售后日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="售后凭证" prop="afterSaleImage">
+          <image-upload :limit="9" v-model="form.afterSaleImage"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitBPForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -720,6 +768,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/api/manage/returnOrderInfo'
+import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -728,6 +777,7 @@ export default {
   data() {
     return {
       returnOrderOpen: false,
+      bpOrderOpen: false,
       //部门相关信息
       deptOptions: [],
       //采购账号信息
@@ -876,9 +926,33 @@ export default {
         case 'handleReturnOrder':
           this.handleReturnOrder(row)
           break
+        case 'handleBPOrder':
+          this.handleBPOrder(row)
+          break
         default:
           break
       }
+    },
+    /** 打开白嫖信息 */
+    handleBPOrder(row) {
+      this.reset()
+      getBPOrderInfoByOrderNumber(row.orderNumber).then(res => {
+        this.title = '新增或者修改白嫖信息'
+        this.bpOrderOpen = true
+        if (res.data) {
+          this.form = res.data
+        }
+        this.form.orderNumber = row.orderNumber
+      })
+    },
+    /**
+     * 提交白嫖订单信息
+     */
+    submitBPForm() {
+      addOrUpdateBPOrderInfo(this.form).then(res => {
+        this.bpOrderOpen = false
+        this.getList()
+      })
     },
     /** 打开退货操作 */
     handleReturnOrder(row) {
@@ -1042,6 +1116,7 @@ export default {
     cancel() {
       this.open = false
       this.returnOrderOpen = false
+      this.bpOrderOpen = false
       this.reset()
     },
     // 表单重置

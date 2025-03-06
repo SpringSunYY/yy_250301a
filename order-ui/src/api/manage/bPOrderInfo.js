@@ -17,10 +17,26 @@ export function getBPOrderInfo(id) {
   })
 }
 
+// 查询白嫖订单信息详细
+export function getBPOrderInfoByOrderNumber(orderNumber) {
+  return request({
+    url: '/manage/bPOrderInfo/orderNumber/' + orderNumber,
+    method: 'get'
+  })
+}
+
 // 新增白嫖订单信息
 export function addBPOrderInfo(data) {
   return request({
     url: '/manage/bPOrderInfo',
+    method: 'post',
+    data: data
+  })
+}
+// 新增或者修改白嫖订单信息
+export function addOrUpdateBPOrderInfo(data) {
+  return request({
+    url: '/manage/bPOrderInfo/addOrUpdate ',
     method: 'post',
     data: data
   })

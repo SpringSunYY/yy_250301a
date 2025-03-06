@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.lz.common.utils.StringUtils;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import javax.annotation.Resource;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,8 +39,7 @@ import com.lz.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/manage/bPOrderInfo")
-public class BPOrderInfoController extends BaseController
-{
+public class BPOrderInfoController extends BaseController {
     @Resource
     private IBPOrderInfoService bPOrderInfoService;
 
@@ -50,8 +51,7 @@ public class BPOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:list')")
     @GetMapping("/list")
-    public TableDataInfo list(BPOrderInfoQuery bPOrderInfoQuery)
-    {
+    public TableDataInfo list(BPOrderInfoQuery bPOrderInfoQuery) {
         BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
         if (StringUtils.isNotNull(bPOrderInfo.getDeptId())) {
             List<Long> dept = deptService.selectDeptByIdReturnIds(bPOrderInfo.getDeptId());
@@ -59,7 +59,7 @@ public class BPOrderInfoController extends BaseController
         }
         startPage();
         List<BPOrderInfo> list = bPOrderInfoService.selectBPOrderInfoList(bPOrderInfo);
-        List<BPOrderInfoVo> listVo= list.stream().map(BPOrderInfoVo::objToVo).collect(Collectors.toList());
+        List<BPOrderInfoVo> listVo = list.stream().map(BPOrderInfoVo::objToVo).collect(Collectors.toList());
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
@@ -71,8 +71,7 @@ public class BPOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:export')")
     @Log(title = "白嫖订单信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, BPOrderInfoQuery bPOrderInfoQuery)
-    {
+    public void export(HttpServletResponse response, BPOrderInfoQuery bPOrderInfoQuery) {
         BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);
         List<BPOrderInfo> list = bPOrderInfoService.selectBPOrderInfoList(bPOrderInfo);
         ExcelUtil<BPOrderInfo> util = new ExcelUtil<BPOrderInfo>(BPOrderInfo.class);
@@ -84,9 +83,18 @@ public class BPOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         BPOrderInfo bPOrderInfo = bPOrderInfoService.selectBPOrderInfoById(id);
+        return success(BPOrderInfoVo.objToVo(bPOrderInfo));
+    }
+
+    /**
+     * 获取白嫖订单信息详细信息 根据订单编号
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:query')")
+    @GetMapping(value = "/orderNumber/{orderNumber}")
+    public AjaxResult getInfoByOderNumber(@PathVariable("orderNumber") String orderNumber) {
+        BPOrderInfo bPOrderInfo = bPOrderInfoService.selectBPOrderInfoByOrderNumber(orderNumber);
         return success(BPOrderInfoVo.objToVo(bPOrderInfo));
     }
 
@@ -96,10 +104,20 @@ public class BPOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:add')")
     @Log(title = "白嫖订单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody BPOrderInfoInsert bPOrderInfoInsert)
-    {
+    public AjaxResult add(@RequestBody BPOrderInfoInsert bPOrderInfoInsert) {
         BPOrderInfo bPOrderInfo = BPOrderInfoInsert.insertToObj(bPOrderInfoInsert);
         return toAjax(bPOrderInfoService.insertBPOrderInfo(bPOrderInfo));
+    }
+
+    /**
+     * 新增白嫖订单信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:add')")
+    @Log(title = "新增或者修改白嫖订单信息", businessType = BusinessType.INSERT)
+    @PostMapping("/addOrUpdate")
+    public AjaxResult addOrUpdate(@RequestBody BPOrderInfoInsert bPOrderInfoInsert) {
+        BPOrderInfo bPOrderInfo = BPOrderInfoInsert.insertToObj(bPOrderInfoInsert);
+        return toAjax(bPOrderInfoService.addOrUpdateBPOrderInfo(bPOrderInfo));
     }
 
     /**
@@ -108,9 +126,8 @@ public class BPOrderInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:edit')")
     @Log(title = "白嫖订单信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody BPOrderInfoEdit bPOrderInfoEdit)
-    {
-        System.out.println("bPOrderInfoEdit = " + bPOrderInfoEdit);
+    public AjaxResult edit(@RequestBody BPOrderInfoEdit bPOrderInfoEdit) {
+//        System.out.println("bPOrderInfoEdit = " + bPOrderInfoEdit);
         BPOrderInfo bPOrderInfo = BPOrderInfoEdit.editToObj(bPOrderInfoEdit);
         System.err.println(bPOrderInfo);
         return toAjax(bPOrderInfoService.updateBPOrderInfo(bPOrderInfo));
@@ -121,9 +138,8 @@ public class BPOrderInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:remove')")
     @Log(title = "白嫖订单信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(bPOrderInfoService.deleteBPOrderInfoByIds(ids));
     }
 }
