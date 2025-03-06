@@ -137,6 +137,16 @@
         >导出
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          icon="el-icon-upload2"
+          size="mini"
+          @click="handleImport"
+          v-hasPermi="['manage:bPOrderInfo:import']"
+        >导入
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
@@ -246,7 +256,9 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="售后金额" prop="afterSalePrice">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice" placeholder="请输入售后金额"/>
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
+                           placeholder="请输入售后金额"
+          />
         </el-form-item>
         <el-form-item label="售后日期" prop="afterSaleTime">
           <el-date-picker clearable
@@ -269,6 +281,36 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 白嫖订单导入对话框 -->
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px">
+      <el-upload
+        ref="upload"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">
+          将文件拖到此处，或
+          <em>点击上传</em>
+        </div>
+        <div class="el-upload__tip" slot="tip">
+          <el-link type="info" style="font-size:12px" @click="importTemplate">下载模板</el-link>
+        </div>
+        <div class="el-upload__tip" style="color:red" slot="tip">提示：仅允许导入“xls”或“xlsx”格式文件！</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -284,6 +326,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { listStoreInfo } from '@/api/manage/storeInfo'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'BPOrderInfo',
@@ -376,6 +419,19 @@ export default {
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
         ]
+      },
+      // 白嫖订单导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: '',
+        // 是否禁用上传
+        isUploading: false,
+        // 设置上传的请求头部
+        headers: { Authorization: 'Bearer ' + getToken() },
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + '/manage/bPOrderInfo/importData'
       }
     }
   },
@@ -559,6 +615,31 @@ export default {
       this.download('manage/bPOrderInfo/export', {
         ...this.queryParams
       }, `bPOrderInfo_${new Date().getTime()}.xlsx`)
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = '白嫖订单导入'
+      this.upload.open = true
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      this.download('manage/bPOrderInfo/importTemplate', {}, `bPOrderInfo_template_${new Date().getTime()}.xlsx`)
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false
+      this.upload.isUploading = false
+      this.$refs.upload.clearFiles()
+      this.$alert(response.msg, '导入结果', { dangerouslyUseHTMLString: true })
+      this.getList()
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit()
     }
   }
 }

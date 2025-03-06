@@ -101,4 +101,15 @@ public interface IBPOrderInfoService extends IService<BPOrderInfo>
      * return: int
      **/
     int addOrUpdateBPOrderInfo(BPOrderInfo bPOrderInfo);
+
+    /**
+     * description: 导入白嫖订单信息
+     * author: YY
+     * method: importBPOrderInfo
+     * date: 2025/3/6 09:46
+     * param:
+     * param: bpOrderInfoList
+     * return: java.lang.String
+     **/
+    String importBPOrderInfo(List<BPOrderInfo> bpOrderInfoList);
 }

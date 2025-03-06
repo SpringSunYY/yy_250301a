@@ -239,8 +239,7 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         List<PurchaseOrderInfo> orderInfos = new ArrayList<>(list.size());
         Date nowDate = DateUtils.getNowDate();
         //如果都通过，根据订单重新赋值
-        for (int i = 0; i < list.size(); i++) {
-            ReturnOrderInfo info = list.get(i);
+        for (ReturnOrderInfo info : list) {
             info.setCreateTime(nowDate);
 
             //未退货订单赋值并查询订单信息
@@ -255,7 +254,7 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
                 return orderInfoService.updateBatchById(orderInfos);
             } catch (Exception e) {
                 log.error("导入退货订单数据失败，原因：", e);
-                throw new ServiceException("导入数据失败，请检查数据结构是否正确！！！");
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如是否导入了重复的订单编号！！！");
             }
         });
         return StringUtils.format("导入成功，成功导入{}条数据", list.size());

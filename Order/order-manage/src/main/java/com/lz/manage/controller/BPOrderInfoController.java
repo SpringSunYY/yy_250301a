@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.ReturnOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -30,6 +31,7 @@ import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoEdit;
 import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 白嫖订单信息Controller
@@ -129,7 +131,7 @@ public class BPOrderInfoController extends BaseController {
     public AjaxResult edit(@RequestBody BPOrderInfoEdit bPOrderInfoEdit) {
 //        System.out.println("bPOrderInfoEdit = " + bPOrderInfoEdit);
         BPOrderInfo bPOrderInfo = BPOrderInfoEdit.editToObj(bPOrderInfoEdit);
-        System.err.println(bPOrderInfo);
+//        System.err.println(bPOrderInfo);
         return toAjax(bPOrderInfoService.updateBPOrderInfo(bPOrderInfo));
     }
 
@@ -141,5 +143,22 @@ public class BPOrderInfoController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(bPOrderInfoService.deleteBPOrderInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:import')")
+    @Log(title = "导入白嫖订单信息", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<BPOrderInfo> util = new ExcelUtil<BPOrderInfo>(BPOrderInfo.class);
+        List<BPOrderInfo> list = util.importExcel(file.getInputStream());
+        String message = bPOrderInfoService.importBPOrderInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<BPOrderInfo> util = new ExcelUtil<BPOrderInfo>(BPOrderInfo.class);
+        util.importTemplateExcel(response, "白嫖订单数据");
     }
 }

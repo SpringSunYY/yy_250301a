@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,16 @@ import com.lz.common.utils.DateUtils;
 import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.PurchaseOrderInfo;
+import com.lz.manage.model.domain.ReturnOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.service.IPurchaseOrderInfoService;
+import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -34,6 +39,7 @@ import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoQuery;
 import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 白嫖订单信息Service业务层处理
@@ -41,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author YY
  * @date 2025-03-03
  */
+@Slf4j
 @Service
 public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrderInfo> implements IBPOrderInfoService {
     @Resource
@@ -54,6 +61,13 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
 
     @Resource
     private IPurchaseOrderInfoService orderInfoService;
+
+    @Resource
+    @Lazy
+    private IReturnOrderInfoService returnOrderInfoService;
+
+    @Resource
+    private TransactionTemplate transactionTemplate;
 
     @Resource
     private IStoreInfoService storeInfoService;
@@ -246,6 +260,59 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
         PurchaseOrderInfo orderInfo = checkBPOrder(bPOrderInfo);
         this.saveOrUpdate(bPOrderInfo);
         return orderInfoService.updatePurchaseOrderInfo(orderInfo);
+    }
+
+    @Override
+    public String importBPOrderInfo(List<BPOrderInfo> bpOrderInfoList) {
+        if (StringUtils.isEmpty(bpOrderInfoList)) {
+            return "导入的文件没有数据";
+        }
+        Date nowDate = DateUtils.getNowDate();
+        //先校验是否已经存在订单了
+        // 获取所有的订单编号 然后根据订单编号校验是否已经有存在的订单
+        List<String> orderNumbers = new ArrayList<>(bpOrderInfoList.size());
+        for (int i = 0; i < bpOrderInfoList.size(); i++) {
+            BPOrderInfo info = bpOrderInfoList.get(i);
+            if (StringUtils.isEmpty(info.getOrderNumber())) {
+                return StringUtils.format("第{}行订单编号不能为空", i + 1);
+            }
+            if (StringUtils.isNull(info.getBPPrice())) {
+                info.setBPPrice(BigDecimal.ZERO);
+            }
+            if (StringUtils.isNull(info.getAfterSalePrice())) {
+                info.setAfterSalePrice(BigDecimal.ZERO);
+            }
+            info.setCreateTime(nowDate);
+
+            orderNumbers.add(info.getOrderNumber());
+        }
+
+        //根据订单编号列表查询退货订单
+        List<BPOrderInfo> bpOrderInfos = this.list(new LambdaQueryWrapper<BPOrderInfo>().in(BPOrderInfo::getOrderNumber, orderNumbers));
+        if (StringUtils.isNotEmpty(bpOrderInfos)) {
+            return StringUtils.format("订单编号{}已存在", bpOrderInfos.get(0).getOrderNumber());
+        }
+
+        List<PurchaseOrderInfo> orderInfos = new ArrayList<>(bpOrderInfoList.size());
+        for (BPOrderInfo info : bpOrderInfoList) {
+
+            //未退货订单赋值并查询订单信息
+            PurchaseOrderInfo orderInfo = checkBPOrder(info);
+            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(orderInfo.getOrderNumber());
+            orderInfo = orderInfoService.getOrderProfit(orderInfo, returnOrderInfo, info);
+            orderInfos.add(orderInfo);
+        }
+
+        transactionTemplate.execute(item -> {
+            try {
+                this.saveBatch(bpOrderInfoList);
+                return orderInfoService.updateBatchById(orderInfos);
+            } catch (Exception e) {
+                log.error("导入白嫖订单数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如是否导入了重复的订单编号！！！");
+            }
+        });
+        return StringUtils.format("导入成功，成功导入{}条数据", bpOrderInfoList.size());
     }
 
 }
