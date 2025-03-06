@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
@@ -28,6 +29,7 @@ import com.lz.manage.model.dto.emptyBagCourierHistoryInfo.EmptyBagCourierHistory
 import com.lz.manage.service.IEmptyBagCourierHistoryInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 空包/快递充值记录Controller
@@ -74,7 +76,7 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
         EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo = EmptyBagCourierHistoryInfoQuery.queryToObj(emptyBagCourierHistoryInfoQuery);
         List<EmptyBagCourierHistoryInfo> list = emptyBagCourierHistoryInfoService.selectEmptyBagCourierHistoryInfoList(emptyBagCourierHistoryInfo);
         ExcelUtil<EmptyBagCourierHistoryInfo> util = new ExcelUtil<EmptyBagCourierHistoryInfo>(EmptyBagCourierHistoryInfo.class);
-        util.exportExcel(response, list, "空包/快递充值记录数据");
+        util.exportExcel(response, list, "空包快递充值记录数据");
     }
 
     /**
@@ -121,5 +123,22 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(emptyBagCourierHistoryInfoService.deleteEmptyBagCourierHistoryInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:emptyBagCourierHistoryInfo:import')")
+    @Log(title = "导入快递/空包信息", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<EmptyBagCourierHistoryInfo> util = new ExcelUtil<EmptyBagCourierHistoryInfo>(EmptyBagCourierHistoryInfo.class);
+        List<EmptyBagCourierHistoryInfo> list = util.importExcel(file.getInputStream());
+        String message = emptyBagCourierHistoryInfoService.importEmptyCourierHistoryInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:emptyBagCourierHistoryInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<EmptyBagCourierHistoryInfo> util = new ExcelUtil<EmptyBagCourierHistoryInfo>(EmptyBagCourierHistoryInfo.class);
+        util.importTemplateExcel(response, "快递空包数据");
     }
 }

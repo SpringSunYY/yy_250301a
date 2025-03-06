@@ -30,6 +30,7 @@ import com.lz.manage.model.domain.EmptyBagCourierHistoryInfo;
 import com.lz.manage.service.IEmptyBagCourierHistoryInfoService;
 import com.lz.manage.model.dto.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryInfoQuery;
 import com.lz.manage.model.vo.emptyBagCourierHistoryInfo.EmptyBagCourierHistoryInfoVo;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 空包/快递充值记录Service业务层处理
@@ -47,6 +48,10 @@ public class EmptyBagCourierHistoryInfoServiceImpl extends ServiceImpl<EmptyBagC
 
     @Resource
     private ISysDeptService deptService;
+
+
+    @Resource
+    private TransactionTemplate transactionTemplate;
     //region mybatis代码
 
     /**
@@ -178,6 +183,51 @@ public class EmptyBagCourierHistoryInfoServiceImpl extends ServiceImpl<EmptyBagC
             return Collections.emptyList();
         }
         return emptyBagCourierHistoryInfoList.stream().map(EmptyBagCourierHistoryInfoVo::objToVo).collect(Collectors.toList());
+    }
+
+    @Override
+    public String importEmptyCourierHistoryInfo(List<EmptyBagCourierHistoryInfo> emptyBagCourierHistoryInfos) {
+        if (StringUtils.isEmpty(emptyBagCourierHistoryInfos)) {
+            return StringUtils.format("数据不能为空");
+        }
+        Date nowDate = DateUtils.getNowDate();
+        for (int i = 0; i < emptyBagCourierHistoryInfos.size(); i++) {
+            EmptyBagCourierHistoryInfo info = emptyBagCourierHistoryInfos.get(i);
+            int index = i + 1;
+            if (StringUtils.isNull(info.getDateTime())) {
+                return StringUtils.format("第{}行日期不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getDigest())) {
+                return StringUtils.format("第{}行摘要不能为空", index);
+            }
+            if (StringUtils.isNull(info.getPrice())) {
+                return StringUtils.format("第{}行金额不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getUserName())) {
+                return StringUtils.format("第{}行创建人不能为空", index);
+            }
+            info.setCreateTime(nowDate);
+        }
+        //数据库查询校验
+        for (int i = 0; i < emptyBagCourierHistoryInfos.size(); i++) {
+            EmptyBagCourierHistoryInfo info = emptyBagCourierHistoryInfos.get(i);
+            int index = i + 1;
+            SysUser user = userService.selectUserByUserName(info.getUserName());
+            if (StringUtils.isNull(user)) {
+                return StringUtils.format("第{}行创建人{}不存在", index, info.getUserName());
+            }
+            info.setUserId(user.getUserId());
+            info.setDeptId(user.getDeptId());
+        }
+        transactionTemplate.execute(item -> {
+            try {
+                return emptyBagCourierHistoryInfoMapper.insert(emptyBagCourierHistoryInfos);
+            } catch (Exception e) {
+                log.error("导入采购账号数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如数据格式是否和描述相同！！！");
+            }
+        });
+        return StringUtils.format("导入成功。成功导入{}条数据！！！", emptyBagCourierHistoryInfos.size());
     }
 
 }
