@@ -175,7 +175,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
             throw new ServiceException("删除失败，请选择要删除的数据！！！");
         }
         //校验是否有订单关联
-        List<PurchaseOrderInfo> orderInfos = orderInfoMapper.selectList(new QueryWrapper<PurchaseOrderInfo>().lambda().in(PurchaseOrderInfo::getStoreId,ids));
+        List<PurchaseOrderInfo> orderInfos = orderInfoMapper.selectList(new QueryWrapper<PurchaseOrderInfo>().lambda().in(PurchaseOrderInfo::getStoreId, ids));
         if (StringUtils.isNotEmpty(orderInfos)) {
             throw new ServiceException("删除失败，请先删除关联的订单！！！");
         }
@@ -364,7 +364,8 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
         // 使用事务模板执行批量保存
         Boolean execute = transactionTemplate.execute(item -> {
             try {
-                return this.saveBatch(validatedStoreInfoList);
+                storeInfoMapper.insert(validatedStoreInfoList);
+                return true;
             } catch (Exception e) {
                 log.error("导入店铺数据失败，原因:", e);
                 throw new ServiceException("请检查数据是否正确，例如店铺名称是否相同,数据格式是否和描述相同！！！");

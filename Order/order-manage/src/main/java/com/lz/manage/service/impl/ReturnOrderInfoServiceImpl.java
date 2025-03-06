@@ -250,7 +250,7 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
         }
         transactionTemplate.execute(item -> {
             try {
-                this.saveBatch(list);
+                returnOrderInfoMapper.insert(list);
                 return orderInfoService.updateBatchById(orderInfos);
             } catch (Exception e) {
                 log.error("导入退货订单数据失败，原因：", e);

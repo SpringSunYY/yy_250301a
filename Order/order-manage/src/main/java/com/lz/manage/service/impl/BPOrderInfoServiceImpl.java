@@ -323,7 +323,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
 
         transactionTemplate.execute(item -> {
             try {
-                this.saveBatch(bpOrderInfoList);
+                bPOrderInfoMapper.insert(bpOrderInfoList);
                 return orderInfoService.updateBatchById(orderInfos);
             } catch (Exception e) {
                 log.error("导入白嫖订单数据失败，原因：", e);

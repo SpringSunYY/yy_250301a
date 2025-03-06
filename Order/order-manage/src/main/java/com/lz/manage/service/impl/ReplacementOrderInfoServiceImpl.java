@@ -299,13 +299,13 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
         }
         transactionTemplate.execute(item -> {
             try {
-                return this.saveBatch(replacementOrderInfoList);
+                return replacementOrderInfoMapper.insert(replacementOrderInfoList);
             } catch (Exception e) {
                 log.error("导入补单信息失败，原因", e);
                 throw new ServiceException("导入信息失败，请检查数据格式，例如是否有相同的订单编号,数据格式是否和描述相同");
             }
         });
-        return StringUtils.format("导入成功。成功导入{}条数据！！！", replacementOrderInfoList.size() );
+        return StringUtils.format("导入成功。成功导入{}条数据！！！", replacementOrderInfoList.size());
     }
 
 }

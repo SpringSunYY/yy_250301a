@@ -417,7 +417,8 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         }
         Boolean execute = transactionTemplate.execute(item -> {
             try {
-                return this.saveBatch(purchaseOrderInfoList);
+                purchaseOrderInfoMapper.insert(purchaseOrderInfoList);
+                return true;
             } catch (Exception e) {
                 log.error("导入采购订单数据失败，原因：", e);
                 throw new ServiceException("导入数据失败，请检查数据结构是否正确，或者查看是否有相同的采购编号,数据格式是否和描述相同！！！");

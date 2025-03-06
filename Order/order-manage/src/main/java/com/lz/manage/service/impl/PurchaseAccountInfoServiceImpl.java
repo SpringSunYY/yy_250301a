@@ -226,7 +226,8 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         }
         Boolean execute = transactionTemplate.execute(item -> {
             try {
-                return this.saveBatch(purchaseAccountInfoList);
+                 purchaseAccountInfoMapper.insert(purchaseAccountInfoList);
+                 return true;
             } catch (Exception e) {
                 log.error("导入采购账号数据失败，原因：", e);
                 throw new ServiceException("导入数据失败，请检查数据结构是否正确,数据格式是否和描述相同！！！");
