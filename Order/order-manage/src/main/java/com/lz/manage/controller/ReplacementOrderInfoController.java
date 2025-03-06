@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,9 @@ public class ReplacementOrderInfoController extends BaseController
     @Resource
     private IReplacementOrderInfoService replacementOrderInfoService;
 
+    @Resource
+    private ISysDeptService deptService;
+
     /**
      * 查询补单明细列表
      */
@@ -47,6 +53,10 @@ public class ReplacementOrderInfoController extends BaseController
     public TableDataInfo list(ReplacementOrderInfoQuery replacementOrderInfoQuery)
     {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoQuery.queryToObj(replacementOrderInfoQuery);
+        if (StringUtils.isNotNull(replacementOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(replacementOrderInfo.getDeptId());
+            replacementOrderInfo.setDeptIds(deptIds);
+        }
         startPage();
         List<ReplacementOrderInfo> list = replacementOrderInfoService.selectReplacementOrderInfoList(replacementOrderInfo);
         List<ReplacementOrderInfoVo> listVo= list.stream().map(ReplacementOrderInfoVo::objToVo).collect(Collectors.toList());

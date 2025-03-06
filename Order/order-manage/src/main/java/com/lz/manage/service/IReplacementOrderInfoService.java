@@ -79,4 +79,15 @@ public interface IReplacementOrderInfoService extends IService<ReplacementOrderI
      * @return ReplacementOrderInfoVO集合
      */
     List<ReplacementOrderInfoVo> convertVoList(List<ReplacementOrderInfo> replacementOrderInfoList);
+
+    /**
+     * description: 根据订单编号查询补单
+     * author: YY
+     * method: selectReplacementOrderInfoByOrderNumber
+     * date: 2025/3/6 11:30
+     * param:
+     * param: orderNumber
+     * return: com.lz.manage.model.domain.ReplacementOrderInfo
+     **/
+    ReplacementOrderInfo selectReplacementOrderInfoByOrderNumber(String orderNumber);
 }

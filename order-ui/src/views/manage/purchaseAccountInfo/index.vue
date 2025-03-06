@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="创建人" prop="userId">
         <el-select
-          v-model="form.userId"
+          v-model="queryParams.userId"
           filterable
           remote
           reserve-keyword
@@ -283,7 +283,7 @@ import {
   addPurchaseAccountInfo,
   updatePurchaseAccountInfo
 } from '@/api/manage/purchaseAccountInfo'
-import { myAllocatedUserList } from '@/api/system/role'
+import { allocatedUserList, myAllocatedUserList } from '@/api/system/role'
 import { listDept } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -431,7 +431,7 @@ export default {
       if (this.userQueryParams.userName !== '') {
         this.userQueryParams.userId = null
       }
-      myAllocatedUserList(this.userQueryParams).then(res => {
+      allocatedUserList(this.userQueryParams).then(res => {
         this.userInfoList = res?.rows
         this.userLoading = false
       })

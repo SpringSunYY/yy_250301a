@@ -69,6 +69,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     private IReturnOrderInfoService returnOrderInfoService;
 
     @Resource
+    private IReplacementOrderInfoService replacementOrderInfoService;
+
+    @Resource
     private TransactionTemplate transactionTemplate;
     //region mybatis代码
 
@@ -131,6 +134,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     private void checkOrder(PurchaseOrderInfo purchaseOrderInfo) {
+        ReplacementOrderInfo replacementOrderInfo = replacementOrderInfoService.selectReplacementOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
+        if (StringUtils.isNotNull(replacementOrderInfo)) {
+            throw new ServiceException("已经存在返款订单");
+        }
         //如果用户id为空，则默认为当前用户
         if (StringUtils.isNull(purchaseOrderInfo.getUserId())) {
             purchaseOrderInfo.setUserId(SecurityUtils.getUserId());
@@ -240,7 +247,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         if (ArrayUtils.isEmpty(ids)) {
             throw new ServiceException("删除失败，请选择要删除的数据！！！");
         }
-        List<String> numbers=new ArrayList<>(ids.length);
+        List<String> numbers = new ArrayList<>(ids.length);
         //先删除退货订单和白嫖订单
         for (PurchaseOrderInfo info : this.listByIds(Arrays.asList(ids))) {
             numbers.add(info.getOrderNumber());

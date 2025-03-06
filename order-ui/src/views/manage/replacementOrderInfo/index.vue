@@ -10,12 +10,23 @@
         />
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
-        <el-input
+        <el-select
           v-model="queryParams.storeId"
+          filterable
+          remote
+          reserve-keyword
           placeholder="请输入店铺名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          :remote-method="selectStoreInfoList"
+          :loading="storeInfoLoading"
+        >
+          <el-option
+            v-for="item in storeInfoList"
+            :key="item.id"
+            :label="item.storeName"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="日期">
         <el-date-picker
@@ -44,8 +55,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="返款状态(0=已返 1=未返)" prop="returnStatus">
-        <el-select v-model="queryParams.returnStatus" placeholder="请选择返款状态(0=已返 1=未返)" clearable>
+      <el-form-item label="返款状态" prop="returnStatus">
+        <el-select v-model="queryParams.returnStatus" placeholder="请选择返款状态" clearable>
           <el-option
             v-for="dict in dict.type.o_replacement_status"
             :key="dict.value"
@@ -55,12 +66,23 @@
         </el-select>
       </el-form-item>
       <el-form-item label="创建人" prop="userId">
-        <el-input
+        <el-select
           v-model="queryParams.userId"
-          placeholder="请输入创建人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectUserInfoList"
+          :loading="userLoading"
+        >
+          <el-option
+            v-for="item in userInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
@@ -73,32 +95,18 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="更新人" prop="updateBy">
-        <el-input
-          v-model="queryParams.updateBy"
-          placeholder="请输入更新人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="更新时间">
-        <el-date-picker
-          v-model="daterangeUpdateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="部门" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">所属部门</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.deptId"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+
+            />
+          </el-col>
+        </el-row>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -115,7 +123,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['manage:replacementOrderInfo:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -126,7 +135,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['manage:replacementOrderInfo:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -137,7 +147,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['manage:replacementOrderInfo:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -147,46 +158,69 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['manage:replacementOrderInfo:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="replacementOrderInfoList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id" />
-        <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible" prop="orderNumber" />
-        <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible" prop="storeId" />
-        <el-table-column label="日期" align="center" v-if="columns[3].visible" prop="dateTime" width="180">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
+      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+                       prop="orderNumber"
+      />
+      <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
+                       prop="storeName"
+      />
+      <el-table-column label="日期" align="center" v-if="columns[3].visible" prop="dateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.dateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-        <el-table-column label="微信号" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible" prop="wxNumber" />
-        <el-table-column label="旺旺号" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible" prop="tbNumber" />
-        <el-table-column label="实付金额" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible" prop="actuallyPrice" />
-        <el-table-column label="佣金" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible" prop="commission" />
-        <el-table-column label="合计金额" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible" prop="totalPrice" />
-        <el-table-column label="返款状态(0=已返 1=未返)" align="center" v-if="columns[9].visible" prop="returnStatus">
+      <el-table-column label="微信号" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
+                       prop="wxNumber"
+      />
+      <el-table-column label="旺旺号" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible"
+                       prop="tbNumber"
+      />
+      <el-table-column label="实付金额" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
+                       prop="actuallyPrice"
+      />
+      <el-table-column label="佣金" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
+                       prop="commission"
+      />
+      <el-table-column label="合计金额" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
+                       prop="totalPrice"
+      />
+      <el-table-column label="返款状态" align="center" v-if="columns[9].visible" prop="returnStatus">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_replacement_status" :value="scope.row.returnStatus"/>
         </template>
       </el-table-column>
-        <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible" prop="userId" />
-        <el-table-column label="创建时间" align="center" v-if="columns[11].visible" prop="createTime" width="180">
+      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
+                       prop="userName"
+      />
+      <el-table-column label="创建时间" align="center" v-if="columns[11].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-        <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible" prop="updateBy" />
-        <el-table-column label="更新时间" align="center" v-if="columns[13].visible" prop="updateTime" width="180">
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible"
+                       prop="updateBy"
+      />
+      <el-table-column label="更新时间" align="center" v-if="columns[13].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-        <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible" prop="remark" />
-        <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible" prop="deptId" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
+                       prop="remark"
+      />
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible"
+                       prop="deptName"
+      />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -194,14 +228,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['manage:replacementOrderInfo:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manage:replacementOrderInfo:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -218,48 +254,82 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="采购编号" prop="orderNumber">
-          <el-input v-model="form.orderNumber" placeholder="请输入采购编号" />
+          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
         </el-form-item>
         <el-form-item label="店铺名称" prop="storeId">
-          <el-input v-model="form.storeId" placeholder="请输入店铺名称" />
+          <el-select
+            v-model="form.storeId"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入店铺名称"
+            :remote-method="selectStoreInfoList"
+            :loading="storeInfoLoading"
+          >
+            <el-option
+              v-for="item in storeInfoList"
+              :key="item.id"
+              :label="item.storeName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="日期" prop="dateTime">
           <el-date-picker clearable
-            v-model="form.dateTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择日期">
+                          v-model="form.dateTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择日期"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="微信号" prop="wxNumber">
-          <el-input v-model="form.wxNumber" placeholder="请输入微信号" />
+          <el-input v-model="form.wxNumber" placeholder="请输入微信号"/>
         </el-form-item>
         <el-form-item label="旺旺号" prop="tbNumber">
-          <el-input v-model="form.tbNumber" placeholder="请输入旺旺号" />
+          <el-input v-model="form.tbNumber" placeholder="请输入旺旺号"/>
         </el-form-item>
         <el-form-item label="实付金额" prop="actuallyPrice">
-          <el-input v-model="form.actuallyPrice" placeholder="请输入实付金额" />
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.actuallyPrice" placeholder="请输入实付金额"/>
         </el-form-item>
         <el-form-item label="佣金" prop="commission">
-          <el-input v-model="form.commission" placeholder="请输入佣金" />
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.commission" placeholder="请输入佣金"/>
         </el-form-item>
         <el-form-item label="合计金额" prop="totalPrice">
-          <el-input v-model="form.totalPrice" placeholder="请输入合计金额" />
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>
         </el-form-item>
-        <el-form-item label="返款状态(0=已返 1=未返)" prop="returnStatus">
+        <el-form-item label="返款状态" prop="returnStatus">
           <el-radio-group v-model="form.returnStatus">
             <el-radio
               v-for="dict in dict.type.o_replacement_status"
               :key="dict.value"
               :label="dict.value"
-            >{{dict.label}}</el-radio>
+            >{{ dict.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="创建人" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入创建人" />
+          <el-select
+            v-model="form.userId"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入用户账号"
+            :remote-method="selectUserInfoList"
+            :loading="userLoading"
+          >
+            <el-option
+              v-for="item in userInfoList"
+              :key="item.userId"
+              :label="item.userName"
+              :value="item.userId"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -271,35 +341,63 @@
 </template>
 
 <script>
-import { listReplacementOrderInfo, getReplacementOrderInfo, delReplacementOrderInfo, addReplacementOrderInfo, updateReplacementOrderInfo } from "@/api/manage/replacementOrderInfo";
+import {
+  listReplacementOrderInfo,
+  getReplacementOrderInfo,
+  delReplacementOrderInfo,
+  addReplacementOrderInfo,
+  updateReplacementOrderInfo
+} from '@/api/manage/replacementOrderInfo'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { listStoreInfo } from '@/api/manage/storeInfo'
+import { listDept } from '@/api/system/dept'
+import { allocatedUserList } from '@/api/system/role'
 
 export default {
-  name: "ReplacementOrderInfo",
+  name: 'ReplacementOrderInfo',
   components: { Treeselect },
   dicts: ['o_replacement_status'],
   data() {
     return {
+      //店铺信息
+      storeInfoList: [],
+      storeInfoLoading: false,
+      storeInfoQueryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        storeName: ''
+      },
+      //用户相关信息
+      userInfoList: [],
+      userLoading: false,
+      userQueryParams: {
+        userName: '',
+        roleId: 102,
+        pageNum: 1,
+        pageSize: 10
+      },
+      //部门相关信息
+      deptOptions: [],
       //表格展示列
       columns: [
-        { key: 0, label: '编号', visible: true },
-          { key: 1, label: '采购编号', visible: true },
-          { key: 2, label: '店铺名称', visible: true },
-          { key: 3, label: '日期', visible: true },
-          { key: 4, label: '微信号', visible: true },
-          { key: 5, label: '旺旺号', visible: true },
-          { key: 6, label: '实付金额', visible: true },
-          { key: 7, label: '佣金', visible: true },
-          { key: 8, label: '合计金额', visible: true },
-          { key: 9, label: '返款状态(0=已返 1=未返)', visible: true },
-          { key: 10, label: '创建人', visible: true },
-          { key: 11, label: '创建时间', visible: true },
-          { key: 12, label: '更新人', visible: true },
-          { key: 13, label: '更新时间', visible: true },
-          { key: 14, label: '备注', visible: true },
-          { key: 15, label: '部门', visible: true },
-        ],
+        { key: 0, label: '编号', visible: false },
+        { key: 1, label: '采购编号', visible: true },
+        { key: 2, label: '店铺名称', visible: true },
+        { key: 3, label: '日期', visible: true },
+        { key: 4, label: '微信号', visible: true },
+        { key: 5, label: '旺旺号', visible: true },
+        { key: 6, label: '实付金额', visible: true },
+        { key: 7, label: '佣金', visible: true },
+        { key: 8, label: '合计金额', visible: true },
+        { key: 9, label: '返款状态', visible: true },
+        { key: 10, label: '创建人', visible: false },
+        { key: 11, label: '创建时间', visible: false },
+        { key: 12, label: '更新人', visible: false },
+        { key: 13, label: '更新时间', visible: false },
+        { key: 14, label: '备注', visible: false },
+        { key: 15, label: '部门', visible: true }
+      ],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -315,7 +413,7 @@ export default {
       // 补单明细表格数据
       replacementOrderInfoList: [],
       // 弹出层标题
-      title: "",
+      title: '',
       // 是否显示弹出层
       open: false,
       // 部门时间范围
@@ -345,47 +443,133 @@ export default {
       // 表单校验
       rules: {
         orderNumber: [
-          { required: true, message: "采购编号不能为空", trigger: "blur" }
+          { required: true, message: '采购编号不能为空', trigger: 'blur' }
         ],
         userId: [
-          { required: true, message: "创建人不能为空", trigger: "blur" }
+          { required: true, message: '创建人不能为空', trigger: 'blur' }
         ],
         createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
-        ],
+          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+        ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
+    this.getDeptList()
   },
   methods: {
+    /**
+     * 获取店铺列表推荐
+     * @param query
+     */
+    selectStoreInfoList(query) {
+      if (query !== '') {
+        this.storeInfoLoading = true
+        this.storeInfoQueryParams.storeName = query
+        setTimeout(() => {
+          this.getStoreInfoList()
+        }, 200)
+      } else {
+        this.storeInfoList = []
+        this.storeInfoQueryParams.storeId = null
+      }
+    },
+    /**
+     * 获取店铺信息列表
+     */
+    getStoreInfoList() {
+      //添加查询参数
+      if (this.form.storeId != null) {
+        this.storeInfoQueryParams.storeId = this.form.storeId
+      } else {
+        this.storeInfoQueryParams.storeId = null
+      }
+      if (this.storeInfoQueryParams.storeName !== '') {
+        this.storeInfoQueryParams.storeId = null
+      }
+      listStoreInfo(this.storeInfoQueryParams).then(res => {
+        this.storeInfoList = res?.rows
+        this.storeInfoLoading = false
+      })
+    },
+    /**
+     * 获取主管用户列表推荐
+     * @param query
+     */
+    selectUserInfoList(query) {
+      if (query !== '') {
+        this.userLoading = true
+        this.userQueryParams.userName = query
+        setTimeout(() => {
+          this.getUserInfoList()
+        }, 200)
+      } else {
+        this.userInfoList = []
+        this.userQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取主管用户信息列表
+     */
+    getUserInfoList() {
+      //添加查询参数
+      if (this.form.userId != null) {
+        this.userQueryParams.userId = this.form.userId
+      } else {
+        this.userQueryParams.userId = null
+      }
+      if (this.userQueryParams.userName !== '') {
+        this.userQueryParams.userId = null
+      }
+      allocatedUserList(this.userQueryParams).then(res => {
+        this.userInfoList = res?.rows
+        this.userLoading = false
+      })
+    },
+    /** 查询部门列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, 'deptId')
+      })
+    },
+    /** 转换部门数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      }
+    },
     /** 查询补单明细列表 */
     getList() {
-      this.loading = true;
-      this.queryParams.params = {};
+      this.loading = true
+      this.queryParams.params = {}
       if (null != this.daterangeDateTime && '' != this.daterangeDateTime) {
-        this.queryParams.params["beginDateTime"] = this.daterangeDateTime[0];
-        this.queryParams.params["endDateTime"] = this.daterangeDateTime[1];
+        this.queryParams.params['beginDateTime'] = this.daterangeDateTime[0]
+        this.queryParams.params['endDateTime'] = this.daterangeDateTime[1]
       }
       if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
-        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
+        this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
+        this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
       }
       if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
-        this.queryParams.params["beginUpdateTime"] = this.daterangeUpdateTime[0];
-        this.queryParams.params["endUpdateTime"] = this.daterangeUpdateTime[1];
+        this.queryParams.params['beginUpdateTime'] = this.daterangeUpdateTime[0]
+        this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
       }
       listReplacementOrderInfo(this.queryParams).then(response => {
-        this.replacementOrderInfoList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.replacementOrderInfoList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -406,73 +590,74 @@ export default {
         updateTime: null,
         remark: null,
         deptId: null
-      };
-      this.resetForm("form");
+      }
+      this.resetForm('form')
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeDateTime = [];
-      this.daterangeCreateTime = [];
-      this.daterangeUpdateTime = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.daterangeDateTime = []
+      this.daterangeCreateTime = []
+      this.daterangeUpdateTime = []
+      this.resetForm('queryForm')
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加补单明细";
+      this.reset()
+      this.open = true
+      this.title = '添加补单明细'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const id = row.id || this.ids
       getReplacementOrderInfo(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改补单明细";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = '修改补单明细'
+      })
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
             updateReplacementOrderInfo(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('修改成功')
+              this.open = false
+              this.getList()
+            })
           } else {
             addReplacementOrderInfo(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('新增成功')
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
+      const ids = row.id || this.ids
       this.$modal.confirm('是否确认删除补单明细编号为"' + ids + '"的数据项？').then(function() {
-        return delReplacementOrderInfo(ids);
+        return delReplacementOrderInfo(ids)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess('删除成功')
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -481,5 +666,5 @@ export default {
       }, `replacementOrderInfo_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>
