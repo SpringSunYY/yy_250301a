@@ -680,6 +680,7 @@ export default {
       const id = row.id || this.ids
       getReplacementOrderInfo(id).then(response => {
         this.form = response.data
+        this.getUserInfoList()
         this.open = true
         this.title = '修改补单明细'
       })
