@@ -3,6 +3,7 @@ package com.lz.manage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -77,6 +78,7 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
      * @param replacementOrderInfo 补单明细
      * @return 补单明细
      */
+    @DataScope(userAlias = "tb_replacement_order_info", deptAlias = "tb_replacement_order_info")
     @Override
     public List<ReplacementOrderInfo> selectReplacementOrderInfoList(ReplacementOrderInfo replacementOrderInfo) {
         List<ReplacementOrderInfo> orderInfos = replacementOrderInfoMapper.selectReplacementOrderInfoList(replacementOrderInfo);

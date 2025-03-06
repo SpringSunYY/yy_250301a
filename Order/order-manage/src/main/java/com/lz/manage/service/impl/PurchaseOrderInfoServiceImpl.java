@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -93,8 +94,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      * @param purchaseOrderInfo 采购发货信息
      * @return 采购发货信息
      */
+    @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     @Override
     public List<PurchaseOrderInfo> selectPurchaseOrderInfoList(PurchaseOrderInfo purchaseOrderInfo) {
+        System.out.println("purchaseOrderInfo = " + purchaseOrderInfo);
         List<PurchaseOrderInfo> purchaseOrderInfos = purchaseOrderInfoMapper.selectPurchaseOrderInfoList(purchaseOrderInfo);
         for (PurchaseOrderInfo info : purchaseOrderInfos) {
             StoreInfo storeInfo = storeInfoService.selectStoreInfoById(info.getStoreId());

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -80,6 +81,7 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
      * @param purchaseAccountInfo 采购账号信息
      * @return 采购账号信息
      */
+    @DataScope(userAlias = "tb_purchase_account_info", deptAlias = "tb_purchase_account_info")
     @Override
     public List<PurchaseAccountInfo> selectPurchaseAccountInfoList(PurchaseAccountInfo purchaseAccountInfo) {
         List<PurchaseAccountInfo> purchaseAccountInfos = purchaseAccountInfoMapper.selectPurchaseAccountInfoList(purchaseAccountInfo);

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -82,6 +83,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      * @param storeInfo 店铺信息
      * @return 店铺信息
      */
+    @DataScope(userAlias = "tb_store_info", deptAlias = "tb_store_info")
     @Override
     public List<StoreInfo> selectStoreInfoList(StoreInfo storeInfo) {
         List<StoreInfo> storeInfos = storeInfoMapper.selectStoreInfoList(storeInfo);

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -71,6 +72,7 @@ public class EmptyBagCourierHistoryInfoServiceImpl extends ServiceImpl<EmptyBagC
      * @param emptyBagCourierHistoryInfo 空包/快递充值记录
      * @return 空包/快递充值记录
      */
+    @DataScope(userAlias = "tb_empty_bag_courier_history_info", deptAlias = "tb_empty_bag_courier_history_info")
     @Override
     public List<EmptyBagCourierHistoryInfo> selectEmptyBagCourierHistoryInfoList(EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo) {
         List<EmptyBagCourierHistoryInfo> emptyBagCourierHistoryInfos = emptyBagCourierHistoryInfoMapper.selectEmptyBagCourierHistoryInfoList(emptyBagCourierHistoryInfo);

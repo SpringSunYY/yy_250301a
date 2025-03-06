@@ -42,6 +42,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{id}
                 </foreach>
             </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
         </where>
     </select>
     

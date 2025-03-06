@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -91,6 +92,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      * @param bPOrderInfo 白嫖订单信息
      * @return 白嫖订单信息
      */
+    @DataScope(userAlias = "tb_b_p_order_info", deptAlias = "tb_b_p_order_info")
     @Override
     public List<BPOrderInfo> selectBPOrderInfoList(BPOrderInfo bPOrderInfo) {
         List<BPOrderInfo> bpOrderInfos = bPOrderInfoMapper.selectBPOrderInfoList(bPOrderInfo);
