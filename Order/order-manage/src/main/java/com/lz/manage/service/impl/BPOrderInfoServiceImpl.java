@@ -185,7 +185,25 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      */
     @Override
     public int deleteBPOrderInfoByIds(Long[] ids) {
-        return bPOrderInfoMapper.deleteBPOrderInfoByIds(ids);
+        List<PurchaseOrderInfo> orderInfos = new ArrayList<>(ids.length);
+        for (Long id : ids) {
+            BPOrderInfo bpOrderInfo = this.selectBPOrderInfoById(id);
+            if (StringUtils.isNotNull(bpOrderInfo)) {
+                PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(bpOrderInfo.getOrderNumber());
+                if (StringUtils.isNotNull(orderInfo)) {
+                    orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
+                    orderInfos.add(orderInfo);
+                }
+            }
+        }
+        transactionTemplate.execute(item -> {
+            bPOrderInfoMapper.deleteBPOrderInfoByIds(ids);
+            for (PurchaseOrderInfo orderInfo : orderInfos) {
+                orderInfoService.updatePurchaseOrderInfo(orderInfo);
+            }
+            return 1;
+        });
+        return 1;
     }
 
     /**

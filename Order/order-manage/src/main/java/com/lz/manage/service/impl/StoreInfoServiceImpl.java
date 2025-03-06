@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -22,6 +23,8 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.mapper.PurchaseOrderInfoMapper;
+import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +56,9 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
 
     @Resource
     private ISysDeptService deptService;
+
+    @Resource
+    private PurchaseOrderInfoMapper orderInfoMapper;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -164,6 +170,15 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     @Override
     public int deleteStoreInfoByIds(Long[] ids) {
+        //ids不能为空
+        if (ArrayUtils.isEmpty(ids)) {
+            throw new ServiceException("删除失败，请选择要删除的数据！！！");
+        }
+        //校验是否有订单关联
+        List<PurchaseOrderInfo> orderInfos = orderInfoMapper.selectList(new QueryWrapper<PurchaseOrderInfo>().lambda().in(PurchaseOrderInfo::getStoreId,ids));
+        if (StringUtils.isNotEmpty(orderInfos)) {
+            throw new ServiceException("删除失败，请先删除关联的订单！！！");
+        }
         return storeInfoMapper.deleteStoreInfoByIds(ids);
     }
 

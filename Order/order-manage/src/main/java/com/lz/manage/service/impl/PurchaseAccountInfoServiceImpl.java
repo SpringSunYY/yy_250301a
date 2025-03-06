@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -20,6 +21,8 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.mapper.PurchaseOrderInfoMapper;
+import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
@@ -51,6 +54,9 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private PurchaseOrderInfoMapper purchaseOrderInfoMapper;
 
 
     //region mybatis代码
@@ -134,6 +140,16 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
      */
     @Override
     public int deletePurchaseAccountInfoByIds(Long[] ids) {
+        //ids不能为空
+        if (ArrayUtils.isEmpty(ids)) {
+            throw new ServiceException("删除失败，请选择要删除的数据！！！");
+        }
+        //查询是否绑定订单
+        purchaseOrderInfoMapper.selectList(new QueryWrapper<PurchaseOrderInfo>().lambda().in(PurchaseOrderInfo::getPurchaseAccountId, ids)).forEach(item -> {
+            if (StringUtils.isNotNull(item)) {
+                throw new ServiceException("存在订单绑定该账号，请先解除绑定再删除");
+            }
+        });
         return purchaseAccountInfoMapper.deletePurchaseAccountInfoByIds(ids);
     }
 

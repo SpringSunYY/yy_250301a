@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
@@ -234,6 +236,17 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int deletePurchaseOrderInfoByIds(Long[] ids) {
+        //ids不能为空
+        if (ArrayUtils.isEmpty(ids)) {
+            throw new ServiceException("删除失败，请选择要删除的数据！！！");
+        }
+        List<String> numbers=new ArrayList<>(ids.length);
+        //先删除退货订单和白嫖订单
+        for (PurchaseOrderInfo info : this.listByIds(Arrays.asList(ids))) {
+            numbers.add(info.getOrderNumber());
+        }
+        ibpOrderInfoService.remove(new LambdaQueryWrapper<BPOrderInfo>().in(BPOrderInfo::getOrderNumber, numbers));
+        returnOrderInfoService.remove(new LambdaQueryWrapper<ReturnOrderInfo>().in(ReturnOrderInfo::getOrderNumber, numbers));
         return purchaseOrderInfoMapper.deletePurchaseOrderInfoByIds(ids);
     }
 
