@@ -167,9 +167,9 @@
       <el-table-column label="白嫖退款金额" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
                        prop="bpprice"
       />
-      <el-table-column label="白嫖退款日期" align="center" v-if="columns[5].visible" prop="bPTime" width="180">
+      <el-table-column label="白嫖退款日期" align="center" v-if="columns[5].visible" prop="bptime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.bPTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.bptime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="售后金额" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
@@ -246,9 +246,9 @@
         <el-form-item label="白嫖退款金额" prop="bpprice">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.bpprice" placeholder="请输入白嫖退款金额"/>
         </el-form-item>
-        <el-form-item label="白嫖退款日期" prop="bPTime">
+        <el-form-item label="白嫖退款日期" prop="bptime">
           <el-date-picker clearable
-                          v-model="form.bPTime"
+                          v-model="form.bptime"
                           type="date"
                           value-format="yyyy-MM-dd"
                           placeholder="请选择白嫖退款日期"
@@ -395,7 +395,7 @@ export default {
         orderNumber: null,
         orderType: null,
         storeId: null,
-        bPTime: null,
+        bptime: null,
         afterSaleTime: null,
         userId: null,
         createTime: null,
@@ -530,7 +530,7 @@ export default {
         orderType: null,
         storeId: null,
         bpprice: null,
-        bPTime: null,
+        bptime: null,
         afterSalePrice: null,
         afterSaleTime: null,
         afterSaleImage: null,
