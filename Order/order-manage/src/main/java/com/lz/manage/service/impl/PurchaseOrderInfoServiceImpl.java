@@ -25,6 +25,7 @@ import com.lz.common.utils.DateUtils;
 import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.*;
+import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
@@ -344,7 +345,12 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
     @Override
     public String importPurchaseOrderInfo(List<PurchaseOrderInfo> purchaseOrderInfoList) {
+        if (StringUtils.isEmpty(purchaseOrderInfoList)) {
+            return StringUtils.format("数据不能为空");
+        }
         Date nowDate = DateUtils.getNowDate();
+        //新增订单集合，判断补单信息是否存在此订单
+        List<String> orderNumbers = new ArrayList<>(purchaseOrderInfoList.size());
         //遍历 判断店铺、账号、创建人是否存在
         for (int i = 0; i < purchaseOrderInfoList.size(); i++) {
             PurchaseOrderInfo info = purchaseOrderInfoList.get(i);
@@ -359,15 +365,33 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             if (StringUtils.isNull(info.getStoreName())) {
                 return StringUtils.format("第{}行店铺名称不能为空", index);
             }
+            if (StringUtils.isEmpty(info.getUserName())) {
+                return StringUtils.format("第{}行创建人不能为空", index);
+            }
             //填入默认值
             if (StringUtils.isEmpty(info.getHasBP())) {
-                info.setHasBP("2");
+                info.setHasBP(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
             }
             if (StringUtils.isEmpty(info.getHasReturn())) {
-                info.setHasReturn("2");
+                info.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
             }
             info.setCreateTime(nowDate);
-
+            orderNumbers.add(info.getOrderNumber());
+        }
+        //根据订单编号列表查询采购订单
+        List<PurchaseOrderInfo> purchaseOrderInfos = this.list(new LambdaQueryWrapper<PurchaseOrderInfo>().in(PurchaseOrderInfo::getOrderNumber, orderNumbers));
+        if (StringUtils.isNotEmpty(purchaseOrderInfos)) {
+            return StringUtils.format("订单编号{}已在采购订单内,不可添加", purchaseOrderInfos.get(0).getOrderNumber());
+        }
+        //查询补货订单是否存在，存在不可添加
+        List<ReplacementOrderInfo> replacementOrderInfos = replacementOrderInfoService.list(new LambdaQueryWrapper<ReplacementOrderInfo>().in(ReplacementOrderInfo::getOrderNumber, orderNumbers));
+        if (StringUtils.isNotEmpty(replacementOrderInfos)) {
+            return StringUtils.format("订单编号{}已在补货订单内,不可添加", replacementOrderInfos.get(0).getOrderNumber());
+        }
+        //通过数据库查询判断
+        for (int i = 0; i < purchaseOrderInfoList.size(); i++) {
+            PurchaseOrderInfo info = purchaseOrderInfoList.get(i);
+            int index = i + 1;
             //数据库查询校验
             //查询店铺是否存在 存在则给订单赋值部门信息，不存在抛出店铺不存在
             StoreInfo storeInfo = storeInfoService.selectStoreInfoByStoreName(info.getStoreName());
@@ -377,9 +401,6 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             info.setStoreId(storeInfo.getId());
             info.setDeptId(storeInfo.getDeptId());
 
-            if (StringUtils.isEmpty(info.getUserName())) {
-                return StringUtils.format("第{}行创建人不能为空", index);
-            }
             SysUser user = userService.selectUserByUserName(info.getUserName());
             if (StringUtils.isNull(user)) {
                 return StringUtils.format("第{}行创建人不存在", index);

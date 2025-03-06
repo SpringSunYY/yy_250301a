@@ -236,6 +236,9 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
 
     @Override
     public String importReplacementOrderInfo(List<ReplacementOrderInfo> replacementOrderInfoList) {
+        if (StringUtils.isEmpty(replacementOrderInfoList)) {
+            return StringUtils.format("导入数据为空");
+        }
         //设置初值 校验
         Date nowDate = DateUtils.getNowDate();
         //新建一个订单编号集合，用于记录订单编号 查询采购订单内是否存在
@@ -272,7 +275,7 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
         if (StringUtils.isNotEmpty(purchaseOrderInfos)) {
             return StringUtils.format("订单编号{}已在采购订单内,不可添加", purchaseOrderInfos.get(0).getOrderNumber());
         }
-        //查询捕获订单是否存在，存在不可添加
+        //查询补货订单是否存在，存在不可添加
         List<ReplacementOrderInfo> replacementOrderInfos = this.list(new LambdaQueryWrapper<ReplacementOrderInfo>().in(ReplacementOrderInfo::getOrderNumber, orderNumbers));
         if (StringUtils.isNotEmpty(replacementOrderInfos)) {
             return StringUtils.format("订单编号{}已在补货订单内,不可添加", replacementOrderInfos.get(0).getOrderNumber());
