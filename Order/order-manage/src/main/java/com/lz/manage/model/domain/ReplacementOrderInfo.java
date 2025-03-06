@@ -44,7 +44,7 @@ public class ReplacementOrderInfo implements Serializable {
     /**
      * 店铺名称
      */
-    @Excel(name = "店铺名称")
+    @Excel(name = "店铺名称",type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String storeName;
     private Long storeId;

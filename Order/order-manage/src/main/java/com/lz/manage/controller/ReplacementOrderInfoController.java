@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
+import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
@@ -28,6 +29,7 @@ import com.lz.manage.model.dto.replacementOrderInfo.ReplacementOrderInfoEdit;
 import com.lz.manage.service.IReplacementOrderInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 补单明细Controller
@@ -123,5 +125,22 @@ public class ReplacementOrderInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(replacementOrderInfoService.deleteReplacementOrderInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:import')")
+    @Log(title = "导入补单明细", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<ReplacementOrderInfo> util = new ExcelUtil<ReplacementOrderInfo>(ReplacementOrderInfo.class);
+        List<ReplacementOrderInfo> list = util.importExcel(file.getInputStream());
+        String message = replacementOrderInfoService.importReplacementOrderInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<ReplacementOrderInfo> util = new ExcelUtil<ReplacementOrderInfo>(ReplacementOrderInfo.class);
+        util.importTemplateExcel(response, "补单数据");
     }
 }

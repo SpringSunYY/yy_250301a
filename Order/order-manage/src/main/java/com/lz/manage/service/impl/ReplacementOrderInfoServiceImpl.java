@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +134,19 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
         if (StringUtils.isNull(replacementOrderInfo.getUserId())) {
             replacementOrderInfo.setUserId(SecurityUtils.getUserId());
         }
+        calculateTotalPrice(replacementOrderInfo);
+    }
+
+    private static void calculateTotalPrice(ReplacementOrderInfo replacementOrderInfo) {
+        if (StringUtils.isNull(replacementOrderInfo.getActuallyPrice())) {
+            replacementOrderInfo.setActuallyPrice(BigDecimal.ZERO);
+        }
+        if (StringUtils.isNull(replacementOrderInfo.getCommission())) {
+            replacementOrderInfo.setCommission(BigDecimal.ZERO);
+        }
+        BigDecimal totalPrice = new BigDecimal(BigInteger.ZERO);
+        totalPrice = replacementOrderInfo.getActuallyPrice().add(replacementOrderInfo.getCommission());
+        replacementOrderInfo.setTotalPrice(totalPrice);
     }
 
     /**
@@ -226,6 +240,52 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
     @Override
     public ReplacementOrderInfo selectReplacementOrderInfoByOrderNumber(String orderNumber) {
         return this.getOne(new LambdaQueryWrapper<ReplacementOrderInfo>().eq(ReplacementOrderInfo::getOrderNumber, orderNumber));
+    }
+
+    @Override
+    public String importReplacementOrderInfo(List<ReplacementOrderInfo> replacementOrderInfoList) {
+        //设置初值 校验
+        Date nowDate = DateUtils.getNowDate();
+        //新建一个订单编号集合，用于记录订单编号 查询采购订单内是否存在
+        List<String> orderNumbers = new ArrayList<>(replacementOrderInfoList.size());
+        for (int i = 0; i < replacementOrderInfoList.size(); i++) {
+            ReplacementOrderInfo info = replacementOrderInfoList.get(i);
+            int index = i + 1;
+            info.setCreateTime(nowDate);
+
+            if (StringUtils.isEmpty(info.getOrderNumber())) {
+                return StringUtils.format("第{}行订单编号不能为空", index);
+            }
+            if (StringUtils.isNull(info.getStoreName())) {
+                return StringUtils.format("第{}行店铺名称不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getUserName())) {
+                return StringUtils.format("第{}行创建人不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getReturnStatus())) {
+                return StringUtils.format("第{}行返款状态不能为空", index);
+            }
+            if (StringUtils.isNull(info.getActuallyPrice())) {
+                info.setActuallyPrice(BigDecimal.ZERO);
+            }
+            if (StringUtils.isNull(info.getCommission())) {
+                info.setCommission(BigDecimal.ZERO);
+            }
+            //计算合计金额
+            calculateTotalPrice(info);
+            orderNumbers.add(info.getOrderNumber());
+        }
+        //根据订单编号列表查询采购订单
+        List<PurchaseOrderInfo> purchaseOrderInfos = purchaseOrderInfoService.list(new LambdaQueryWrapper<PurchaseOrderInfo>().in(PurchaseOrderInfo::getOrderNumber, orderNumbers));
+        if (StringUtils.isNotEmpty(purchaseOrderInfos)) {
+            return StringUtils.format("订单编号{}已在采购订单内,不可添加", purchaseOrderInfos.get(0).getOrderNumber());
+        }
+        //查询捕获订单是否存在，存在不可添加
+        List<ReplacementOrderInfo> replacementOrderInfos = this.list(new LambdaQueryWrapper<ReplacementOrderInfo>().in(ReplacementOrderInfo::getOrderNumber, orderNumbers));
+        if (StringUtils.isNotEmpty(replacementOrderInfos)) {
+            return StringUtils.format("订单编号{}已在补货订单内,不可添加", replacementOrderInfos.get(0).getOrderNumber());
+        }
+        return "";
     }
 
 }
