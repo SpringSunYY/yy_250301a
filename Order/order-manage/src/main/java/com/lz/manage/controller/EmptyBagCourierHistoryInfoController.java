@@ -3,6 +3,9 @@ package com.lz.manage.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lz.common.utils.StringUtils;
+import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +41,8 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
 {
     @Resource
     private IEmptyBagCourierHistoryInfoService emptyBagCourierHistoryInfoService;
+    @Resource
+    private ISysDeptService deptService;
 
     /**
      * 查询空包/快递充值记录列表
@@ -47,6 +52,9 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
     public TableDataInfo list(EmptyBagCourierHistoryInfoQuery emptyBagCourierHistoryInfoQuery)
     {
         EmptyBagCourierHistoryInfo emptyBagCourierHistoryInfo = EmptyBagCourierHistoryInfoQuery.queryToObj(emptyBagCourierHistoryInfoQuery);
+        if (StringUtils.isNotNull(emptyBagCourierHistoryInfo.getDeptId())) {
+            emptyBagCourierHistoryInfo.setDeptIds(deptService.selectDeptByIdReturnIds(emptyBagCourierHistoryInfo.getDeptId()));
+        }
         startPage();
         List<EmptyBagCourierHistoryInfo> list = emptyBagCourierHistoryInfoService.selectEmptyBagCourierHistoryInfoList(emptyBagCourierHistoryInfo);
         List<EmptyBagCourierHistoryInfoVo> listVo= list.stream().map(EmptyBagCourierHistoryInfoVo::objToVo).collect(Collectors.toList());
