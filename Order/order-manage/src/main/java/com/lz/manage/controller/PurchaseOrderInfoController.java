@@ -1,38 +1,33 @@
 package com.lz.manage.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
-
-import com.lz.common.utils.StringUtils;
-import com.lz.manage.model.domain.PurchaseAccountInfo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
-import com.lz.system.service.ISysDeptService;
-import org.springframework.security.access.prepost.PreAuthorize;
-
-import javax.annotation.Resource;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.lz.common.annotation.Log;
 import com.lz.common.core.controller.BaseController;
 import com.lz.common.core.domain.AjaxResult;
-import com.lz.common.enums.BusinessType;
-import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
-import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
-import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoInsert;
-import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoEdit;
-import com.lz.manage.service.IPurchaseOrderInfoService;
-import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import com.lz.common.enums.BusinessType;
+import com.lz.common.utils.StringUtils;
+import com.lz.common.utils.poi.ExcelUtil;
+import com.lz.manage.model.domain.BPOrderInfo;
+import com.lz.manage.model.domain.PurchaseOrderInfo;
+import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoEdit;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoInsert;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderAllVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
+import com.lz.manage.service.IBPOrderInfoService;
+import com.lz.manage.service.IPurchaseOrderInfoService;
+import com.lz.manage.service.IReturnOrderInfoService;
+import com.lz.system.service.ISysDeptService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 采购发货信息Controller
@@ -49,6 +44,12 @@ public class PurchaseOrderInfoController extends BaseController {
     @Resource
     private ISysDeptService deptService;
 
+    @Resource
+    private IReturnOrderInfoService returnOrderInfoService;
+
+    @Resource
+    private IBPOrderInfoService bpOrderInfoService;
+
     /**
      * 查询采购发货信息列表
      */
@@ -62,7 +63,24 @@ public class PurchaseOrderInfoController extends BaseController {
         }
         startPage();
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
-        List<PurchaseOrderInfoVo> listVo = list.stream().map(PurchaseOrderInfoVo::objToVo).collect(Collectors.toList());
+        List<PurchaseOrderAllVo> listVo = list.stream().map(PurchaseOrderAllVo::objToVo).collect(Collectors.toList());
+        for (PurchaseOrderAllVo vo : listVo) {
+            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
+            if (StringUtils.isNotNull(returnOrderInfo)) {
+                vo.setReturnStatus(returnOrderInfo.getReturnStatus());
+                vo.setReturnPrice(returnOrderInfo.getReturnPrice());
+                vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
+                vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+            }
+            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
+            if (StringUtils.isNotNull(bpOrderInfo)) {
+                vo.setBPPrice(bpOrderInfo.getBPPrice());
+                vo.setBPTime(bpOrderInfo.getBPTime());
+                vo.setAfterSalePrice(bpOrderInfo.getAfterSalePrice());
+                vo.setAfterSaleTime(bpOrderInfo.getAfterSaleTime());
+                vo.setAfterSaleImage(bpOrderInfo.getAfterSaleImage());
+            }
+        }
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;
@@ -79,6 +97,33 @@ public class PurchaseOrderInfoController extends BaseController {
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
         ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
         util.exportExcel(response, list, "采购发货信息数据");
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:export')")
+    @Log(title = "采购发货详细信息", businessType = BusinessType.EXPORT)
+    @PostMapping("/export/detail")
+    public void exportDetail(HttpServletResponse response, PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
+        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        List<PurchaseOrderAllVo> listVo = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo).stream().map(PurchaseOrderAllVo::objToVo).collect(Collectors.toList());
+        for (PurchaseOrderAllVo vo : listVo) {
+            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
+            if (StringUtils.isNotNull(returnOrderInfo)) {
+                vo.setReturnStatus(returnOrderInfo.getReturnStatus());
+                vo.setReturnPrice(returnOrderInfo.getReturnPrice());
+                vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
+                vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+            }
+            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
+            if (StringUtils.isNotNull(bpOrderInfo)) {
+                vo.setBPPrice(bpOrderInfo.getBPPrice());
+                vo.setBPTime(bpOrderInfo.getBPTime());
+                vo.setAfterSalePrice(bpOrderInfo.getAfterSalePrice());
+                vo.setAfterSaleTime(bpOrderInfo.getAfterSaleTime());
+                vo.setAfterSaleImage(bpOrderInfo.getAfterSaleImage());
+            }
+        }
+        ExcelUtil<PurchaseOrderAllVo> util = new ExcelUtil<PurchaseOrderAllVo>(PurchaseOrderAllVo.class);
+        util.exportExcel(response, listVo, "采购发货信息数据");
     }
 
     /**
@@ -139,6 +184,7 @@ public class PurchaseOrderInfoController extends BaseController {
         ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
         util.importTemplateExcel(response, "采购订单数据");
     }
+
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
     @GetMapping("/getPurchaseOrderInfoCount")
     public AjaxResult getPurchaseOrderInfoCount(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {

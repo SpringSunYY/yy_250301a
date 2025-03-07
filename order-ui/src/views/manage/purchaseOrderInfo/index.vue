@@ -257,6 +257,17 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExportDetail"
+          v-hasPermi="['manage:purchaseOrderInfo:export']"
+        >导出详情
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="info"
           icon="el-icon-upload2"
           size="mini"
@@ -313,6 +324,191 @@
 
     <el-table v-loading="loading" :data="purchaseOrderInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand" label-width="100px">
+            <el-row :gutter="20">
+              <el-col :span="6">
+                <el-form-item label="编号">
+                  <span>{{ props.row.id }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购编号">
+                  <span>{{ props.row.orderNumber }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="销售类型">
+                  <span><dict-tag :options="dict.type.o_order_type" :value="props.row.orderType"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订单利润">
+                  <span>{{ props.row.orderProfit }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="利润率">
+                  <span>{{ toPercentage(props.row.orderProfitRate) }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购日期">
+                  <span>{{ parseTime(props.row.purchaseTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="店铺名称">
+                  <span>{{ props.row.storeName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="买家">
+                  <span>{{ props.row.buyerNumber }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="销售量">
+                  <span>{{ props.row.salesNumber }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="销售价">
+                  <span>{{ props.row.salesPrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购渠道分类">
+                    <span> <dict-tag :options="dict.type.o_purchase_channel_type"
+                                     :value="props.row.purchaseChannelType"
+                    /></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购渠道">
+                  <span>{{ props.row.purchaseChannelDetail }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购账号">
+                  <span>{{ props.row.purchaseAccount }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购订单编号">
+                  <span>{{ props.row.purchaseOrder }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="供应商名称">
+                  <span>{{ props.row.supplierName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购进价">
+                  <span>{{ props.row.purchasePrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="采购补价">
+                  <span>{{ props.row.purchasePremium }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="发货单号">
+                  <span>{{ props.row.shipmentsOrder }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="是否退货">
+                  <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasReturn"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="是否白嫖">
+                  <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasBP"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="退货状态">
+                  <span><dict-tag :options="dict.type.o_return_order_status" :value="props.row.returnStatus"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="客户退货金额">
+                  <span>{{ props.row.returnPrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="上家退款金额">
+                  <span>{{ props.row.lastReturnPrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="退货完成日期">
+                  <span>{{ parseTime(props.row.returnAccomplishTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="白嫖退款金额">
+                  <span>{{ props.row.bPPrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="白嫖退款日期">
+                  <span>{{ parseTime(props.row.bPTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="售后金额">
+                  <span>{{ props.row.afterSalePrice }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="售后日期">
+                  <span>{{ parseTime(props.row.afterSaleTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="部门">
+                  <span>{{ props.row.deptName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="创建人">
+                  <span>{{ props.row.userName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="创建时间">
+                  <span>{{ parseTime(props.row.createTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="更新人">
+                  <span>{{ props.row.updateBy }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="更新时间">
+                  <span>{{ parseTime(props.row.updateTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="售后凭证">
+                  <span><image-preview :src="props.row.afterSaleImage" :width="50" :height="50"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="备注">
+                  <span>{{ props.row.remark }}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
@@ -812,6 +1008,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/api/manage/returnOrderInfo'
 import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
+import { parseTime } from '../../../utils/ruoyi'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -971,6 +1168,7 @@ export default {
     this.getDeptList()
   },
   methods: {
+    parseTime,
     toPercentage,
     // 更多操作触发
     handleCommand(command, row) {
@@ -1284,6 +1482,12 @@ export default {
         ...this.queryParams
       }, `purchaseOrderInfo_${new Date().getTime()}.xlsx`)
     },
+    /** 导出按钮操作 */
+    handleExportDetail() {
+      this.download('manage/purchaseOrderInfo/export/detail', {
+        ...this.queryParams
+      }, `purchaseOrderInfo_${new Date().getTime()}.xlsx`)
+    },
     /** 导入按钮操作 */
     handleImport() {
       this.upload.title = '采购订单导入'
@@ -1312,3 +1516,19 @@ export default {
   }
 }
 </script>
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>
