@@ -34,9 +34,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="returnStatus != null  and returnStatus != ''"> and return_status = #{returnStatus}</if>
             <if test="params.beginReturnAccomplishTime != null and params.beginReturnAccomplishTime != '' and params.endReturnAccomplishTime != null and params.endReturnAccomplishTime != ''"> and return_accomplish_time between #{params.beginReturnAccomplishTime} and #{params.endReturnAccomplishTime}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}</if>
             <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
-            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="updateTime != null "> and DATE_FORMAT(update_time, '%Y-%m-%d') = #{updateTime}</if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
                 <foreach collection="deptIds" open="(" close=")" separator="," item="id">
@@ -71,10 +71,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="updateTime != null ">and DATE_FORMAT(update_time, '%Y-%m-%d') = #{updateTime}</if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
                 <foreach collection="deptIds" open="(" close=")" separator="," item="id">

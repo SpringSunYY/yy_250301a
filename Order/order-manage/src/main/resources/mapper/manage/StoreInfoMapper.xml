@@ -1,48 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lz.manage.mapper.StoreInfoMapper">
-    
+
     <resultMap type="StoreInfo" id="StoreInfoResult">
-        <result property="id"    column="id"    />
-        <result property="principalId"    column="principal_id"    />
-        <result property="operationId"    column="operation_id"    />
-        <result property="serviceId"    column="service_id"    />
-        <result property="storeName"    column="store_name"    />
-        <result property="status"    column="status"    />
-        <result property="storePassword"    column="store_password"    />
-        <result property="storePhone"    column="store_phone"    />
-        <result property="alipayAccount"    column="alipay_account"    />
-        <result property="alipayPassword"    column="alipay_password"    />
-        <result property="alipayPayPassword"    column="alipay_pay_password"    />
-        <result property="alipayPhone"    column="alipay_phone"    />
-        <result property="alipayAuthenticator"    column="alipay_authenticator"    />
-        <result property="alipayProvider"    column="alipay_provider"    />
-        <result property="serverIp"    column="server_ip"    />
-        <result property="serverCost"    column="server_cost"    />
-        <result property="serverPassword"    column="server_password"    />
-        <result property="channels"    column="channels"    />
-        <result property="openPrice"    column="open_price"    />
-        <result property="isCommissionSettlement"    column="is_commission_settlement"    />
-        <result property="departureTime"    column="departure_time"    />
-        <result property="businessLicenseName"    column="business_license_name"    />
-        <result property="legalPerson"    column="legal_person"    />
-        <result property="expireTime"    column="expire_time"    />
-        <result property="isOrderAccomplish"    column="is_order_accomplish"    />
-        <result property="isBonaFideRedemption"    column="is_bona_fide_redemption"    />
-        <result property="isBail"    column="is_bail"    />
-        <result property="isAlipay"    column="is_alipay"    />
-        <result property="deptId"    column="dept_id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="remark"    column="remark"    />
+        <result property="id" column="id"/>
+        <result property="principalId" column="principal_id"/>
+        <result property="operationId" column="operation_id"/>
+        <result property="serviceId" column="service_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="status" column="status"/>
+        <result property="storePassword" column="store_password"/>
+        <result property="storePhone" column="store_phone"/>
+        <result property="alipayAccount" column="alipay_account"/>
+        <result property="alipayPassword" column="alipay_password"/>
+        <result property="alipayPayPassword" column="alipay_pay_password"/>
+        <result property="alipayPhone" column="alipay_phone"/>
+        <result property="alipayAuthenticator" column="alipay_authenticator"/>
+        <result property="alipayProvider" column="alipay_provider"/>
+        <result property="serverIp" column="server_ip"/>
+        <result property="serverCost" column="server_cost"/>
+        <result property="serverPassword" column="server_password"/>
+        <result property="channels" column="channels"/>
+        <result property="openPrice" column="open_price"/>
+        <result property="isCommissionSettlement" column="is_commission_settlement"/>
+        <result property="departureTime" column="departure_time"/>
+        <result property="businessLicenseName" column="business_license_name"/>
+        <result property="legalPerson" column="legal_person"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="isOrderAccomplish" column="is_order_accomplish"/>
+        <result property="isBonaFideRedemption" column="is_bona_fide_redemption"/>
+        <result property="isBail" column="is_bail"/>
+        <result property="isAlipay" column="is_alipay"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
     <sql id="selectStoreInfoVo">
-        select id, principal_id, operation_id, service_id, store_name, status, store_password, store_phone, alipay_account, alipay_password, alipay_pay_password, alipay_phone, alipay_authenticator, alipay_provider, server_ip, server_cost, server_password, channels, open_price, is_commission_settlement, departure_time, business_license_name, legal_person, expire_time, is_order_accomplish, is_bona_fide_redemption, is_bail, is_alipay, dept_id, user_id, create_time, update_by, update_time, remark from tb_store_info
+        select id,
+               principal_id,
+               operation_id,
+               service_id,
+               store_name,
+               status,
+               store_password,
+               store_phone,
+               alipay_account,
+               alipay_password,
+               alipay_pay_password,
+               alipay_phone,
+               alipay_authenticator,
+               alipay_provider,
+               server_ip,
+               server_cost,
+               server_password,
+               channels,
+               open_price,
+               is_commission_settlement,
+               departure_time,
+               business_license_name,
+               legal_person,
+               expire_time,
+               is_order_accomplish,
+               is_bona_fide_redemption,
+               is_bail,
+               is_alipay,
+               dept_id,
+               user_id,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from tb_store_info
     </sql>
 
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
@@ -70,7 +104,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 #{isCommissionSettlement}
             </if>
             <if test="params.beginDepartureTime != null and params.beginDepartureTime != '' and params.endDepartureTime != null and params.endDepartureTime != ''">
-                and departure_time between #{params.beginDepartureTime} and #{params.endDepartureTime}
+                and DATE_FORMAT(departure_time, '%Y-%m-%d') between #{params.beginDepartureTime} and #{params.endDepartureTime}
             </if>
             <if test="businessLicenseName != null  and businessLicenseName != ''">and business_license_name like
                 concat('%', #{businessLicenseName}, '%')
@@ -79,7 +113,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 '%')
             </if>
             <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
-                and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+                and DATE_FORMAT(expire_time, '%Y-%m-%d') between #{params.beginExpireTime} and #{params.endExpireTime}
             </if>
             <if test="isOrderAccomplish != null  and isOrderAccomplish != ''">and is_order_accomplish =
                 #{isOrderAccomplish}
@@ -97,17 +131,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </where>
     </select>
-    
+
     <select id="selectStoreInfoById" parameterType="Long" resultMap="StoreInfoResult">
         <include refid="selectStoreInfoVo"/>
         where id = #{id}
@@ -149,7 +183,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="principalId != null">#{principalId},</if>
             <if test="operationId != null">#{operationId},</if>
@@ -184,7 +218,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateStoreInfo" parameterType="StoreInfo">
@@ -228,11 +262,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteStoreInfoById" parameterType="Long">
-        delete from tb_store_info where id = #{id}
+        delete
+        from tb_store_info
+        where id = #{id}
     </delete>
 
     <delete id="deleteStoreInfoByIds" parameterType="String">
-        delete from tb_store_info where id in 
+        delete from tb_store_info where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
             <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
-                and purchase_time between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
+                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
             </if>
             <if test="storeId != null ">and store_id = #{storeId}</if>
             <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
@@ -73,11 +73,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
@@ -109,7 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
             <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
-                and purchase_time between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
+                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
             </if>
             <if test="storeId != null ">and store_id = #{storeId}</if>
             <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
@@ -137,11 +137,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in

@@ -1,45 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lz.manage.mapper.ReplacementOrderInfoMapper">
-    
+
     <resultMap type="ReplacementOrderInfo" id="ReplacementOrderInfoResult">
-        <result property="id"    column="id"    />
-        <result property="orderNumber"    column="order_number"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="dateTime"    column="date_time"    />
-        <result property="wxNumber"    column="wx_number"    />
-        <result property="tbNumber"    column="tb_number"    />
-        <result property="actuallyPrice"    column="actually_price"    />
-        <result property="commission"    column="commission"    />
-        <result property="totalPrice"    column="total_price"    />
-        <result property="returnStatus"    column="return_status"    />
-        <result property="userId"    column="user_id"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="remark"    column="remark"    />
-        <result property="deptId"    column="dept_id"    />
+        <result property="id" column="id"/>
+        <result property="orderNumber" column="order_number"/>
+        <result property="storeId" column="store_id"/>
+        <result property="dateTime" column="date_time"/>
+        <result property="wxNumber" column="wx_number"/>
+        <result property="tbNumber" column="tb_number"/>
+        <result property="actuallyPrice" column="actually_price"/>
+        <result property="commission" column="commission"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="returnStatus" column="return_status"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="deptId" column="dept_id"/>
     </resultMap>
 
     <sql id="selectReplacementOrderInfoVo">
-        select id, order_number, store_id, date_time, wx_number, tb_number, actually_price, commission, total_price, return_status, user_id, create_time, update_by, update_time, remark, dept_id from tb_replacement_order_info
+        select id,
+               order_number,
+               store_id,
+               date_time,
+               wx_number,
+               tb_number,
+               actually_price,
+               commission,
+               total_price,
+               return_status,
+               user_id,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               dept_id
+        from tb_replacement_order_info
     </sql>
 
-    <select id="selectReplacementOrderInfoList" parameterType="ReplacementOrderInfo" resultMap="ReplacementOrderInfoResult">
+    <select id="selectReplacementOrderInfoList" parameterType="ReplacementOrderInfo"
+            resultMap="ReplacementOrderInfoResult">
         <include refid="selectReplacementOrderInfoVo"/>
-        <where>  
-            <if test="orderNumber != null  and orderNumber != ''"> and order_number like concat('%', #{orderNumber}, '%')</if>
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''"> and date_time between #{params.beginDateTime} and #{params.endDateTime}</if>
-            <if test="wxNumber != null  and wxNumber != ''"> and wx_number like concat('%', #{wxNumber}, '%')</if>
-            <if test="tbNumber != null  and tbNumber != ''"> and tb_number like concat('%', #{tbNumber}, '%')</if>
-            <if test="returnStatus != null  and returnStatus != ''"> and return_status = #{returnStatus}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
-            <if test="updateBy != null  and updateBy != ''"> and update_by like concat('%', #{updateBy}, '%')</if>
-            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+        <where>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
+                '%')
+            </if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
+                and DATE_FORMAT(date_time, '%Y-%m-%d') between #{params.beginDateTime} and #{params.endDateTime}
+            </if>
+            <if test="wxNumber != null  and wxNumber != ''">and wx_number like concat('%', #{wxNumber}, '%')</if>
+            <if test="tbNumber != null  and tbNumber != ''">and tb_number like concat('%', #{tbNumber}, '%')</if>
+            <if test="returnStatus != null  and returnStatus != ''">and return_status = #{returnStatus}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
                 <foreach collection="deptIds" open="(" close=")" separator="," item="id">
@@ -50,7 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ${params.dataScope}
         </where>
     </select>
-    
+
     <select id="selectReplacementOrderInfoById" parameterType="Long" resultMap="ReplacementOrderInfoResult">
         <include refid="selectReplacementOrderInfoVo"/>
         where id = #{id}
@@ -69,18 +94,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="storeId != null ">and store_id = #{storeId}</if>
             <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
-                and date_time between #{params.beginDateTime} and #{params.endDateTime}
+                and DATE_FORMAT(date_time, '%Y-%m-%d') between #{params.beginDateTime} and #{params.endDateTime}
             </if>
             <if test="wxNumber != null  and wxNumber != ''">and wx_number like concat('%', #{wxNumber}, '%')</if>
             <if test="tbNumber != null  and tbNumber != ''">and tb_number like concat('%', #{tbNumber}, '%')</if>
             <if test="returnStatus != null  and returnStatus != ''">and return_status = #{returnStatus}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
@@ -93,7 +118,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <insert id="insertReplacementOrderInfo" parameterType="ReplacementOrderInfo" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertReplacementOrderInfo" parameterType="ReplacementOrderInfo" useGeneratedKeys="true"
+            keyProperty="id">
         insert into tb_replacement_order_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderNumber != null and orderNumber != ''">order_number,</if>
@@ -111,7 +137,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="deptId != null">dept_id,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNumber != null and orderNumber != ''">#{orderNumber},</if>
             <if test="storeId != null">#{storeId},</if>
@@ -128,7 +154,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="deptId != null">#{deptId},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateReplacementOrderInfo" parameterType="ReplacementOrderInfo">
@@ -154,11 +180,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteReplacementOrderInfoById" parameterType="Long">
-        delete from tb_replacement_order_info where id = #{id}
+        delete
+        from tb_replacement_order_info
+        where id = #{id}
     </delete>
 
     <delete id="deleteReplacementOrderInfoByIds" parameterType="String">
-        delete from tb_replacement_order_info where id in 
+        delete from tb_replacement_order_info where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

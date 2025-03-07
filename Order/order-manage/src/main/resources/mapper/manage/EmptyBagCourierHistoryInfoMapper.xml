@@ -25,16 +25,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectEmptyBagCourierHistoryInfoVo"/>
         <where>
             <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
-                and date_time between #{params.beginDateTime} and #{params.endDateTime}
+                and DATE_FORMAT(date_time, '%Y-%m-%d') between #{params.beginDateTime} and #{params.endDateTime}
             </if>
             <if test="digest != null  and digest != ''">and digest like concat('%', #{digest}, '%')</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
@@ -57,16 +57,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from tb_empty_bag_courier_history_info
         <where>
             <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
-                and date_time between #{params.beginDateTime} and #{params.endDateTime}
+                and DATE_FORMAT(date_time, '%Y-%m-%d') between #{params.beginDateTime} and #{params.endDateTime}
             </if>
             <if test="digest != null  and digest != ''">and digest like concat('%', #{digest}, '%')</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
             <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
-                and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
             </if>
             <if test="deptIds != null and deptIds.size > 0">
                 and dept_id in
