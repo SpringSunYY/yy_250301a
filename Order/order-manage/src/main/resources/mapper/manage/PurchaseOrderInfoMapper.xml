@@ -88,6 +88,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </where>
+        order by purchase_time desc
     </select>
     
     <select id="selectPurchaseOrderInfoById" parameterType="Long" resultMap="PurchaseOrderInfoResult">

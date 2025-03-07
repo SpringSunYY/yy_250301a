@@ -140,6 +140,7 @@
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </where>
+        order by create_time desc
     </select>
 
     <select id="selectStoreInfoById" parameterType="Long" resultMap="StoreInfoResult">

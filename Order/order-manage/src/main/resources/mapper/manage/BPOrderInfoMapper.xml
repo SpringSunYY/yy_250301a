@@ -57,6 +57,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </where>
+        order by b_p_time desc
     </select>
     
     <select id="selectBPOrderInfoById" parameterType="Long" resultMap="BPOrderInfoResult">

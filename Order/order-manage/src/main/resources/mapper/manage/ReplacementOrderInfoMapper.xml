@@ -74,6 +74,7 @@
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </where>
+        order by date_time desc
     </select>
 
     <select id="selectReplacementOrderInfoById" parameterType="Long" resultMap="ReplacementOrderInfoResult">

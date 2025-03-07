@@ -722,6 +722,7 @@ export default {
       getReplacementOrderInfo(id).then(response => {
         this.form = response.data
         this.getUserInfoList()
+        this.getStoreInfoList()
         this.open = true
         this.title = '修改补单明细'
       })
