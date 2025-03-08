@@ -34,8 +34,10 @@ server:
 # 日志配置
 logging:
   level:
-    com.lz: debug
     org.springframework: warn
+    #关闭日志输出
+    com.lz: warn
+    org.mybatis: warn
 
 # 用户配置
 user:

@@ -322,9 +322,10 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="purchaseOrderInfoList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column type="expand">
+    <el-table v-loading="loading" :data="purchaseOrderInfoList" :border="true"
+              @selection-change="handleSelectionChange"
+    >
+      <el-table-column lable="详情" type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" label-width="100px">
             <el-row :gutter="20">
@@ -509,6 +510,7 @@
           </el-form>
         </template>
       </el-table-column>
+      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
@@ -605,7 +607,7 @@
       <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[25].visible"
                        prop="deptName"
       />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
