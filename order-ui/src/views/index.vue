@@ -1,6 +1,87 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="40" class="panel-group">
+      <el-col :xs="24" :sm="24" :lg="24" class="card-panel-col">
+        <el-date-picker
+          v-model="daterangePurchaseTime"
+          style="width: 240px;float: right;margin-bottom: 10px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          @change="changeDateRange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+      </el-col>
+      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-people">
+            <svg-icon icon-class="count" class-name="card-panel-icon"/>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">
+              订单总数
+            </div>
+            <count-to :start-val="0"
+                      :end-val="Number(Number(onlineOrderCount.orderCount)+Number(offlineOrderCount.orderCount))"
+                      :duration="2600"
+                      class="card-panel-num"
+            />
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-message">
+            <svg-icon icon-class="ratePrice" class-name="card-panel-icon"/>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">
+              订单利润
+            </div>
+            <count-to :start-val="0"
+                      :end-val="Number(Number(onlineOrderCount.orderProfitCount)+Number(offlineOrderCount.orderProfitCount))"
+                      :duration="3000"
+                      class="card-panel-num"
+            />
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-money">
+            <svg-icon icon-class="money" class-name="card-panel-icon"/>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">
+              销售价
+            </div>
+            <count-to :start-val="0"
+                      :end-val="Number(Number(onlineOrderCount.salesPriceCount)+Number(offlineOrderCount.salesPriceCount))"
+                      :duration="3200"
+                      class="card-panel-num"
+            />
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-shopping">
+            <svg-icon icon-class="shopping" class-name="card-panel-icon"/>
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">
+              订单销量
+            </div>
+            <count-to :start-val="0"
+                      :end-val="Number(Number(onlineOrderCount.salesNumberCount)+Number(offlineOrderCount.salesNumberCount))"
+                      :duration="3600"
+                      class="card-panel-num"
+            />
+          </div>
+        </div>
+      </el-col>
       <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
         <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-people">
@@ -73,7 +154,9 @@
             <div class="card-panel-text">
               线下订单总数
             </div>
-            <count-to :start-val="0" :end-val="Number(offlineOrderCount.orderCount)" :duration="2600" class="card-panel-num"/>
+            <count-to :start-val="0" :end-val="Number(offlineOrderCount.orderCount)" :duration="2600"
+                      class="card-panel-num"
+            />
           </div>
         </div>
       </el-col>
@@ -148,10 +231,7 @@ export default {
         xData: [],
         yData: []
       },
-      chartQuery: {
-        startTime: new Date(new Date().getTime() - 3600 * 1000 * 24 * 30), // 一周前
-        endTime: new Date() // 今天
-      },
+      chartQuery: {},
       onlineOrderCount: {
         orderCount: 0,
         orderProfitCount: 0,
@@ -159,7 +239,8 @@ export default {
         salesPriceCount: 0
       },
       queryParamsOnline: {
-        orderType: '1'
+        orderType: '1',
+        params: {}
       },
       offlineOrderCount: {
         orderCount: 0,
@@ -168,9 +249,60 @@ export default {
         salesPriceCount: 0
       },
       queryParamsOffline: {
-        orderType: '2'
+        orderType: '2',
+        params: {}
       },
-      user: {},
+      daterangePurchaseTime: (() => {
+        const today = new Date()
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 2)
+        return [firstDayOfMonth.toISOString().split('T')[0], today.toISOString().split('T')[0]]
+      })(),
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近半年',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一年',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
+      ,
+      user: {}
+      ,
       // 版本号
       version: '3.8.9'
     }
@@ -182,7 +314,20 @@ export default {
     this.getChartData()
   },
   methods: {
+    // 日期范围改变时触发
+    changeDateRange() {
+      this.getStaticData()
+    },
+    getStaticData() {
+      this.getOnlineCount()
+      this.getOfflineCount()
+      this.getChartData()
+    },
     getChartData() {
+      if (null != this.queryParamsOnline && '' != this.queryParamsOnline) {
+        this.chartQuery.startTime = this.daterangePurchaseTime[0]
+        this.chartQuery.endTime = this.daterangePurchaseTime[1]
+      }
       getPurchaseOrderStaticData(this.chartQuery).then(res => {
         if (res.code === 200) {
           const data = res.data
@@ -219,20 +364,23 @@ export default {
     }
     ,
     getOnlineCount() {
-      this.queryParamsOnline = {
-        orderType: '1',
-        deptId: this.user.deptId
+      if (null != this.queryParamsOnline && '' != this.queryParamsOnline) {
+        this.queryParamsOnline.params['beginPurchaseTime'] = this.daterangePurchaseTime[0]
+        this.queryParamsOnline.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
       }
+      this.queryParamsOnline.orderType = '1'
+      this.queryParamsOnline.deptId = this.user.deptId
       getPurchaseOrderInfoCount(this.queryParamsOnline).then(response => {
         this.onlineOrderCount = response.data
       })
-    }
-    ,
+    },
     getOfflineCount() {
-      this.queryParamsOffline = {
-        orderType: '2',
-        deptId: this.user.deptId
+      if (null != this.queryParamsOffline && '' != this.queryParamsOffline) {
+        this.queryParamsOffline.params['beginPurchaseTime'] = this.daterangePurchaseTime[0]
+        this.queryParamsOffline.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
       }
+      this.queryParamsOffline.orderType = '2'
+      this.queryParamsOffline.deptId = this.user.deptId
       getPurchaseOrderInfoCount(this.queryParamsOffline).then(response => {
         this.offlineOrderCount = response.data
       })

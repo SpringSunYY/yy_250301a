@@ -438,7 +438,35 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     @Override
     @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     public PurchaseOrderInfoCountVo getPurchaseOrderInfoCount(PurchaseOrderInfo purchaseOrderInfo) {
-        return purchaseOrderInfoMapper.getPurchaseOrderInfoCount(purchaseOrderInfo);
+        PurchaseOrderInfoCountVo purchaseOrderInfoCount = purchaseOrderInfoMapper.getPurchaseOrderInfoCount(purchaseOrderInfo);
+        if (StringUtils.isNull(purchaseOrderInfoCount)) {
+            purchaseOrderInfoCount = new PurchaseOrderInfoCountVo();
+            purchaseOrderInfoCount.setOrderProfitCount(new BigDecimal(0));
+            purchaseOrderInfoCount.setSalesNumberCount(0L);
+            purchaseOrderInfoCount.setSalesPriceCount(new BigDecimal("0"));
+            purchaseOrderInfoCount.setPurchasePriceCount(new BigDecimal("0"));
+            purchaseOrderInfoCount.setPurchasePremiumCount(new BigDecimal("0"));
+            purchaseOrderInfoCount.setOrderCount(0L);
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getOrderProfitCount())) {
+            purchaseOrderInfoCount.setOrderProfitCount(new BigDecimal(0));
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getSalesNumberCount())) {
+            purchaseOrderInfoCount.setSalesNumberCount(0L);
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getSalesPriceCount())) {
+            purchaseOrderInfoCount.setSalesPriceCount(new BigDecimal("0"));
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getPurchasePriceCount())) {
+            purchaseOrderInfoCount.setPurchasePriceCount(new BigDecimal("0"));
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getPurchasePremiumCount())) {
+            purchaseOrderInfoCount.setPurchasePremiumCount(new BigDecimal("0"));
+        }
+        if (StringUtils.isNull(purchaseOrderInfoCount.getOrderCount())) {
+            purchaseOrderInfoCount.setOrderCount(0L);
+        }
+        return purchaseOrderInfoCount;
     }
 
 }
