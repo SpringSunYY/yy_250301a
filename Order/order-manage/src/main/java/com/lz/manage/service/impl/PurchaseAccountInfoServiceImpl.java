@@ -118,6 +118,10 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         if (StringUtils.isNull(purchaseAccountInfo.getUserId())) {
             purchaseAccountInfo.setUserId(SecurityUtils.getUserId());
         }
+        PurchaseAccountInfo purchaseAccount = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
+        if (StringUtils.isNotNull(purchaseAccount)) {
+            throw new ServiceException("账号已存在!!!");
+        }
         checkPurchaseAccountInfo(purchaseAccountInfo);
         purchaseAccountInfo.setCreateTime(DateUtils.getNowDate());
         return purchaseAccountInfoMapper.insertPurchaseAccountInfo(purchaseAccountInfo);
@@ -147,6 +151,10 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
      */
     @Override
     public int updatePurchaseAccountInfo(PurchaseAccountInfo purchaseAccountInfo) {
+        PurchaseAccountInfo purchaseAccount = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
+        if (StringUtils.isNotNull(purchaseAccount) && !purchaseAccount.getPurchaseAccount().equals(purchaseAccountInfo.getPurchaseAccount())) {
+            throw new ServiceException("账号已存在!!!");
+        }
         checkPurchaseAccountInfo(purchaseAccountInfo);
         purchaseAccountInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseAccountInfo.setUpdateTime(DateUtils.getNowDate());

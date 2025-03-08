@@ -118,6 +118,7 @@ public class PurchaseOrderInfo implements Serializable {
     private String purchaseChannelsName;
     @Excel(name = "采购渠道",prompt = "采购渠道编号")
     private Long purchaseChannelsId;
+    @TableField(exist = false)
     private List<Long> purchaseChannelsIds;
 
     /**

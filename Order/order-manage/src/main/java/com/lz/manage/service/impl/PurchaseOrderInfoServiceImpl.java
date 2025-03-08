@@ -391,6 +391,15 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             if (StringUtils.isEmpty(info.getUserName())) {
                 return StringUtils.format("第{}行创建人不能为空", index);
             }
+            if (StringUtils.isEmpty(info.getPurchaseAccount())) {
+                return StringUtils.format("第{}行采购账号不能为空", index);
+            }
+            if (StringUtils.isEmpty(info.getPurchaseChannelType())) {
+                return StringUtils.format("第{}行采购渠道分类不能为空", index);
+            }
+            if (StringUtils.isNull(info.getPurchaseChannelsId())) {
+                return StringUtils.format("第{}行采购渠道编号不能为空", index);
+            }
             //填入默认值
             if (StringUtils.isEmpty(info.getHasBP())) {
                 info.setHasBP(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
@@ -429,13 +438,27 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
                 return StringUtils.format("第{}行创建人不存在", index);
             }
             info.setUserId(user.getUserId());
-            if (StringUtils.isNotEmpty(info.getPurchaseAccount())) {
-                PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoByAccount(info.getPurchaseAccount());
-                if (StringUtils.isNull(purchaseAccountInfo)) {
-                    return StringUtils.format("第{}行填入了采购账号信息，但是账号不存在", index);
-                }
-                info.setPurchaseAccountId(purchaseAccountInfo.getId());
+
+            PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoByAccount(info.getPurchaseAccount());
+            if (StringUtils.isNull(purchaseAccountInfo)) {
+                return StringUtils.format("第{}行填入了采购账号信息，但是账号不存在", index);
             }
+            if (!purchaseAccountInfo.getAccountType().equals(info.getPurchaseChannelType())) {
+                throw new ServiceException("渠道类型与账号类型不一致!!!");
+            }
+
+            PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(info.getPurchaseChannelsId());
+            if (StringUtils.isNull(purchaseChannelInfo)) {
+                throw new ServiceException("采购渠道不存在！！！");
+            }
+            if (!purchaseChannelInfo.getChannelType().equals(purchaseAccountInfo.getAccountType())) {
+                throw new ServiceException("渠道类型与账号类型不一致!!!");
+            }
+            if (!purchaseChannelInfo.getChannelType().equals(info.getPurchaseChannelType())) {
+                throw new ServiceException("渠道类型与订单类型不一致!!!");
+            }
+            info.setPurchaseAccountId(purchaseAccountInfo.getId());
+
             this.getOrderProfit(info, new ReturnOrderInfo(), new BPOrderInfo());
         }
         Boolean execute = transactionTemplate.execute(item -> {

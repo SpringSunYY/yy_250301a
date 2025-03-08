@@ -136,6 +136,12 @@
         sum(order_profit) as orderProfitCount,
         count(id) as orderCount from tb_purchase_order_info
         <where>
+            <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+                and purchase_channels_id in
+                <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
             <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
                 '%')
             </if>

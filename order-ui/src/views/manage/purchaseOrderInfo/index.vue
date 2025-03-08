@@ -1531,6 +1531,7 @@ export default {
       this.daterangeCreateTime = []
       this.daterangeUpdateTime = []
       this.purchaseChannelQuery = {}
+      this.queryParams.purchaseChannelsId = null
       this.getChannelsTreeselect()
       this.purchaseAccountInfoQueryParams = {}
       this.getPurchaseAccountInfoList()

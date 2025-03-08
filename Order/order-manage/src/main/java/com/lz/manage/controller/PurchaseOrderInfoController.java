@@ -200,6 +200,9 @@ public class PurchaseOrderInfoController extends BaseController {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
             purchaseOrderInfo.setDeptIds(deptIds);
         }
+        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchaseChannelsId())) {
+            purchaseOrderInfo.setPurchaseChannelsIds(channelInfoService.selectPurchaseChannelInfoReturnIds(purchaseOrderInfo.getPurchaseChannelsId()));
+        }
         PurchaseOrderInfoCountVo purchaseOrderInfoCountVo = purchaseOrderInfoService.getPurchaseOrderInfoCount(purchaseOrderInfo);
         return success(purchaseOrderInfoCountVo);
     }
