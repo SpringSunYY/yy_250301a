@@ -206,6 +206,19 @@
                        prop="storeName"
       />
       <el-table-column label="退货状态" align="center" v-if="columns[4].visible" prop="returnStatus">
+        <template slot="header">
+          <div class="custom-header">
+            <span>退货状态</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="退货状态 【有退货标退货，没退货不用标】"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_return_order_status" :value="scope.row.returnStatus"/>
         </template>
@@ -406,7 +419,7 @@ export default {
         { key: 5, label: '客户退货金额', visible: true },
         { key: 6, label: '上家退款金额', visible: true },
         { key: 7, label: '退货完成日期', visible: true },
-        { key: 8, label: '客服', visible: false },
+        { key: 8, label: '客服', visible: true },
         { key: 9, label: '创建时间', visible: false },
         { key: 10, label: '更新人', visible: false },
         { key: 11, label: '更新时间', visible: false },

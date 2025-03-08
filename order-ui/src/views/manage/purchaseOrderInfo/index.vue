@@ -512,7 +512,21 @@
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>订单编号</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="线下的订单直接用发货快递单号"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="销售类型" align="center" v-if="columns[2].visible" prop="orderType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_order_type" :value="scope.row.orderType"/>
@@ -520,10 +534,37 @@
       </el-table-column>
       <el-table-column label="订单利润" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
                        prop="orderProfit"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>订单利润</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="销售价格-采购进价-客户退货金额-客户白仅退款金额-售后补偿金额-采购补价+上家退款金额"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="利润率" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
                        prop="orderProfitRate"
       >
+        <template slot="header">
+          <div class="custom-header">
+            <span>利润率</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="利润/销售价格"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
         <template slot-scope="scope">
           <span>{{ toPercentage(scope.row.orderProfitRate) }}</span>
         </template>
@@ -538,13 +579,41 @@
       />
       <el-table-column label="买家" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
                        prop="buyerNumber"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>买家</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="线上买家旺旺（id）/线下客户名称"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="销售量" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
                        prop="salesNumber"
       />
       <el-table-column label="销售价" :show-overflow-tooltip="true" align="center" v-if="columns[9].visible"
                        prop="salesPrice"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>销售价</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="销售价 【含运费】"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="采购渠道分类" align="center" v-if="columns[10].visible" prop="purchaseChannelType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_purchase_channel_type" :value="scope.row.purchaseChannelType"/>
@@ -569,7 +638,21 @@
       />
       <el-table-column label="采购补价" :show-overflow-tooltip="true" align="center" v-if="columns[16].visible"
                        prop="purchasePremium"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>采购补价</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="采购补价（运费或者加收等【支出+，收入-}】）"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="发货单号" :show-overflow-tooltip="true" align="center" v-if="columns[17].visible"
                        prop="shipmentsOrder"
       />
