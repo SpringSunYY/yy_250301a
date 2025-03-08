@@ -38,6 +38,25 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="客服" prop="userId">
+        <el-select
+          v-model="queryParams.userId"
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectServiceUserInfoList"
+          :loading="serviceUserLoading"
+        >
+          <el-option
+            v-for="item in serviceUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="退货状态" prop="returnStatus">
         <el-select v-model="queryParams.returnStatus" placeholder="请选择退货状态" clearable>
           <el-option
@@ -204,7 +223,7 @@
           <span>{{ parseTime(scope.row.returnAccomplishTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[9].visible" prop="createTime" width="180">
@@ -345,6 +364,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { getToken } from '@/utils/auth'
 import { listStoreInfo } from '@/api/manage/storeInfo'
+import { allocatedUserList } from '@/api/system/role'
 
 export default {
   name: 'ReturnOrderInfo',
@@ -352,6 +372,15 @@ export default {
   dicts: ['o_return_order_status', 'o_order_type'],
   data() {
     return {
+      //客服相关信息
+      serviceUserInfoList: [],
+      serviceUserLoading: false,
+      serviceUserQueryParams: {
+        userName: '',
+        roleId: 102,
+        pageNum: 1,
+        pageSize: 100
+      },
       returnOrderCount: {
         orderCount: 0,
         returnPriceCount: 0,
@@ -362,7 +391,7 @@ export default {
       storeInfoLoading: false,
       storeInfoQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         storeName: ''
       },
       //部门相关信息
@@ -377,7 +406,7 @@ export default {
         { key: 5, label: '客户退货金额', visible: true },
         { key: 6, label: '上家退款金额', visible: true },
         { key: 7, label: '退货完成日期', visible: true },
-        { key: 8, label: '创建人', visible: false },
+        { key: 8, label: '客服', visible: false },
         { key: 9, label: '创建时间', visible: false },
         { key: 10, label: '更新人', visible: false },
         { key: 11, label: '更新时间', visible: false },
@@ -435,7 +464,7 @@ export default {
           { required: true, message: '退货状态不能为空', trigger: 'change' }
         ],
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
@@ -459,8 +488,44 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getStoreInfoList()
+    this.getServiceUserInfoList()
   },
   methods: {
+    /**
+     * 获取客服用户列表推荐
+     * @param query
+     */
+    selectServiceUserInfoList(query) {
+      if (query !== '') {
+        this.serviceUserLoading = true
+        this.serviceUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getServiceUserInfoList()
+        }, 200)
+      } else {
+        this.serviceUserInfoList = []
+        this.serviceUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取客服用户信息列表
+     */
+    getServiceUserInfoList() {
+      //添加查询参数
+      if (this.form.userId != null) {
+        this.serviceUserQueryParams.userId = this.form.serviceId
+      } else {
+        this.serviceUserQueryParams.userId = null
+      }
+      if (this.serviceUserQueryParams.userName !== '') {
+        this.serviceUserQueryParams.userId = null
+      }
+      allocatedUserList(this.serviceUserQueryParams).then(res => {
+        this.serviceUserInfoList = res?.rows
+        this.serviceUserLoading = false
+      })
+    },
     /**
      * 获取店铺列表推荐
      * @param query

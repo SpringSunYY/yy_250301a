@@ -38,6 +38,25 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="客服" prop="userId">
+        <el-select
+          v-model="queryParams.userId"
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectServiceUserInfoList"
+          :loading="serviceUserLoading"
+        >
+          <el-option
+            v-for="item in serviceUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="退款日期">
         <el-date-picker
           v-model="daterangeBPTime"
@@ -207,7 +226,7 @@
           <image-preview :src="scope.row.afterSaleImage" :width="50" :height="50"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[9].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[9].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[10].visible" prop="createTime" width="180">
@@ -349,6 +368,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { listStoreInfo } from '@/api/manage/storeInfo'
 import { getToken } from '@/utils/auth'
+import { allocatedUserList } from '@/api/system/role'
 
 export default {
   name: 'BPOrderInfo',
@@ -366,8 +386,17 @@ export default {
       storeInfoLoading: false,
       storeInfoQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         storeName: ''
+      },
+      //客服相关信息
+      serviceUserInfoList: [],
+      serviceUserLoading: false,
+      serviceUserQueryParams: {
+        userName: '',
+        roleId: 102,
+        pageNum: 1,
+        pageSize: 100
       },
       //部门相关信息
       deptOptions: [],
@@ -382,7 +411,7 @@ export default {
         { key: 6, label: '售后金额', visible: true },
         { key: 7, label: '售后日期', visible: true },
         { key: 8, label: '售后凭证', visible: true },
-        { key: 9, label: '创建人', visible: false },
+        { key: 9, label: '客服', visible: true },
         { key: 10, label: '创建时间', visible: false },
         { key: 11, label: '更新人', visible: false },
         { key: 12, label: '更新时间', visible: false },
@@ -441,7 +470,7 @@ export default {
           { required: true, message: '类型不能为空', trigger: 'change' }
         ],
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
@@ -465,8 +494,44 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getStoreInfoList()
+    this.getServiceUserInfoList()
   },
   methods: {
+    /**
+     * 获取客服用户列表推荐
+     * @param query
+     */
+    selectServiceUserInfoList(query) {
+      if (query !== '') {
+        this.serviceUserLoading = true
+        this.serviceUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getServiceUserInfoList()
+        }, 200)
+      } else {
+        this.serviceUserInfoList = []
+        this.serviceUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取客服用户信息列表
+     */
+    getServiceUserInfoList() {
+      //添加查询参数
+      if (this.form.userId != null) {
+        this.serviceUserQueryParams.userId = this.form.serviceId
+      } else {
+        this.serviceUserQueryParams.userId = null
+      }
+      if (this.serviceUserQueryParams.userName !== '') {
+        this.serviceUserQueryParams.userId = null
+      }
+      allocatedUserList(this.serviceUserQueryParams).then(res => {
+        this.serviceUserInfoList = res?.rows
+        this.serviceUserLoading = false
+      })
+    },
     /**
      * 获取店铺列表推荐
      * @param query

@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
+      <el-form-item label="客服" prop="userId">
         <el-select
           v-model="queryParams.userId"
           filterable
@@ -135,7 +135,7 @@
       <el-table-column label="采购账号" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
                        prop="purchaseAccount"
       />
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[4].visible" prop="createTime" width="180">
@@ -196,7 +196,7 @@
         <el-form-item label="采购账号" prop="purchaseAccount">
           <el-input v-model="form.purchaseAccount" placeholder="请输入采购账号"/>
         </el-form-item>
-        <el-form-item label="创建人" prop="userId">
+        <el-form-item label="客服" prop="userId">
           <el-select
             v-model="form.userId"
             filterable
@@ -284,14 +284,14 @@ export default {
         userName: '',
         roleId: 102,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },
         { key: 1, label: '名称', visible: true },
         { key: 2, label: '采购账号', visible: true },
-        { key: 3, label: '创建人', visible: true },
+        { key: 3, label: '客服', visible: true },
         { key: 4, label: '创建时间', visible: true },
         { key: 5, label: '更新人', visible: false },
         { key: 6, label: '更新时间', visible: false },
@@ -340,7 +340,7 @@ export default {
           { required: true, message: '采购账号不能为空', trigger: 'blur' }
         ],
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
@@ -364,6 +364,7 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getUserInfoList()
   },
   methods: {
     /** 查询部门列表 */

@@ -12,7 +12,7 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
+      <el-form-item label="客服" prop="userId">
         <el-select
           v-model="queryParams.userId"
           filterable
@@ -151,7 +151,7 @@
       <el-table-column label="金额" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
                        prop="price"
       />
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[5].visible" prop="createTime" width="180">
@@ -221,7 +221,7 @@
         <el-form-item label="金额" prop="price">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.price" placeholder="请输入金额"/>
         </el-form-item>
-        <el-form-item label="创建人" prop="userId">
+        <el-form-item label="客服" prop="userId">
           <el-select
             v-model="form.userId"
             filterable
@@ -312,7 +312,7 @@ export default {
         userName: '',
         roleId: 102,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //部门相关信息
       deptOptions: [],
@@ -322,7 +322,7 @@ export default {
         { key: 1, label: '日期', visible: true },
         { key: 2, label: '摘要', visible: true },
         { key: 3, label: '金额', visible: true },
-        { key: 4, label: '创建人', visible: true },
+        { key: 4, label: '客服', visible: true },
         { key: 5, label: '创建时间', visible: false },
         { key: 6, label: '更新人', visible: false },
         { key: 7, label: '更新时间', visible: false },
@@ -370,13 +370,13 @@ export default {
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         dateTime: [
           { required: true, message: '日期不能为空', trigger: 'blur' }
         ],
         digest: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
@@ -400,6 +400,7 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getUserInfoList()
   },
   methods: {
     /**

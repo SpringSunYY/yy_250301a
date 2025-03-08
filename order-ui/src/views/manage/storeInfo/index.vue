@@ -233,14 +233,14 @@
           </el-col>
         </el-row>
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入创建人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="创建人" prop="userId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.userId"-->
+<!--          placeholder="请输入创建人"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -827,7 +827,7 @@ export default {
         userName: '',
         roleId: 100,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //运营相关信息
       operationUserInfoList: [],
@@ -836,7 +836,7 @@ export default {
         userName: '',
         roleId: 101,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //客服相关信息
       serviceUserInfoList: [],
@@ -845,7 +845,7 @@ export default {
         userName: '',
         roleId: 102,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //表格展示列
       columns: [
@@ -988,6 +988,9 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getPrincipalUserInfoList()
+    this.getServiceUserInfoList()
+    this.getOperationUserInfoList()
   },
   methods: {
     /** 查询部门列表 */

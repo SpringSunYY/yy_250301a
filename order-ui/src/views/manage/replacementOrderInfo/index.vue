@@ -65,7 +65,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
+      <el-form-item label="客服" prop="userId">
         <el-select
           v-model="queryParams.userId"
           filterable
@@ -237,7 +237,7 @@
           <dict-tag :options="dict.type.o_replacement_status" :value="scope.row.returnStatus"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[11].visible" prop="createTime" width="180">
@@ -350,7 +350,7 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="创建人" prop="userId">
+        <el-form-item label="客服" prop="userId">
           <el-select
             v-model="form.userId"
             filterable
@@ -443,7 +443,7 @@ export default {
       storeInfoLoading: false,
       storeInfoQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         storeName: ''
       },
       //用户相关信息
@@ -453,7 +453,7 @@ export default {
         userName: '',
         roleId: 102,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //部门相关信息
       deptOptions: [],
@@ -469,7 +469,7 @@ export default {
         { key: 7, label: '佣金', visible: true },
         { key: 8, label: '合计金额', visible: true },
         { key: 9, label: '返款状态', visible: true },
-        { key: 10, label: '创建人', visible: false },
+        { key: 10, label: '客服', visible: false },
         { key: 11, label: '创建时间', visible: false },
         { key: 12, label: '更新人', visible: false },
         { key: 13, label: '更新时间', visible: false },
@@ -524,7 +524,7 @@ export default {
           { required: true, message: '采购编号不能为空', trigger: 'blur' }
         ],
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }

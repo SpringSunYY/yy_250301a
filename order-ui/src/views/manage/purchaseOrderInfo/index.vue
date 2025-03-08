@@ -140,7 +140,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建人" prop="userId">
+      <el-form-item label="客服" prop="userId">
         <el-select
           v-model="queryParams.userId"
           filterable
@@ -475,7 +475,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="创建人">
+                <el-form-item label="客服">
                   <span>{{ props.row.userName }}</span>
                 </el-form-item>
               </el-col>
@@ -583,7 +583,7 @@
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.hasBP"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[20].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[20].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[21].visible" prop="createTime" width="180">
@@ -782,7 +782,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="创建人" prop="userId">
+            <el-form-item label="客服" prop="userId">
               <el-select
                 v-model="form.userId"
                 filterable
@@ -1034,7 +1034,7 @@ export default {
       purchaseAccountInfoLoading: false,
       purchaseAccountInfoQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         purchaseAccount: ''
       },
       //店铺信息
@@ -1042,7 +1042,7 @@ export default {
       storeInfoLoading: false,
       storeInfoQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         storeName: ''
       },
       //客服相关信息
@@ -1052,7 +1052,7 @@ export default {
         userName: '',
         roleId: 102,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 100
       },
       //表格展示列
       columns: [
@@ -1076,7 +1076,7 @@ export default {
         { key: 17, label: '发货单号', visible: false },
         { key: 18, label: '是否退货', visible: false },
         { key: 19, label: '是否白嫖', visible: false },
-        { key: 20, label: '创建人', visible: true },
+        { key: 20, label: '客服', visible: true },
         { key: 21, label: '创建时间', visible: false },
         { key: 22, label: '更新人', visible: false },
         { key: 23, label: '更新时间', visible: false },
@@ -1141,7 +1141,7 @@ export default {
           { required: true, message: '销售类型不能为空', trigger: 'change' }
         ],
         userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '创建时间不能为空', trigger: 'blur' }
@@ -1166,6 +1166,8 @@ export default {
     this.getList()
     this.getStoreInfoList()
     this.getDeptList()
+    this.getPurchaseAccountInfoList()
+    this.getServiceUserInfoList()
   },
   methods: {
     parseTime,
@@ -1327,7 +1329,7 @@ export default {
      */
     getServiceUserInfoList() {
       //添加查询参数
-      if (this.form.serviceId != null) {
+      if (this.form.userId != null) {
         this.serviceUserQueryParams.userId = this.form.serviceId
       } else {
         this.serviceUserQueryParams.userId = null
