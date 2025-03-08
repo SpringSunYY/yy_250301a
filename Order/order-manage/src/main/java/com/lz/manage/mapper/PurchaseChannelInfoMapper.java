@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.PurchaseChannelInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 采购渠道信息Mapper接口
@@ -59,4 +60,6 @@ public interface PurchaseChannelInfoMapper extends BaseMapper<PurchaseChannelInf
      * @return 结果
      */
     public int deletePurchaseChannelInfoByIds(Long[] ids);
+
+    List<Long> selectPurchaseChannelInfoReturnIds(@Param("purchaseChannelsId") Long purchaseChannelsId);
 }

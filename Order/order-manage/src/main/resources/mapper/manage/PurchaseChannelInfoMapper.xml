@@ -55,11 +55,18 @@
         <include refid="selectPurchaseChannelInfoVo"/>
         where id = #{id}
     </select>
+    <select id="selectPurchaseChannelInfoReturnIds" resultType="java.lang.Long">
+        SELECT id
+        FROM tb_purchase_channel_info
+        WHERE id = #{purchaseChannelsId}
+           OR FIND_IN_SET(#{purchaseChannelsId}, ancestors);
+    </select>
 
     <insert id="insertPurchaseChannelInfo" parameterType="PurchaseChannelInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_purchase_channel_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="parentId != null">parent_id,</if>
+            <if test="ancestors != null and ancestors != ''">ancestors,</if>
             <if test="channelName != null and channelName != ''">channel_name,</if>
             <if test="channelType != null and channelType != ''">channel_type,</if>
             <if test="orderNum != null">order_num,</if>
@@ -71,6 +78,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="parentId != null">#{parentId},</if>
+            <if test="ancestors != null and ancestors != ''">#{ancestors},</if>
             <if test="channelName != null and channelName != ''">#{channelName},</if>
             <if test="channelType != null and channelType != ''">#{channelType},</if>
             <if test="orderNum != null">#{orderNum},</if>
@@ -85,6 +93,7 @@
     <update id="updatePurchaseChannelInfo" parameterType="PurchaseChannelInfo">
         update tb_purchase_channel_info
         <trim prefix="SET" suffixOverrides=",">
+            <if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
             <if test="parentId != null">parent_id = #{parentId},</if>
             <if test="channelName != null and channelName != ''">channel_name = #{channelName},</if>
             <if test="channelType != null and channelType != ''">channel_type = #{channelType},</if>

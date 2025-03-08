@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.service.IPurchaseChannelInfoService;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.annotation.Resource;
@@ -47,6 +48,9 @@ public class PurchaseAccountInfoController extends BaseController
     @Resource
     private ISysDeptService deptService;
 
+    @Resource
+    private IPurchaseChannelInfoService channelInfoService;
+
     /**
      * 查询采购账号信息列表
      */
@@ -57,6 +61,9 @@ public class PurchaseAccountInfoController extends BaseController
         PurchaseAccountInfo purchaseAccountInfo = PurchaseAccountInfoQuery.queryToObj(purchaseAccountInfoQuery);
         if (StringUtils.isNotNull(purchaseAccountInfo.getDeptId())) {
             purchaseAccountInfo.setDeptIds(deptService.selectDeptByIdReturnIds(purchaseAccountInfo.getDeptId()));
+        }
+        if (StringUtils.isNotNull(purchaseAccountInfo.getPurchaseChannelsId())) {
+            purchaseAccountInfo.setPurchaseChannelsIds(channelInfoService.selectPurchaseChannelInfoReturnIds(purchaseAccountInfo.getPurchaseChannelsId()));
         }
         startPage();
         List<PurchaseAccountInfo> list = purchaseAccountInfoService.selectPurchaseAccountInfoList(purchaseAccountInfo);

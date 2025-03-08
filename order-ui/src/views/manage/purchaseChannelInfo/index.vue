@@ -95,25 +95,26 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column label="父级" :show-overflow-tooltip="true" v-if="columns[0].visible" prop="parentId" />
-      <el-table-column label="名称" align="center" :show-overflow-tooltip="true" v-if="columns[1].visible" prop="channelName" />
-      <el-table-column label="渠道类型" align="center" v-if="columns[2].visible" prop="channelType">
+      <el-table-column label="编号" align="center" :show-overflow-tooltip="true" v-if="columns[1].visible" prop="id" />
+      <el-table-column label="名称" align="center" :show-overflow-tooltip="true" v-if="columns[2].visible" prop="channelName" />
+      <el-table-column label="渠道类型" align="center" v-if="columns[3].visible" prop="channelType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_purchase_channel_type" :value="scope.row.channelType"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" align="center" :show-overflow-tooltip="true" v-if="columns[3].visible" prop="userName" />
-      <el-table-column label="创建时间" align="center" v-if="columns[4].visible" prop="createTime" width="180">
+      <el-table-column label="创建人" align="center" :show-overflow-tooltip="true" v-if="columns[4].visible" prop="userName" />
+      <el-table-column label="创建时间" align="center" v-if="columns[5].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" align="center" :show-overflow-tooltip="true" v-if="columns[5].visible" prop="updateBy" />
-      <el-table-column label="更新时间" align="center" v-if="columns[6].visible" prop="updateTime" width="180">
+      <el-table-column label="更新人" align="center" :show-overflow-tooltip="true" v-if="columns[6].visible" prop="updateBy" />
+      <el-table-column label="更新时间" align="center" v-if="columns[7].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" :show-overflow-tooltip="true" v-if="columns[7].visible" prop="remark" />
+      <el-table-column label="备注" align="center" :show-overflow-tooltip="true" v-if="columns[8].visible" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -161,7 +162,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="排序" prop="orderNum">
-          <el-input-number :min="0"  v-model="form.orderNum" placeholder="请输入排序" />
+          <el-input-number :min="0" :step="1"  v-model="form.orderNum" placeholder="请输入排序" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -191,13 +192,14 @@ export default {
       //表格展示列
       columns: [
         { key: 0, label: '父级', visible: true },
-        { key: 1, label: '名称', visible: true },
-        { key: 2, label: '渠道类型', visible: true },
-        { key: 3, label: '创建人', visible: true },
-        { key: 4, label: '创建时间', visible: true },
-        { key: 5, label: '更新人', visible: false },
-        { key: 6, label: '更新时间', visible: false },
-        { key: 7, label: '备注', visible: false },
+        { key: 1, label: '编号', visible: false },
+        { key: 2, label: '名称', visible: true },
+        { key: 3, label: '渠道类型', visible: true },
+        { key: 4, label: '创建人', visible: true },
+        { key: 5, label: '创建时间', visible: true },
+        { key: 6, label: '更新人', visible: false },
+        { key: 7, label: '更新时间', visible: false },
+        { key: 8, label: '备注', visible: false },
       ],
       // 遮罩层
       loading: true,

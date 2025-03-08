@@ -23,6 +23,12 @@ public class PurchaseAccountInfoInsert implements Serializable
     /** 名称 */
     private String nickName;
 
+    /** 账号类型(1=线上 2=线下) */
+    private String accountType;
+
+    /** 采购渠道 */
+    private Long purchaseChannelsId;
+
     /** 采购账号 */
     private String purchaseAccount;
 

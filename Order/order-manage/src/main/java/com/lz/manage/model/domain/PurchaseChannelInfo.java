@@ -69,6 +69,9 @@ public class PurchaseChannelInfo implements Serializable
     @Excel(name = "备注")
     private String remark;
 
+    /** 祖级列表 */
+    private String ancestors;
+
     /** 请求参数 */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)

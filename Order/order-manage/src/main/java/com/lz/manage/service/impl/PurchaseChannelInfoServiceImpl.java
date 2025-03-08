@@ -82,6 +82,7 @@ public class PurchaseChannelInfoServiceImpl extends ServiceImpl<PurchaseChannelI
     public int insertPurchaseChannelInfo(PurchaseChannelInfo purchaseChannelInfo) {
         purchaseChannelInfo.setUserId(SecurityUtils.getUserId());
         purchaseChannelInfo.setCreateTime(DateUtils.getNowDate());
+        purchaseChannelInfo.setAncestors(getChannelAncestors(purchaseChannelInfo.getParentId(), new StringBuffer()).toString());
         return purchaseChannelInfoMapper.insertPurchaseChannelInfo(purchaseChannelInfo);
     }
 
@@ -95,7 +96,34 @@ public class PurchaseChannelInfoServiceImpl extends ServiceImpl<PurchaseChannelI
     public int updatePurchaseChannelInfo(PurchaseChannelInfo purchaseChannelInfo) {
         purchaseChannelInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseChannelInfo.setUpdateTime(DateUtils.getNowDate());
+        purchaseChannelInfo.setAncestors(getChannelAncestors(purchaseChannelInfo.getParentId(), new StringBuffer()).toString());
         return purchaseChannelInfoMapper.updatePurchaseChannelInfo(purchaseChannelInfo);
+    }
+
+    /**
+     * description: 获取渠道祖级列表
+     * author: YY
+     * method:
+     * date: 2025/3/8 22:16
+     * param:
+     * param: null
+     * return:
+     **/
+    private StringBuffer getChannelAncestors(Long parentId, StringBuffer ancestors) {
+        //根据父类id查询渠道信息
+        PurchaseChannelInfo parentChannelInfo = purchaseChannelInfoMapper.selectPurchaseChannelInfoById(parentId);
+        //如果有数据，则添加至祖级列表
+        if (StringUtils.isNotNull(parentChannelInfo)) {
+            //添加至祖级列表
+            ancestors.insert(0, parentChannelInfo.getId() + ",");
+            //递归查询父类信息
+            getChannelAncestors(parentChannelInfo.getParentId(), ancestors);
+        }
+        //顶级父类
+        if (StringUtils.isNull(parentChannelInfo)) {
+            ancestors.append(0);
+        }
+        return ancestors;
     }
 
     /**
@@ -157,6 +185,11 @@ public class PurchaseChannelInfoServiceImpl extends ServiceImpl<PurchaseChannelI
             return Collections.emptyList();
         }
         return purchaseChannelInfoList.stream().map(PurchaseChannelInfoVo::objToVo).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> selectPurchaseChannelInfoReturnIds(Long purchaseChannelsId) {
+        return purchaseChannelInfoMapper.selectPurchaseChannelInfoReturnIds(purchaseChannelsId);
     }
 
 }

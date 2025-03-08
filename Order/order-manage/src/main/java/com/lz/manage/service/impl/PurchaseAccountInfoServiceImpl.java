@@ -23,7 +23,9 @@ import com.lz.common.utils.DateUtils;
 import javax.annotation.Resource;
 
 import com.lz.manage.mapper.PurchaseOrderInfoMapper;
+import com.lz.manage.model.domain.PurchaseChannelInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
+import com.lz.manage.service.IPurchaseChannelInfoService;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,9 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
     @Resource
     private PurchaseOrderInfoMapper purchaseOrderInfoMapper;
 
+    @Resource
+    private IPurchaseChannelInfoService channelInfoService;
+
 
     //region mybatis代码
 
@@ -94,6 +99,10 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
             if (StringUtils.isNotNull(dept)) {
                 info.setDeptName(dept.getDeptName());
             }
+            PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(info.getPurchaseChannelsId());
+            if (StringUtils.isNotNull(purchaseChannelInfo)) {
+                info.setPurchaseChannelsName(purchaseChannelInfo.getChannelName());
+            }
         }
         return purchaseAccountInfos;
     }
@@ -109,13 +118,25 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         if (StringUtils.isNull(purchaseAccountInfo.getUserId())) {
             purchaseAccountInfo.setUserId(SecurityUtils.getUserId());
         }
+        checkPurchaseAccountInfo(purchaseAccountInfo);
+        purchaseAccountInfo.setCreateTime(DateUtils.getNowDate());
+        return purchaseAccountInfoMapper.insertPurchaseAccountInfo(purchaseAccountInfo);
+    }
+
+    private void checkPurchaseAccountInfo(PurchaseAccountInfo purchaseAccountInfo) {
         SysUser user = userService.selectUserById(purchaseAccountInfo.getUserId());
         if (StringUtils.isNull(user)) {
             throw new ServiceException("用户不存在!!!");
         }
+        PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(purchaseAccountInfo.getPurchaseChannelsId());
+        if (StringUtils.isNull(purchaseChannelInfo)) {
+            throw new ServiceException("渠道不存在!!!");
+        }
+        //如果和渠道的类型不同则直接抛出异常
+        if (!purchaseChannelInfo.getChannelType().equals(purchaseAccountInfo.getAccountType())) {
+            throw new ServiceException("渠道类型与账号类型不一致!!!");
+        }
         purchaseAccountInfo.setDeptId(user.getDeptId());
-        purchaseAccountInfo.setCreateTime(DateUtils.getNowDate());
-        return purchaseAccountInfoMapper.insertPurchaseAccountInfo(purchaseAccountInfo);
     }
 
     /**
@@ -126,11 +147,7 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
      */
     @Override
     public int updatePurchaseAccountInfo(PurchaseAccountInfo purchaseAccountInfo) {
-        SysUser user = userService.selectUserById(purchaseAccountInfo.getUserId());
-        if (StringUtils.isNull(user)) {
-            throw new ServiceException("用户不存在!!!");
-        }
-        purchaseAccountInfo.setDeptId(user.getDeptId());
+        checkPurchaseAccountInfo(purchaseAccountInfo);
         purchaseAccountInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseAccountInfo.setUpdateTime(DateUtils.getNowDate());
         return purchaseAccountInfoMapper.updatePurchaseAccountInfo(purchaseAccountInfo);
@@ -228,8 +245,8 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         }
         Boolean execute = transactionTemplate.execute(item -> {
             try {
-                 purchaseAccountInfoMapper.insert(purchaseAccountInfoList);
-                 return true;
+                purchaseAccountInfoMapper.insert(purchaseAccountInfoList);
+                return true;
             } catch (Exception e) {
                 log.error("导入采购账号数据失败，原因：", e);
                 throw new ServiceException("导入数据失败，请检查数据结构是否正确,数据格式是否和描述相同！！！");

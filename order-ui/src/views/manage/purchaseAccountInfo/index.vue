@@ -9,6 +9,28 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="账号类型" prop="accountType">
+        <el-select v-model="queryParams.accountType" placeholder="请选择账号类型" clearable>
+          <el-option
+            v-for="dict in dict.type.o_purchase_channel_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">采购渠道</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.purchaseChannelsId" :options="purchaseChannelInfoOptions"
+                        :normalizer="normalizerChannels" placeholder="请选择渠道"
+            />
+          </el-col>
+        </el-row>
+      </el-form-item>
       <el-form-item label="采购账号" prop="purchaseAccount">
         <el-input
           v-model="queryParams.purchaseAccount"
@@ -132,29 +154,37 @@
       <el-table-column label="名称" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="nickName"
       />
-      <el-table-column label="采购账号" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
+      <el-table-column label="账号类型" align="center" v-if="columns[2].visible" prop="accountType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.o_purchase_channel_type" :value="scope.row.accountType"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="采购渠道" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
+                       prop="purchaseChannelsName"
+      />
+      <el-table-column label="采购账号" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
                        prop="purchaseAccount"
       />
-      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible"
                        prop="userName"
       />
-      <el-table-column label="创建时间" align="center" v-if="columns[4].visible" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" v-if="columns[6].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible"
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
                        prop="updateBy"
       />
-      <el-table-column label="更新时间" align="center" v-if="columns[6].visible" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" v-if="columns[8].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[9].visible"
                        prop="remark"
       />
-      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
                        prop="deptName"
       />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -192,6 +222,23 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="nickName">
           <el-input v-model="form.nickName" placeholder="请输入名称"/>
+        </el-form-item>
+        <el-form-item label="账号类型" prop="accountType">
+          <el-select v-model="form.accountType" @change="accountTypeSelectChange"
+                     placeholder="请选择账号类型"
+          >
+            <el-option
+              v-for="dict in dict.type.o_purchase_channel_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="采购渠道" prop="purchaseChannelsId">
+          <treeselect v-model="form.purchaseChannelsId" :options="purchaseChannelInfoOptions"
+                      :normalizer="normalizerChannels" placeholder="请选择渠道"
+          />
         </el-form-item>
         <el-form-item label="采购账号" prop="purchaseAccount">
           <el-input v-model="form.purchaseAccount" placeholder="请输入采购账号"/>
@@ -269,14 +316,21 @@ import { listDept } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getToken } from '@/utils/auth'
+import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
 
 export default {
   name: 'PurchaseAccountInfo',
   components: { Treeselect },
+  dicts: ['o_purchase_channel_type'],
   data() {
     return {
       //部门相关信息
       deptOptions: [],
+      //采购渠道相关信息
+      purchaseChannelInfoOptions: [],
+      purchaseChannelQuery: {
+        channelType: null
+      },
       //用户相关信息
       userInfoList: [],
       userLoading: false,
@@ -290,13 +344,15 @@ export default {
       columns: [
         { key: 0, label: '编号', visible: false },
         { key: 1, label: '名称', visible: true },
-        { key: 2, label: '采购账号', visible: true },
-        { key: 3, label: '客服', visible: true },
-        { key: 4, label: '创建时间', visible: true },
-        { key: 5, label: '更新人', visible: false },
-        { key: 6, label: '更新时间', visible: false },
-        { key: 7, label: '备注', visible: false },
-        { key: 8, label: '部门', visible: true }
+        { key: 2, label: '账号类型', visible: true },
+        { key: 3, label: '采购渠道', visible: true },
+        { key: 4, label: '采购账号', visible: true },
+        { key: 5, label: '客服', visible: true },
+        { key: 6, label: '创建时间', visible: false },
+        { key: 7, label: '更新人', visible: false },
+        { key: 8, label: '更新时间', visible: false },
+        { key: 9, label: '备注', visible: false },
+        { key: 10, label: '部门', visible: true }
       ],
       // 遮罩层
       loading: true,
@@ -330,7 +386,8 @@ export default {
         createTime: null,
         updateBy: null,
         updateTime: null,
-        deptId: null
+        deptId: null,
+        purchaseChannelsId: null
       },
       // 表单参数
       form: {},
@@ -365,8 +422,34 @@ export default {
     this.getList()
     this.getDeptList()
     this.getUserInfoList()
+    this.getChannelsTreeselect()
   },
   methods: {
+    accountTypeSelectChange() {
+      this.purchaseChannelQuery.channelType = this.form.accountType
+      this.form.purchaseChannelsId = null
+      this.getChannelsTreeselect()
+    },
+    /** 转换采购渠道信息数据结构 */
+    normalizerChannels(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.id,
+        label: node.channelName,
+        children: node.children
+      }
+    },
+    /** 查询采购渠道信息下拉树结构 */
+    getChannelsTreeselect() {
+      listPurchaseChannelInfo(this.purchaseChannelQuery).then(response => {
+        this.purchaseChannelInfoOptions = []
+        const data = { id: 0, channelName: '顶级节点', children: [] }
+        data.children = this.handleTree(response.data, 'id', 'parentId')
+        this.purchaseChannelInfoOptions.push(data)
+      })
+    },
     /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {
@@ -452,7 +535,9 @@ export default {
         updateBy: null,
         updateTime: null,
         remark: null,
-        deptId: null
+        deptId: null,
+        accountType: null,
+        purchaseChannelsId: null
       }
       this.resetForm('form')
     },
@@ -466,6 +551,9 @@ export default {
       this.daterangeCreateTime = []
       this.daterangeUpdateTime = []
       this.resetForm('queryForm')
+      this.queryParams.purchaseChannelsId = null
+      this.purchaseChannelQuery = {}
+      this.getChannelsTreeselect()
       this.handleQuery()
     },
     // 多选框选中数据

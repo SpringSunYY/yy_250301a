@@ -35,6 +35,18 @@ public class PurchaseAccountInfo implements Serializable
     @Excel(name = "名称")
     private String nickName;
 
+    /** 账号类型(1=线上 2=线下) */
+    @Excel(name = "账号类型",readConverterExp = "只能线上、线下")
+    private String accountType;
+
+    /** 采购渠道 */
+    @Excel(name = "采购渠道",type = Excel.Type.EXPORT)
+    @TableField(exist = false)
+    private String purchaseChannelsName;
+    @Excel(name = "采购渠道",prompt = "采购渠道编号")
+    private Long purchaseChannelsId;
+    private List<Long> purchaseChannelsIds;
+
     /** 采购账号 */
     @Excel(name = "采购账号")
     private String purchaseAccount;
