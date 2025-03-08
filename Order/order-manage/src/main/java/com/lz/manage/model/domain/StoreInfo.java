@@ -125,6 +125,11 @@ public class StoreInfo implements Serializable {
     private String alipayProvider;
 
     /**
+     * 服务商
+     */
+    @Excel(name = "服务商")
+    private String serviceProvider;
+    /**
      * 服务器IP
      */
     @Excel(name = "服务器IP")
@@ -134,8 +139,8 @@ public class StoreInfo implements Serializable {
      * 服务器费用
      */
     @Excel(name = "服务器费用",
-    scale = 20,
-    prompt = "精确到两位小数")
+            scale = 20,
+            prompt = "精确到两位小数")
     private BigDecimal serverCost;
 
     /**

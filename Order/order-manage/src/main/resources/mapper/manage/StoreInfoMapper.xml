@@ -19,6 +19,7 @@
         <result property="alipayPhone" column="alipay_phone"/>
         <result property="alipayAuthenticator" column="alipay_authenticator"/>
         <result property="alipayProvider" column="alipay_provider"/>
+        <result property="serviceProvider"    column="service_provider"    />
         <result property="serverIp" column="server_ip"/>
         <result property="serverCost" column="server_cost"/>
         <result property="serverPassword" column="server_password"/>
@@ -56,6 +57,7 @@
                alipay_phone,
                alipay_authenticator,
                alipay_provider,
+               service_provider,
                server_ip,
                server_cost,
                server_password,
@@ -98,13 +100,17 @@
             <if test="alipayProvider != null  and alipayProvider != ''">and alipay_provider like concat('%',
                 #{alipayProvider}, '%')
             </if>
+            <if test="serviceProvider != null  and serviceProvider != ''">and service_provider like
+                concat('%',serviceProvider, '%')
+            </if>
             <if test="serverIp != null  and serverIp != ''">and server_ip = #{serverIp}</if>
             <if test="channels != null  and channels != ''">and channels like concat('%', #{channels}, '%')</if>
             <if test="isCommissionSettlement != null  and isCommissionSettlement != ''">and is_commission_settlement =
                 #{isCommissionSettlement}
             </if>
             <if test="params.beginDepartureTime != null and params.beginDepartureTime != '' and params.endDepartureTime != null and params.endDepartureTime != ''">
-                and DATE_FORMAT(departure_time, '%Y-%m-%d') between #{params.beginDepartureTime} and #{params.endDepartureTime}
+                and DATE_FORMAT(departure_time, '%Y-%m-%d') between #{params.beginDepartureTime} and
+                #{params.endDepartureTime}
             </if>
             <if test="businessLicenseName != null  and businessLicenseName != ''">and business_license_name like
                 concat('%', #{businessLicenseName}, '%')
@@ -151,6 +157,7 @@
     <insert id="insertStoreInfo" parameterType="StoreInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_store_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceProvider != null and serviceProvider != ''">service_provider,</if>
             <if test="principalId != null">principal_id,</if>
             <if test="operationId != null">operation_id,</if>
             <if test="serviceId != null">service_id,</if>
@@ -186,6 +193,7 @@
             <if test="remark != null">remark,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceProvider != null and serviceProvider != ''">#{serviceProvider},</if>
             <if test="principalId != null">#{principalId},</if>
             <if test="operationId != null">#{operationId},</if>
             <if test="serviceId != null">#{serviceId},</if>
@@ -225,6 +233,7 @@
     <update id="updateStoreInfo" parameterType="StoreInfo">
         update tb_store_info
         <trim prefix="SET" suffixOverrides=",">
+            <if test="serviceProvider != null and serviceProvider != ''">service_provider = #{serviceProvider},</if>
             <if test="principalId != null">principal_id = #{principalId},</if>
             <if test="operationId != null">operation_id = #{operationId},</if>
             <if test="serviceId != null">service_id = #{serviceId},</if>

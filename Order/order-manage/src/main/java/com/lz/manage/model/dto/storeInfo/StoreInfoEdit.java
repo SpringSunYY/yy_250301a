@@ -60,6 +60,9 @@ public class StoreInfoEdit implements Serializable
     /** 支付宝提供人 */
     private String alipayProvider;
 
+    /** 服务商 */
+    private String serviceProvider;
+
     /** 服务器IP */
     private String serverIp;
 

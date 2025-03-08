@@ -407,6 +407,75 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     private List<StoreInfo> validateAndPrepareStoreInfo(List<StoreInfo> storeInfoList, Long userId, Date createTime) {
         List<StoreInfo> validatedList = new ArrayList<>();
+        for (int i = 0; i < storeInfoList.size(); i++) {
+            StoreInfo info = storeInfoList.get(i);
+            if (StringUtils.isEmpty(info.getStoreName())) {
+                throw new ServiceException("第" + (i + 1) + "行店铺名称不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getStatus())) {
+                throw new ServiceException("第" + (i + 1) + "行店铺状态不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getStorePassword())) {
+                throw new ServiceException("第" + (i + 1) + "行店铺密码不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getStorePhone())) {
+                throw new ServiceException("第" + (i + 1) + "行店铺手机号不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayAccount())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝账号不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayPassword())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝登录密码不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayPayPassword())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝支付密码不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayPhone())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝手机号不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayAuthenticator())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝认证人不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getAlipayProvider())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝提供人不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getServiceProvider())) {
+                throw new ServiceException("第" + (i + 1) + "行服务商不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getServerIp())) {
+                throw new ServiceException("第" + (i + 1) + "行服务器IP不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getServerPassword())) {
+                throw new ServiceException("第" + (i + 1) + "行服务器密码不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getChannels())) {
+                throw new ServiceException("第" + (i + 1) + "行渠道不能为空！！！");
+            }
+            if (StringUtils.isNull(info.getOpenPrice())) {
+                throw new ServiceException("第" + (i + 1) + "行开通金额不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getIsCommissionSettlement())) {
+                throw new ServiceException("第" + (i + 1) + "行是否结佣不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getIsOrderAccomplish())) {
+                throw new ServiceException("第" + (i + 1) + "行店铺订单是否处理完毕不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getIsBonaFideRedemption())) {
+                throw new ServiceException("第" + (i + 1) + "行诚意赊是否关闭不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getIsBail())) {
+                throw new ServiceException("第" + (i + 1) + "行保证金是否退出不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getIsAlipay())) {
+                throw new ServiceException("第" + (i + 1) + "行支付宝是否解绑不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getBusinessLicenseName())) {
+                throw new ServiceException("第" + (i + 1) + "行营业执照名称不能为空！！！");
+            }
+            if (StringUtils.isEmpty(info.getLegalPerson())) {
+                throw new ServiceException("第" + (i + 1) + "行法人不能为空！！！");
+            }
+        }
         for (StoreInfo item : storeInfoList) {
             // 根据店铺名称查询店铺是否已经存在
             StoreInfo existingStoreInfo = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, item.getStoreName()));

@@ -124,6 +124,14 @@
       <!--          @keyup.enter.native="handleQuery"-->
       <!--        />-->
       <!--      </el-form-item>-->
+      <el-form-item label="服务商" prop="serviceProvider">
+        <el-input
+          v-model="queryParams.serviceProvider"
+          placeholder="请输入服务商"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="渠道" prop="channels">
         <el-input
           v-model="queryParams.channels"
@@ -233,14 +241,14 @@
           </el-col>
         </el-row>
       </el-form-item>
-<!--      <el-form-item label="创建人" prop="userId">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.userId"-->
-<!--          placeholder="请输入创建人"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="创建人" prop="userId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.userId"-->
+      <!--          placeholder="请输入创建人"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -381,82 +389,85 @@
       <el-table-column label="支付宝提供人" :show-overflow-tooltip="true" align="center" v-if="columns[13].visible"
                        prop="alipayProvider"
       />
-      <el-table-column label="服务器IP" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
+      <el-table-column label="服务商" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
+                       prop="serviceProvider"
+      />
+      <el-table-column label="服务器IP" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible"
                        prop="serverIp"
       />
-      <el-table-column label="服务器费用" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible"
+      <el-table-column label="服务器费用" :show-overflow-tooltip="true" align="center" v-if="columns[16].visible"
                        prop="serverCost"
       />
-      <el-table-column label="服务器密码" :show-overflow-tooltip="true" align="center" v-if="columns[16].visible"
+      <el-table-column label="服务器密码" :show-overflow-tooltip="true" align="center" v-if="columns[17].visible"
                        prop="serverPassword"
       />
-      <el-table-column label="渠道" :show-overflow-tooltip="true" align="center" v-if="columns[17].visible"
+      <el-table-column label="渠道" :show-overflow-tooltip="true" align="center" v-if="columns[18].visible"
                        prop="channels"
       />
-      <el-table-column label="开通金额" :show-overflow-tooltip="true" align="center" v-if="columns[18].visible"
+      <el-table-column label="开通金额" :show-overflow-tooltip="true" align="center" v-if="columns[19].visible"
                        prop="openPrice"
       />
-      <el-table-column label="是否结佣" align="center" v-if="columns[19].visible" prop="isCommissionSettlement">
+      <el-table-column label="是否结佣" align="center" v-if="columns[20].visible" prop="isCommissionSettlement">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isCommissionSettlement"/>
         </template>
       </el-table-column>
-      <el-table-column label="下店时间" align="center" v-if="columns[20].visible" prop="departureTime" width="180">
+      <el-table-column label="下店时间" align="center" v-if="columns[21].visible" prop="departureTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.departureTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="营业执照名称" :show-overflow-tooltip="true" align="center" v-if="columns[21].visible"
+      <el-table-column label="营业执照名称" :show-overflow-tooltip="true" align="center" v-if="columns[22].visible"
                        prop="businessLicenseName"
       />
-      <el-table-column label="法人" :show-overflow-tooltip="true" align="center" v-if="columns[22].visible"
+      <el-table-column label="法人" :show-overflow-tooltip="true" align="center" v-if="columns[23].visible"
                        prop="legalPerson"
       />
-      <el-table-column label="到期时间" align="center" v-if="columns[23].visible" prop="expireTime" width="180">
+      <el-table-column label="到期时间" align="center" v-if="columns[24].visible" prop="expireTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="店铺订单是否处理完毕" align="center" v-if="columns[24].visible" prop="isOrderAccomplish">
+      <el-table-column label="店铺订单是否处理完毕" align="center" v-if="columns[25].visible" prop="isOrderAccomplish">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isOrderAccomplish"/>
         </template>
       </el-table-column>
-      <el-table-column label="诚意赊是否关闭" align="center" v-if="columns[25].visible" prop="isBonaFideRedemption">
+      <el-table-column label="诚意赊是否关闭" align="center" v-if="columns[26].visible" prop="isBonaFideRedemption">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBonaFideRedemption"/>
         </template>
       </el-table-column>
-      <el-table-column label="保证金是否退出" align="center" v-if="columns[26].visible" prop="isBail">
+      <el-table-column label="保证金是否退出" align="center" v-if="columns[27].visible" prop="isBail">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBail"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付宝是否解绑" align="center" v-if="columns[27].visible" prop="isAlipay">
+      <el-table-column label="支付宝是否解绑" align="center" v-if="columns[28].visible" prop="isAlipay">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isAlipay"/>
         </template>
       </el-table-column>
-      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[28].visible"
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[29].visible"
                        prop="deptName"
       />
-      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[29].visible"
+      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[30].visible"
                        prop="userName"
       />
-      <el-table-column label="创建时间" align="center" v-if="columns[30].visible" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" v-if="columns[31].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[31].visible"
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[32].visible"
                        prop="updateBy"
       />
-      <el-table-column label="更新时间" align="center" v-if="columns[32].visible" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" v-if="columns[33].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[33].visible"
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[34].visible"
                        prop="remark"
       />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -490,8 +501,8 @@
     />
 
     <!-- 添加或修改店铺信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="1100px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+    <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="部门" prop="deptId">
@@ -628,17 +639,22 @@
           </el-col>
         </el-row>
         <el-row :gutter="10">
-          <el-col :span="8">
+          <el-col :span="6">
+            <el-form-item label="服务商" prop="serviceProvider">
+              <el-input v-model="form.serviceProvider" placeholder="请输入服务商"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item label="服务器IP" prop="serverIp">
               <el-input v-model="form.serverIp" placeholder="请输入服务器IP"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="服务器费用" prop="serverCost">
               <el-input v-model="form.serverCost" placeholder="请输入服务器费用"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="服务器密码" prop="serverPassword">
               <el-input v-model="form.serverPassword" show-password placeholder="请输入服务器密码"/>
             </el-form-item>
@@ -851,8 +867,8 @@ export default {
       columns: [
         { key: 0, label: '编号', visible: false },
         { key: 1, label: '主管', visible: true },
-        { key: 2, label: '运营', visible: false },
-        { key: 3, label: '客服', visible: false },
+        { key: 2, label: '运营', visible: true },
+        { key: 3, label: '客服', visible: true },
         { key: 4, label: '店铺名称', visible: true },
         { key: 5, label: '店铺状态', visible: true },
         { key: 6, label: '店铺密码', visible: false },
@@ -863,26 +879,27 @@ export default {
         { key: 11, label: '支付宝手机号', visible: false },
         { key: 12, label: '支付宝认证人', visible: false },
         { key: 13, label: '支付宝提供人', visible: false },
-        { key: 14, label: '服务器IP', visible: false },
-        { key: 15, label: '服务器费用', visible: false },
-        { key: 16, label: '服务器密码', visible: false },
-        { key: 17, label: '渠道', visible: true },
-        { key: 18, label: '开通金额', visible: false },
-        { key: 19, label: '是否结佣', visible: true },
-        { key: 20, label: '下店时间', visible: true },
-        { key: 21, label: '营业执照名称', visible: true },
-        { key: 22, label: '法人', visible: false },
-        { key: 23, label: '到期时间', visible: false },
-        { key: 24, label: '店铺订单是否处理完毕', visible: false },
-        { key: 25, label: '诚意赊是否关闭', visible: false },
-        { key: 26, label: '保证金是否退出', visible: false },
-        { key: 27, label: '支付宝是否解绑', visible: false },
-        { key: 28, label: '部门', visible: true },
-        { key: 29, label: '创建人', visible: false },
-        { key: 30, label: '创建时间', visible: false },
-        { key: 31, label: '更新人', visible: false },
-        { key: 32, label: '更新时间', visible: false },
-        { key: 33, label: '备注', visible: false }
+        { key: 14, label: '服务商', visible: false },
+        { key: 15, label: '服务器IP', visible: false },
+        { key: 16, label: '服务器费用', visible: false },
+        { key: 17, label: '服务器密码', visible: false },
+        { key: 18, label: '渠道', visible: true },
+        { key: 19, label: '开通金额', visible: false },
+        { key: 20, label: '是否结佣', visible: true },
+        { key: 21, label: '下店时间', visible: false },
+        { key: 22, label: '营业执照名称', visible: false },
+        { key: 23, label: '法人', visible: false },
+        { key: 24, label: '到期时间', visible: false },
+        { key: 25, label: '店铺订单是否处理完毕', visible: false },
+        { key: 26, label: '诚意赊是否关闭', visible: false },
+        { key: 27, label: '保证金是否退出', visible: false },
+        { key: 28, label: '支付宝是否解绑', visible: false },
+        { key: 29, label: '部门', visible: true },
+        { key: 30, label: '创建人', visible: false },
+        { key: 31, label: '创建时间', visible: false },
+        { key: 32, label: '更新人', visible: false },
+        { key: 33, label: '更新时间', visible: false },
+        { key: 34, label: '备注', visible: false }
       ],
       // 遮罩层
       loading: true,
@@ -948,23 +965,86 @@ export default {
         principalId: [
           { required: true, message: '主管不能为空', trigger: 'blur' }
         ],
+        operationId: [
+          { required: true, message: '运营不能为空', trigger: 'blur' }
+        ],
+        serviceId: [
+          { required: true, message: '客服不能为空', trigger: 'blur' }
+        ],
         storeName: [
           { required: true, message: '店铺名称不能为空', trigger: 'blur' }
         ],
         status: [
           { required: true, message: '店铺状态不能为空', trigger: 'change' }
         ],
+        storePassword: [
+          { required: true, message: '店铺密码不能为空', trigger: 'blur' }
+        ],
+        storePhone: [
+          { required: true, message: '店铺手机号不能为空', trigger: 'blur' }
+        ],
+        alipayAccount: [
+          { required: true, message: '支付宝账号不能为空', trigger: 'blur' }
+        ],
+        alipayPassword: [
+          { required: true, message: '支付宝登录密码不能为空', trigger: 'blur' }
+        ],
+        alipayPayPassword: [
+          { required: true, message: '支付宝支付密码不能为空', trigger: 'blur' }
+        ],
+        alipayPhone: [
+          { required: true, message: '支付宝手机号不能为空', trigger: 'blur' }
+        ],
+        alipayAuthenticator: [
+          { required: true, message: '支付宝认证人不能为空', trigger: 'blur' }
+        ],
+        alipayProvider: [
+          { required: true, message: '支付宝提供人不能为空', trigger: 'blur' }
+        ],
+        serviceProvider: [
+          { required: true, message: '服务商不能为空', trigger: 'blur' }
+        ],
+        serverIp: [
+          { required: true, message: '服务器IP不能为空', trigger: 'blur' }
+        ],
+        serverCost: [
+          { required: true, message: '服务器费用不能为空', trigger: 'blur' }
+        ],
+        serverPassword: [
+          { required: true, message: '服务器密码不能为空', trigger: 'blur' }
+        ],
         channels: [
           { required: true, message: '渠道不能为空', trigger: 'blur' }
+        ],
+        openPrice: [
+          { required: true, message: '开通金额不能为空', trigger: 'blur' }
+        ],
+        isCommissionSettlement: [
+          { required: true, message: '是否结佣不能为空', trigger: 'change' }
         ],
         departureTime: [
           { required: true, message: '下店时间不能为空', trigger: 'blur' }
         ],
-        userId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
+        businessLicenseName: [
+          { required: true, message: '营业执照名称不能为空', trigger: 'blur' }
         ],
-        createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+        legalPerson: [
+          { required: true, message: '法人不能为空', trigger: 'blur' }
+        ],
+        expireTime: [
+          { required: true, message: '到期时间不能为空', trigger: 'blur' }
+        ],
+        isOrderAccomplish: [
+          { required: true, message: '店铺订单是否处理完毕不能为空', trigger: 'change' }
+        ],
+        isBonaFideRedemption: [
+          { required: true, message: '诚意赊是否关闭不能为空', trigger: 'change' }
+        ],
+        isBail: [
+          { required: true, message: '保证金是否退出不能为空', trigger: 'change' }
+        ],
+        isAlipay: [
+          { required: true, message: '支付宝是否解绑不能为空', trigger: 'change' }
         ],
         deptId: [
           { required: true, message: '部门不能为空', trigger: 'blur' }
@@ -982,7 +1062,7 @@ export default {
         headers: { Authorization: 'Bearer ' + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + '/manage/storeInfo/importData'
-      },
+      }
     }
   },
   created() {
@@ -1283,7 +1363,7 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()
-    },
+    }
   }
 }
 </script>
