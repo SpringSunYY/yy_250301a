@@ -36,7 +36,7 @@ public class PurchaseAccountInfo implements Serializable
     private String nickName;
 
     /** 账号类型(1=线上 2=线下) */
-    @Excel(name = "账号类型",readConverterExp = "只能线上、线下")
+    @Excel(name = "账号类型",readConverterExp = "1=线上,2=线下",prompt = "只能线上、线下")
     private String accountType;
 
     /** 采购渠道 */

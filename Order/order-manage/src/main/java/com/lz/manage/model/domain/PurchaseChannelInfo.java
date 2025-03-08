@@ -39,7 +39,7 @@ public class PurchaseChannelInfo implements Serializable
     private String channelName;
 
     /** 渠道类型（1=线上 2=线下） */
-    @Excel(name = "渠道类型", readConverterExp = "1==线上,2==线下")
+    @Excel(name = "渠道类型", readConverterExp = "1=线上,2=线下")
     private String channelType;
 
     /** 排序 */

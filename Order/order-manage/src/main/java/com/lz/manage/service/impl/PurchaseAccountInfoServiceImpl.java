@@ -229,15 +229,22 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
     @Override
     public String importPurchaseAccountInfo(List<PurchaseAccountInfo> purchaseAccountInfoList) {
         Date nowDate = DateUtils.getNowDate();
-        for (PurchaseAccountInfo info : purchaseAccountInfoList) {
+        for (int i = 0; i < purchaseAccountInfoList.size(); i++) {
+            PurchaseAccountInfo info = purchaseAccountInfoList.get(i);
+            int index = i + 1;
             SysUser user = userService.selectUserByUserName(info.getUserName());
             if (StringUtils.isNull(user)) {
-                return "用户:" + info.getUserName() + "不存在！！！";
+                return StringUtils.format("第{}行创建人{}不存在", index, info.getUserName());
             }
-            //查询账号是否存在
-            PurchaseAccountInfo purchaseAccountInfo = purchaseAccountInfoMapper.selectOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", info.getPurchaseAccount()));
-            if (StringUtils.isNotNull(purchaseAccountInfo)) {
-                return "账号：" + purchaseAccountInfo.getPurchaseAccount() + "已存在！！！";
+            if (StringUtils.isNull(info.getAccountType())) {
+                return StringUtils.format("第{}行账号类型不能为空", index);
+            }
+            PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(info.getPurchaseChannelsId());
+            if (StringUtils.isNull(purchaseChannelInfo)) {
+                return StringUtils.format("第{}行采购渠道不存在", index);
+            }
+            if (!purchaseChannelInfo.getChannelType().equals(info.getAccountType())) {
+                return StringUtils.format("第{}行账号类型与渠道类型不一致", index);
             }
             info.setUserId(user.getUserId());
             info.setCreateTime(nowDate);
