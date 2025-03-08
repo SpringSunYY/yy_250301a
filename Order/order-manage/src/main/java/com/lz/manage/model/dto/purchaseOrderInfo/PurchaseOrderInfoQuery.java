@@ -22,7 +22,7 @@ import com.lz.manage.model.domain.PurchaseOrderInfo;
 public class PurchaseOrderInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 采购编号 */
     private String orderNumber;
 
@@ -43,7 +43,7 @@ public class PurchaseOrderInfoQuery implements Serializable
     private String purchaseChannelType;
 
     /** 采购渠道 */
-    private String purchaseChannelDetail;
+    private Long purchaseChannelsId;
 
     /** 采购账号 */
     private Long purchaseAccountId;

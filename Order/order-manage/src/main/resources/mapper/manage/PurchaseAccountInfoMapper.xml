@@ -37,6 +37,7 @@
             resultMap="PurchaseAccountInfoResult">
         <include refid="selectPurchaseAccountInfoVo"/>
         <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
             <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
                 and purchase_channels_id in

@@ -1,51 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lz.manage.mapper.PurchaseOrderInfoMapper">
-    
+
     <resultMap type="PurchaseOrderInfo" id="PurchaseOrderInfoResult">
-        <result property="id"    column="id"    />
-        <result property="orderNumber"    column="order_number"    />
-        <result property="orderType"    column="order_type"    />
-        <result property="orderProfit"    column="order_profit"    />
-        <result property="orderProfitRate"    column="order_profit_rate"    />
-        <result property="purchaseTime"    column="purchase_time"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="buyerNumber"    column="buyer_number"    />
-        <result property="salesNumber"    column="sales_number"    />
-        <result property="salesPrice"    column="sales_price"    />
-        <result property="purchaseChannelType"    column="purchase_channel_type"    />
-        <result property="purchaseChannelDetail"    column="purchase_channel_detail"    />
-        <result property="purchaseAccountId"    column="purchase_account_id"    />
-        <result property="purchaseOrder"    column="purchase_order"    />
-        <result property="supplierName"    column="supplier_name"    />
-        <result property="purchasePrice"    column="purchase_price"    />
-        <result property="purchasePremium"    column="purchase_premium"    />
-        <result property="shipmentsOrder"    column="shipments_order"    />
-        <result property="hasReturn"    column="has_return"    />
-        <result property="hasBP"    column="has_b_p"    />
-        <result property="userId"    column="user_id"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="remark"    column="remark"    />
-        <result property="deptId"    column="dept_id"    />
+        <result property="id" column="id"/>
+        <result property="orderNumber" column="order_number"/>
+        <result property="orderType" column="order_type"/>
+        <result property="orderProfit" column="order_profit"/>
+        <result property="orderProfitRate" column="order_profit_rate"/>
+        <result property="purchaseTime" column="purchase_time"/>
+        <result property="storeId" column="store_id"/>
+        <result property="buyerNumber" column="buyer_number"/>
+        <result property="salesNumber" column="sales_number"/>
+        <result property="salesPrice" column="sales_price"/>
+        <result property="purchaseChannelType" column="purchase_channel_type"/>
+        <result property="purchaseChannelsId" column="purchase_channels_id"/>
+        <result property="purchaseAccountId" column="purchase_account_id"/>
+        <result property="purchaseOrder" column="purchase_order"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="purchasePrice" column="purchase_price"/>
+        <result property="purchasePremium" column="purchase_premium"/>
+        <result property="shipmentsOrder" column="shipments_order"/>
+        <result property="hasReturn" column="has_return"/>
+        <result property="hasBP" column="has_b_p"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="deptId" column="dept_id"/>
     </resultMap>
 
     <sql id="selectPurchaseOrderInfoVo">
-        select id, order_number, order_type, order_profit, order_profit_rate, purchase_time, store_id, buyer_number, sales_number, sales_price, purchase_channel_type, purchase_channel_detail, purchase_account_id, purchase_order, supplier_name, purchase_price, purchase_premium, shipments_order, has_return, has_b_p, user_id, create_time, update_by, update_time, remark, dept_id from tb_purchase_order_info
+        select id,
+               order_number,
+               order_type,
+               order_profit,
+               order_profit_rate,
+               purchase_time,
+               store_id,
+               buyer_number,
+               sales_number,
+               sales_price,
+               purchase_channel_type,
+               purchase_channels_id,
+               purchase_account_id,
+               purchase_order,
+               supplier_name,
+               purchase_price,
+               purchase_premium,
+               shipments_order,
+               has_return,
+               has_b_p,
+               user_id,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               dept_id
+        from tb_purchase_order_info
     </sql>
 
     <select id="selectPurchaseOrderInfoList" parameterType="PurchaseOrderInfo" resultMap="PurchaseOrderInfoResult">
         <include refid="selectPurchaseOrderInfoVo"/>
         <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
                 '%')
             </if>
             <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
             <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
-                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
+                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
+                #{params.endPurchaseTime}
             </if>
             <if test="storeId != null ">and store_id = #{storeId}</if>
             <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
@@ -54,8 +82,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="purchaseChannelType != null  and purchaseChannelType != ''">and purchase_channel_type =
                 #{purchaseChannelType}
             </if>
-            <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''">and purchase_channel_detail =
-                #{purchaseChannelDetail}
+            <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+                and purchase_channels_id in
+                <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
             </if>
             <if test="purchaseAccountId != null  and purchaseAccountId != ''">and purchase_account_id =
                 #{purchaseAccountId}
@@ -90,7 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by purchase_time desc
     </select>
-    
+
     <select id="selectPurchaseOrderInfoById" parameterType="Long" resultMap="PurchaseOrderInfoResult">
         <include refid="selectPurchaseOrderInfoVo"/>
         where id = #{id}
@@ -110,7 +141,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
             <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
-                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and #{params.endPurchaseTime}
+                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
+                #{params.endPurchaseTime}
             </if>
             <if test="storeId != null ">and store_id = #{storeId}</if>
             <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
@@ -119,8 +151,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="purchaseChannelType != null  and purchaseChannelType != ''">and purchase_channel_type =
                 #{purchaseChannelType}
             </if>
-            <if test="purchaseChannelDetail != null  and purchaseChannelDetail != ''">and purchase_channel_detail =
-                #{purchaseChannelDetail}
+            <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+                and purchase_channels_id in
+                <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
             </if>
             <if test="purchaseAccountId != null  and purchaseAccountId != ''">and purchase_account_id =
                 #{purchaseAccountId}
@@ -168,7 +203,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesNumber != null">sales_number,</if>
             <if test="salesPrice != null">sales_price,</if>
             <if test="purchaseChannelType != null">purchase_channel_type,</if>
-            <if test="purchaseChannelDetail != null">purchase_channel_detail,</if>
+            <if test="purchaseChannelsId != null">purchase_channels_id,</if>
             <if test="purchaseAccountId != null">purchase_account_id,</if>
             <if test="purchaseOrder != null">purchase_order,</if>
             <if test="supplierName != null">supplier_name,</if>
@@ -183,7 +218,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="deptId != null">dept_id,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNumber != null and orderNumber != ''">#{orderNumber},</if>
             <if test="orderType != null and orderType != ''">#{orderType},</if>
@@ -195,7 +230,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesNumber != null">#{salesNumber},</if>
             <if test="salesPrice != null">#{salesPrice},</if>
             <if test="purchaseChannelType != null">#{purchaseChannelType},</if>
-            <if test="purchaseChannelDetail != null">#{purchaseChannelDetail},</if>
+            <if test="purchaseChannelsId != null">#{purchaseChannelsId},</if>
             <if test="purchaseAccountId != null">#{purchaseAccountId},</if>
             <if test="purchaseOrder != null">#{purchaseOrder},</if>
             <if test="supplierName != null">#{supplierName},</if>
@@ -210,7 +245,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="deptId != null">#{deptId},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updatePurchaseOrderInfo" parameterType="PurchaseOrderInfo">
@@ -226,7 +261,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesNumber != null">sales_number = #{salesNumber},</if>
             <if test="salesPrice != null">sales_price = #{salesPrice},</if>
             <if test="purchaseChannelType != null">purchase_channel_type = #{purchaseChannelType},</if>
-            <if test="purchaseChannelDetail != null">purchase_channel_detail = #{purchaseChannelDetail},</if>
+            <if test="purchaseChannelsId != null">purchase_channels_id = #{purchaseChannelsId},</if>
             <if test="purchaseAccountId != null">purchase_account_id = #{purchaseAccountId},</if>
             <if test="purchaseOrder != null">purchase_order = #{purchaseOrder},</if>
             <if test="supplierName != null">supplier_name = #{supplierName},</if>
@@ -246,11 +281,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deletePurchaseOrderInfoById" parameterType="Long">
-        delete from tb_purchase_order_info where id = #{id}
+        delete
+        from tb_purchase_order_info
+        where id = #{id}
     </delete>
 
     <delete id="deletePurchaseOrderInfoByIds" parameterType="String">
-        delete from tb_purchase_order_info where id in 
+        delete from tb_purchase_order_info where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

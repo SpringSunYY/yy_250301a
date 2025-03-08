@@ -22,7 +22,7 @@ import com.lz.manage.model.domain.StoreInfo;
 public class StoreInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 主管 */
     private Long principalId;
 

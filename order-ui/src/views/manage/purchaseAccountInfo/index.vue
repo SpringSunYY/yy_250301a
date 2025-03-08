@@ -575,6 +575,8 @@ export default {
       getPurchaseAccountInfo(id).then(response => {
         this.form = response.data
         this.getUserInfoList()
+        this.purchaseChannelQuery = {}
+        this.getChannelsTreeselect()
         this.open = true
         this.title = '修改采购账号信息'
       })

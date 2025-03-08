@@ -84,6 +84,7 @@
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
         <include refid="selectStoreInfoVo"/>
         <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="principalId != null ">and principal_id = #{principalId}</if>
             <if test="operationId != null ">and operation_id = #{operationId}</if>
             <if test="serviceId != null ">and service_id = #{serviceId}</if>

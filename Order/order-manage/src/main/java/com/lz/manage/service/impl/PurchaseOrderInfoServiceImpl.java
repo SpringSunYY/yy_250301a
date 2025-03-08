@@ -76,6 +76,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private IPurchaseChannelInfoService channelInfoService;
     //region mybatis代码
 
     /**
@@ -115,6 +118,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             SysDept dept = deptService.selectDeptById(info.getDeptId());
             if (StringUtils.isNotNull(dept)) {
                 info.setDeptName(dept.getDeptName());
+            }
+            PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(info.getPurchaseChannelsId());
+            if (StringUtils.isNotNull(purchaseChannelInfo)) {
+                info.setPurchaseChannelsName(purchaseChannelInfo.getChannelName());
             }
         }
         return purchaseOrderInfos;
@@ -156,11 +163,24 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             purchaseOrderInfo.setDeptId(storeInfo.getDeptId());
         }
 
-        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchaseAccountId())) {
-            PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoById(purchaseOrderInfo.getPurchaseAccountId());
-            if (StringUtils.isNull(purchaseAccountInfo)) {
-                throw new ServiceException("采购账号不存在！！！");
-            }
+        PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoById(purchaseOrderInfo.getPurchaseAccountId());
+        if (StringUtils.isNull(purchaseAccountInfo)) {
+            throw new ServiceException("采购账号不存在！！！");
+
+        }
+        if (!purchaseAccountInfo.getAccountType().equals(purchaseOrderInfo.getPurchaseChannelType())) {
+            throw new ServiceException("渠道类型与账号类型不一致!!!");
+        }
+
+        PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(purchaseOrderInfo.getPurchaseChannelsId());
+        if (StringUtils.isNull(purchaseChannelInfo)) {
+            throw new ServiceException("采购渠道不存在！！！");
+        }
+        if (!purchaseChannelInfo.getChannelType().equals(purchaseAccountInfo.getAccountType())) {
+            throw new ServiceException("渠道类型与账号类型不一致!!!");
+        }
+        if (!purchaseChannelInfo.getChannelType().equals(purchaseOrderInfo.getPurchaseChannelType())) {
+            throw new ServiceException("渠道类型与订单类型不一致!!!");
         }
     }
 
@@ -299,8 +319,8 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         String purchaseChannelType = purchaseOrderInfoQuery.getPurchaseChannelType();
         queryWrapper.eq(StringUtils.isNotEmpty(purchaseChannelType), "purchase_channel_type", purchaseChannelType);
 
-        String purchaseChannelDetail = purchaseOrderInfoQuery.getPurchaseChannelDetail();
-        queryWrapper.eq(StringUtils.isNotEmpty(purchaseChannelDetail), "purchase_channel_detail", purchaseChannelDetail);
+        Long purchaseChannelsId = purchaseOrderInfoQuery.getPurchaseChannelsId();
+        queryWrapper.eq(StringUtils.isNotNull(purchaseChannelsId), "purchase_channel_id", purchaseChannelsId);
 
         Long purchaseAccountId = purchaseOrderInfoQuery.getPurchaseAccountId();
         queryWrapper.eq(StringUtils.isNotNull(purchaseAccountId), "purchase_account_id", purchaseAccountId);

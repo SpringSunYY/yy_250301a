@@ -22,7 +22,7 @@ import com.lz.manage.model.domain.EmptyBagCourierHistoryInfo;
 public class EmptyBagCourierHistoryInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateTime;

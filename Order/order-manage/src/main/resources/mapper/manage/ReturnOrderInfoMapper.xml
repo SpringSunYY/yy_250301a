@@ -27,7 +27,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectReturnOrderInfoList" parameterType="ReturnOrderInfo" resultMap="ReturnOrderInfoResult">
         <include refid="selectReturnOrderInfoVo"/>
-        <where>  
+        <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="orderNumber != null  and orderNumber != ''"> and order_number like concat('%', #{orderNumber}, '%')</if>
             <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
             <if test="storeId != null "> and store_id = #{storeId}</if>

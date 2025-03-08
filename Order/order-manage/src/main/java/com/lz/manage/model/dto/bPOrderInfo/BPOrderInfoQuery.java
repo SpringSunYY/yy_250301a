@@ -22,7 +22,7 @@ import com.lz.manage.model.domain.BPOrderInfo;
 public class BPOrderInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 采购编号 */
     private String orderNumber;
 

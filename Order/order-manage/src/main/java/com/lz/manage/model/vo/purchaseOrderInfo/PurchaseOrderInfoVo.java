@@ -86,7 +86,8 @@ public class PurchaseOrderInfoVo implements Serializable
     /**
      * 采购渠道
      */
-    private String purchaseChannelDetail;
+    private String purchaseChannelsName;
+    private Long purchaseChannelsId;
 
     /**
      * 采购账号

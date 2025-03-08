@@ -22,7 +22,7 @@ import com.lz.manage.model.domain.ReturnOrderInfo;
 public class ReturnOrderInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 订单编号 */
     private String orderNumber;
 

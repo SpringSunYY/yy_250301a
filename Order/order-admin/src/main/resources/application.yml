@@ -36,8 +36,8 @@ logging:
   level:
     org.springframework: warn
     #关闭日志输出
-    com.lz: warn
-    org.mybatis: warn
+    com.lz: debug
+    org.mybatis: debug
 
 # 用户配置
 user:

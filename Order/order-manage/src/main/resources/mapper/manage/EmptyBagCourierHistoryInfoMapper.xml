@@ -24,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectEmptyBagCourierHistoryInfoList" parameterType="EmptyBagCourierHistoryInfo" resultMap="EmptyBagCourierHistoryInfoResult">
         <include refid="selectEmptyBagCourierHistoryInfoVo"/>
         <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="params.beginDateTime != null and params.beginDateTime != '' and params.endDateTime != null and params.endDateTime != ''">
                 and DATE_FORMAT(date_time, '%Y-%m-%d') between #{params.beginDateTime} and #{params.endDateTime}
             </if>

@@ -17,6 +17,7 @@ import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderAllVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
 import com.lz.manage.service.IBPOrderInfoService;
+import com.lz.manage.service.IPurchaseChannelInfoService;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.system.service.ISysDeptService;
@@ -50,6 +51,9 @@ public class PurchaseOrderInfoController extends BaseController {
     @Resource
     private IBPOrderInfoService bpOrderInfoService;
 
+    @Resource
+    private IPurchaseChannelInfoService channelInfoService;
+
     /**
      * 查询采购发货信息列表
      */
@@ -60,6 +64,9 @@ public class PurchaseOrderInfoController extends BaseController {
         if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
             purchaseOrderInfo.setDeptIds(deptIds);
+        }
+        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchaseChannelsId())) {
+            purchaseOrderInfo.setPurchaseChannelsIds(channelInfoService.selectPurchaseChannelInfoReturnIds(purchaseOrderInfo.getPurchaseChannelsId()));
         }
         startPage();
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);

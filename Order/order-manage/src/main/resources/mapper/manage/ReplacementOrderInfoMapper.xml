@@ -47,6 +47,7 @@
             resultMap="ReplacementOrderInfoResult">
         <include refid="selectReplacementOrderInfoVo"/>
         <where>
+            <if test="id != null">and id = #{id}</if>
             <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
                 '%')
             </if>

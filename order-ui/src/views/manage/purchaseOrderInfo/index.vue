@@ -67,15 +67,17 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="采购渠道" prop="purchaseChannelDetail">
-        <el-select v-model="queryParams.purchaseChannelDetail" placeholder="请选择采购渠道" clearable>
-          <el-option
-            v-for="dict in dict.type.o_purchase_channels"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">采购渠道</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.purchaseChannelsId" :options="purchaseChannelInfoOptions"
+                        :normalizer="normalizerChannels" placeholder="请选择渠道"
+            />
+          </el-col>
+        </el-row>
       </el-form-item>
       <el-form-item label="采购账号" prop="purchaseAccountId">
         <el-select
@@ -322,7 +324,9 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="purchaseOrderInfoList" :border="true" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="purchaseOrderInfoList" :border="true"
+              @selection-change="handleSelectionChange"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" label-width="100px">
@@ -386,7 +390,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item label="采购渠道">
-                  <span>{{ props.row.purchaseChannelDetail }}</span>
+                  <span>{{ props.row.purchaseChannelsName }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -619,11 +623,8 @@
           <dict-tag :options="dict.type.o_purchase_channel_type" :value="scope.row.purchaseChannelType"/>
         </template>
       </el-table-column>
-      <el-table-column label="采购渠道" align="center" v-if="columns[11].visible" prop="purchaseChannelDetail">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.o_purchase_channels" :value="scope.row.purchaseChannelDetail"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="采购渠道" align="center" v-if="columns[11].visible" prop="purchaseChannelsName"/>
+
       <el-table-column label="采购账号" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible"
                        prop="purchaseAccount"
       />
@@ -769,7 +770,9 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="采购渠道分类" prop="purchaseChannelType">
-              <el-select v-model="form.purchaseChannelType" placeholder="请选择采购渠道分类">
+              <el-select v-model="form.purchaseChannelType" @change="channelsTypeSelectChange"
+                         placeholder="请选择采购渠道分类"
+              >
                 <el-option
                   v-for="dict in dict.type.o_purchase_channel_type"
                   :key="dict.value"
@@ -780,21 +783,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="采购渠道" prop="purchaseChannelDetail">
-              <el-select v-model="form.purchaseChannelDetail"
-                         v-if="form.purchaseChannelType==='1'"
-                         placeholder="请选择采购渠道"
-              >
-                <el-option
-                  v-for="dict in dict.type.o_purchase_channels"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-              <el-input v-model="form.purchaseChannelDetail"
-                        v-else
-                        placeholder="请输入采购渠道"
+            <el-form-item label="采购渠道" prop="purchaseChannelsId">
+              <treeselect v-model="form.purchaseChannelsId" :options="purchaseChannelInfoOptions"
+                          :normalizer="normalizerChannels" placeholder="请选择渠道"
               />
             </el-form-item>
           </el-col>
@@ -1091,7 +1082,8 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { listDept } from '@/api/system/dept'
 import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/api/manage/returnOrderInfo'
 import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
-import { parseTime } from '../../../utils/ruoyi'
+import { parseTime } from '@/utils/ruoyi'
+import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -1099,6 +1091,11 @@ export default {
   dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
     return {
+      //采购渠道相关信息
+      purchaseChannelInfoOptions: [],
+      purchaseChannelQuery: {
+        channelType: null
+      },
       //统计信息
       purchaseOrderInfoCount: {
         orderCount: 0,
@@ -1118,7 +1115,8 @@ export default {
       purchaseAccountInfoQueryParams: {
         pageNum: 1,
         pageSize: 100,
-        purchaseAccount: ''
+        purchaseAccount: '',
+        purchaseAccountType: ''
       },
       //店铺信息
       storeInfoList: [],
@@ -1200,7 +1198,7 @@ export default {
         storeId: null,
         buyerNumber: null,
         purchaseChannelType: null,
-        purchaseChannelDetail: null,
+        purchaseChannelsId: null,
         purchaseAccountId: null,
         purchaseOrder: null,
         supplierName: null,
@@ -1251,6 +1249,7 @@ export default {
     this.getDeptList()
     this.getPurchaseAccountInfoList()
     this.getServiceUserInfoList()
+    this.getChannelsTreeselect()
   },
   methods: {
     parseTime,
@@ -1267,6 +1266,34 @@ export default {
         default:
           break
       }
+    },
+    channelsTypeSelectChange() {
+      this.purchaseChannelQuery.channelType = this.form.purchaseChannelType
+      this.form.purchaseChannelsId = null
+      this.getChannelsTreeselect()
+      this.purchaseAccountInfoQueryParams.accountType = this.form.purchaseChannelType
+      this.form.purchaseAccountId = null
+      this.getPurchaseAccountInfoList()
+    },
+    /** 转换采购渠道信息数据结构 */
+    normalizerChannels(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.id,
+        label: node.channelName,
+        children: node.children
+      }
+    },
+    /** 查询采购渠道信息下拉树结构 */
+    getChannelsTreeselect() {
+      listPurchaseChannelInfo(this.purchaseChannelQuery).then(response => {
+        this.purchaseChannelInfoOptions = []
+        const data = { id: 0, channelName: '顶级节点', children: [] }
+        data.children = this.handleTree(response.data, 'id', 'parentId')
+        this.purchaseChannelInfoOptions.push(data)
+      })
     },
     /** 打开白嫖信息 */
     handleBPOrder(row) {
@@ -1348,7 +1375,8 @@ export default {
       if (this.form.purchaseAccountId != null) {
         this.purchaseAccountInfoQueryParams.id = this.form.purchaseAccountId
       }
-      if (this.purchaseAccountInfoQueryParams.purchaseAccountId !== '') {
+      console.log(this.purchaseAccountInfoQueryParams.id)
+      if (this.purchaseAccountInfoQueryParams.purchaseAccount !== '') {
         this.purchaseAccountInfoQueryParams.id = null
       }
       listPurchaseAccountInfo(this.purchaseAccountInfoQueryParams).then(res => {
@@ -1379,9 +1407,9 @@ export default {
     getStoreInfoList() {
       //添加查询参数
       if (this.form.storeId != null) {
-        this.storeInfoQueryParams.storeId = this.form.storeId
+        this.storeInfoQueryParams.id = this.form.storeId
       } else {
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
       if (this.storeInfoQueryParams.storeName !== '') {
         this.storeInfoQueryParams.storeId = null
@@ -1474,7 +1502,7 @@ export default {
         salesNumber: null,
         salesPrice: null,
         purchaseChannelType: null,
-        purchaseChannelDetail: null,
+        purchaseChannelsId: null,
         purchaseAccountId: null,
         purchaseOrder: null,
         supplierName: null,
@@ -1502,6 +1530,10 @@ export default {
       this.daterangePurchaseTime = []
       this.daterangeCreateTime = []
       this.daterangeUpdateTime = []
+      this.purchaseChannelQuery = {}
+      this.getChannelsTreeselect()
+      this.purchaseAccountInfoQueryParams = {}
+      this.getPurchaseAccountInfoList()
       this.resetForm('queryForm')
       this.handleQuery()
     },
@@ -1525,6 +1557,11 @@ export default {
         this.form = response.data
         this.getStoreInfoList()
         this.getServiceUserInfoList()
+        this.purchaseChannelQuery = {
+          channelType: this.form.purchaseChannelType
+        }
+        this.getChannelsTreeselect()
+        this.purchaseAccountInfoQueryParams.accountType = this.form.purchaseChannelType
         this.getPurchaseAccountInfoList()
         this.open = true
         this.title = '修改采购发货信息'

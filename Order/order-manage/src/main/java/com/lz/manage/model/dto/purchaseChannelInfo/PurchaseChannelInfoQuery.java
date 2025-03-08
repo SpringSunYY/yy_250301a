@@ -21,7 +21,7 @@ import com.lz.manage.model.domain.PurchaseChannelInfo;
 public class PurchaseChannelInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
+    private Long id;
     /** 名称 */
     private String channelName;
 
