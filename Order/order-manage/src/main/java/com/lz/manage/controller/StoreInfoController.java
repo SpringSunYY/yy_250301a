@@ -56,6 +56,8 @@ public class StoreInfoController extends BaseController
         StoreInfo storeInfo = StoreInfoQuery.queryToObj(storeInfoQuery);
         if (StringUtils.isNotNull(storeInfo.getDeptId())) {
             storeInfo.setDeptIds(deptService.selectDeptByIdReturnIds(storeInfo.getDeptId()));
+        }else {
+            storeInfo.setDeptIds(deptService.selectDeptByIdReturnIds(getDeptId()));
         }
         startPage();
         List<StoreInfo> list = storeInfoService.selectStoreInfoList(storeInfo);

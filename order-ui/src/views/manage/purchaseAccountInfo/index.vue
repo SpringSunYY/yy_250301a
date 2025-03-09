@@ -566,6 +566,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
+      this.form.userId = this.$store.state.user.id;
       this.title = '添加采购账号信息'
     },
     /** 修改按钮操作 */

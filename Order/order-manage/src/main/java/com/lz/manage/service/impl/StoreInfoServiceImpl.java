@@ -83,7 +83,7 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      * @param storeInfo 店铺信息
      * @return 店铺信息
      */
-    @DataScope(userAlias = "tb_store_info", deptAlias = "tb_store_info")
+//    @DataScope(userAlias = "tb_store_info", deptAlias = "tb_store_info")
     @Override
     public List<StoreInfo> selectStoreInfoList(StoreInfo storeInfo) {
         List<StoreInfo> storeInfos = storeInfoMapper.selectStoreInfoList(storeInfo);
