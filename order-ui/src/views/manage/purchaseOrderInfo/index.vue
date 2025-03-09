@@ -728,7 +728,7 @@
           >删除
           </el-button>
           <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
-                       v-hasPermi="['manage:returnOrderInfo:add','manage:bPOrderInfo:add']"
+                       v-hasPermi="['manage:returnOrderInfo:add','manage:bPOrderInfo:add','manage:afterSaleOrderInfo:add']"
           >
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -739,6 +739,10 @@
               <el-dropdown-item command="handleBPOrder"
                                 v-hasPermi="['manage:bPOrderInfo:add']"
               >白嫖订单
+              </el-dropdown-item>
+              <el-dropdown-item command="handleAfterSaleOrder"
+                                v-hasPermi="['manage:afterSaleOrderInfo:add']"
+              >售后订单
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -1060,7 +1064,7 @@
         </el-form-item>
         <el-form-item label="白嫖退款日期" prop="bPTime">
           <el-date-picker clearable
-                          v-model="form.bPTime"
+                          v-model="form.bptime"
                           type="date"
                           value-format="yyyy-MM-dd"
                           placeholder="请选择白嫖退款日期"
@@ -1073,6 +1077,39 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitBPForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 添加或修改售后订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="afterSaleOrderOpen" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="采购编号" prop="orderNumber">
+          <el-input :readonly="true" v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        </el-form-item>
+        <el-form-item label="售后金额" prop="afterSalePrice">
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
+                           placeholder="请输入售后金额"
+          />
+        </el-form-item>
+        <el-form-item label="售后日期" prop="afterSaleTime">
+          <el-date-picker clearable
+                          v-model="form.afterSaleTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择售后日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="售后凭证" prop="afterSaleImage">
+          <image-upload v-model="form.afterSaleImage"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitAfterSaleForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -1099,6 +1136,7 @@ import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/a
 import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
 import { parseTime } from '@/utils/ruoyi'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
+import { addOrUpdateAfterSaleOrderInfo, getAfterSaleOrderInfoByOrderNumber } from '@/api/manage/afterSaleOrderInfo'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -1120,6 +1158,7 @@ export default {
         purchasePriceCount: 0,
         purchasePremiumCount: 0
       },
+      afterSaleOrderOpen: false,
       returnOrderOpen: false,
       bpOrderOpen: false,
       //部门相关信息
@@ -1280,6 +1319,9 @@ export default {
         case 'handleBPOrder':
           this.handleBPOrder(row)
           break
+        case 'handleAfterSaleOrder':
+          this.handleAfterSaleOrder(row)
+          break
         default:
           break
       }
@@ -1312,6 +1354,28 @@ export default {
         this.purchaseChannelInfoOptions.push(data)
       })
     },
+    /**
+     * 提交售后订单信息
+     */
+    submitAfterSaleForm() {
+      addOrUpdateAfterSaleOrderInfo(this.form).then(res => {
+        this.afterSaleOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
+        this.getList()
+      })
+    },
+    /** 打开售后信息 */
+    handleAfterSaleOrder(row) {
+      this.reset()
+      getAfterSaleOrderInfoByOrderNumber(row.orderNumber).then(res => {
+        this.title = '新增或者修改售后信息'
+        this.afterSaleOrderOpen = true
+        if (res.data) {
+          this.form = res.data
+        }
+        this.form.orderNumber = row.orderNumber
+      })
+    },
     /** 打开白嫖信息 */
     handleBPOrder(row) {
       this.reset()
@@ -1330,6 +1394,7 @@ export default {
     submitBPForm() {
       addOrUpdateBPOrderInfo(this.form).then(res => {
         this.bpOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
         this.getList()
       })
     },
@@ -1351,6 +1416,7 @@ export default {
     submitReturnForm() {
       addOrUpdateReturnOrderInfo(this.form).then(res => {
         this.returnOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
         this.getList()
       })
     },
@@ -1503,6 +1569,7 @@ export default {
       this.open = false
       this.returnOrderOpen = false
       this.bpOrderOpen = false
+      this.afterSaleOrderOpen = false
       this.reset()
     },
     // 表单重置

@@ -28,12 +28,23 @@
         </el-select>
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
-        <el-input
+        <el-select
           v-model="queryParams.storeId"
+          filterable
+          remote
+          reserve-keyword
           placeholder="请输入店铺名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          :remote-method="selectStoreInfoList"
+          :loading="storeInfoLoading"
+        >
+          <el-option
+            v-for="item in storeInfoList"
+            :key="item.id"
+            :label="item.storeName"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="售后金额" prop="afterSalePrice">
         <el-input
@@ -55,20 +66,36 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="客服" prop="userId">
-        <el-input
+        <el-select
           v-model="queryParams.userId"
-          placeholder="请输入客服"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入用户账号"
+          :remote-method="selectServiceUserInfoList"
+          :loading="serviceUserLoading"
+        >
+          <el-option
+            v-for="item in serviceUserInfoList"
+            :key="item.userId"
+            :label="item.userName"
+            :value="item.userId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="部门" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">所属部门</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.deptId"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+
+            />
+          </el-col>
+        </el-row>
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
@@ -115,7 +142,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['manage:afterSaleOrderInfo:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -126,7 +154,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['manage:afterSaleOrderInfo:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -137,7 +166,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['manage:afterSaleOrderInfo:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -147,22 +177,44 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['manage:afterSaleOrderInfo:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
+      </el-col>
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ afterSaleOrderCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >售后金额：{{ afterSaleOrderCount.afterSalePriceCount }}
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="afterSaleOrderInfoList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id" />
-      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible" prop="orderNumber" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
+      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+                       prop="orderNumber"
+      />
       <el-table-column label="类型" align="center" v-if="columns[2].visible" prop="orderType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_order_type" :value="scope.row.orderType"/>
         </template>
       </el-table-column>
-      <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible" prop="storeName" />
-      <el-table-column label="售后金额" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible" prop="afterSalePrice" />
+      <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[3].visible"
+                       prop="storeName"
+      />
+      <el-table-column label="售后金额" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
+                       prop="afterSalePrice"
+      />
       <el-table-column label="售后日期" align="center" v-if="columns[5].visible" prop="afterSaleTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.afterSaleTime, '{y}-{m}-{d}') }}</span>
@@ -173,20 +225,28 @@
           <image-preview :src="scope.row.afterSaleImage" :width="50" :height="50"/>
         </template>
       </el-table-column>
-      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible" prop="userName" />
-      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible" prop="deptName" />
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
+                       prop="userName"
+      />
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
+                       prop="deptName"
+      />
       <el-table-column label="创建时间" align="center" v-if="columns[9].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible" prop="updateBy" />
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
+                       prop="updateBy"
+      />
       <el-table-column label="更新时间" align="center" v-if="columns[11].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible" prop="remark" />
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[12].visible"
+                       prop="remark"
+      />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -195,14 +255,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['manage:afterSaleOrderInfo:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manage:afterSaleOrderInfo:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -219,17 +281,20 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="采购编号" prop="orderNumber">
-          <el-input v-model="form.orderNumber" placeholder="请输入采购编号" />
+          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
         </el-form-item>
         <el-form-item label="售后金额" prop="afterSalePrice">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice" placeholder="请输入售后金额" />
+          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
+                           placeholder="请输入售后金额"
+          />
         </el-form-item>
         <el-form-item label="售后日期" prop="afterSaleTime">
           <el-date-picker clearable
                           v-model="form.afterSaleTime"
                           type="date"
                           value-format="yyyy-MM-dd"
-                          placeholder="请选择售后日期">
+                          placeholder="请选择售后日期"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="售后凭证" prop="afterSaleImage">
@@ -248,16 +313,52 @@
 </template>
 
 <script>
-import { listAfterSaleOrderInfo, getAfterSaleOrderInfo, delAfterSaleOrderInfo, addAfterSaleOrderInfo, updateAfterSaleOrderInfo } from "@/api/manage/afterSaleOrderInfo";
+import {
+  addAfterSaleOrderInfo,
+  delAfterSaleOrderInfo,
+  getAfterSaleOrderCount,
+  getAfterSaleOrderInfo,
+  listAfterSaleOrderInfo,
+  updateAfterSaleOrderInfo
+} from '@/api/manage/afterSaleOrderInfo'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import Treeselect from '@riophae/vue-treeselect'
+import { listStoreInfo } from '@/api/manage/storeInfo'
+import { listDept } from '@/api/system/dept'
+import { allocatedUserList } from '@/api/system/role'
 
 export default {
-  name: "AfterSaleOrderInfo",
+  name: 'AfterSaleOrderInfo',
+  components: { Treeselect },
   dicts: ['o_order_type'],
   data() {
     return {
+      //客服相关信息
+      serviceUserInfoList: [],
+      serviceUserLoading: false,
+      serviceUserQueryParams: {
+        userName: '',
+        roleId: 102,
+        pageNum: 1,
+        pageSize: 100
+      },
+      //店铺信息
+      storeInfoList: [],
+      storeInfoLoading: false,
+      storeInfoQueryParams: {
+        pageNum: 1,
+        pageSize: 100,
+        storeName: ''
+      },
+      //部门相关信息
+      deptOptions: [],
+      afterSaleOrderCount: {
+        orderCount: 0,
+        afterSalePriceCount: 0
+      },
       //表格展示列
       columns: [
-        { key: 0, label: '编号', visible: true },
+        { key: 0, label: '编号', visible: false },
         { key: 1, label: '采购编号', visible: true },
         { key: 2, label: '类型', visible: true },
         { key: 3, label: '店铺名称', visible: true },
@@ -269,7 +370,7 @@ export default {
         { key: 9, label: '创建时间', visible: false },
         { key: 10, label: '更新人', visible: false },
         { key: 11, label: '更新时间', visible: false },
-        { key: 12, label: '备注', visible: true },
+        { key: 12, label: '备注', visible: true }
       ],
       // 遮罩层
       loading: true,
@@ -286,7 +387,7 @@ export default {
       // 售后订单信息表格数据
       afterSaleOrderInfoList: [],
       // 弹出层标题
-      title: "",
+      title: '',
       // 是否显示弹出层
       open: false,
       // 备注时间范围
@@ -318,50 +419,128 @@ export default {
       // 表单校验
       rules: {
         orderNumber: [
-          { required: true, message: "采购编号不能为空", trigger: "blur" }
+          { required: true, message: '采购编号不能为空', trigger: 'blur' }
         ],
         orderType: [
-          { required: true, message: "类型不能为空", trigger: "change" }
+          { required: true, message: '类型不能为空', trigger: 'change' }
         ],
         userId: [
-          { required: true, message: "客服不能为空", trigger: "blur" }
+          { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
         createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
-        ],
+          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+        ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
+    this.getDeptList()
+    this.getStoreInfoList()
+    this.getServiceUserInfoList()
   },
   methods: {
+    /**
+     * 获取客服用户列表推荐
+     * @param query
+     */
+    selectServiceUserInfoList(query) {
+      if (query !== '') {
+        this.serviceUserLoading = true
+        this.serviceUserQueryParams.userName = query
+        setTimeout(() => {
+          this.getServiceUserInfoList()
+        }, 200)
+      } else {
+        this.serviceUserInfoList = []
+        this.serviceUserQueryParams.userName = null
+      }
+    },
+    /**
+     * 获取客服用户信息列表
+     */
+    getServiceUserInfoList() {
+      //添加查询参数
+      if (this.form.userId != null) {
+        this.serviceUserQueryParams.userId = this.form.serviceId
+      } else {
+        this.serviceUserQueryParams.userId = null
+      }
+      if (this.serviceUserQueryParams.userName !== '') {
+        this.serviceUserQueryParams.userId = null
+      }
+      allocatedUserList(this.serviceUserQueryParams).then(res => {
+        this.serviceUserInfoList = res?.rows
+        this.serviceUserLoading = false
+      })
+    },
+    /**
+     * 获取店铺信息列表
+     */
+    getStoreInfoList() {
+      //添加查询参数
+      if (this.form.storeId != null) {
+        this.storeInfoQueryParams.storeId = this.form.storeId
+      } else {
+        this.storeInfoQueryParams.storeId = null
+      }
+      if (this.storeInfoQueryParams.storeName !== '') {
+        this.storeInfoQueryParams.storeId = null
+      }
+      listStoreInfo(this.storeInfoQueryParams).then(res => {
+        this.storeInfoList = res?.rows
+        this.storeInfoLoading = false
+      })
+    },
+    /** 查询部门列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, 'deptId')
+      })
+    },
+    /** 转换部门数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      }
+    },
     /** 查询售后订单信息列表 */
     getList() {
-      this.loading = true;
-      this.queryParams.params = {};
+      this.loading = true
+      this.queryParams.params = {}
       if (null != this.daterangeAfterSaleTime && '' != this.daterangeAfterSaleTime) {
-        this.queryParams.params["beginAfterSaleTime"] = this.daterangeAfterSaleTime[0];
-        this.queryParams.params["endAfterSaleTime"] = this.daterangeAfterSaleTime[1];
+        this.queryParams.params['beginAfterSaleTime'] = this.daterangeAfterSaleTime[0]
+        this.queryParams.params['endAfterSaleTime'] = this.daterangeAfterSaleTime[1]
       }
       if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
-        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
+        this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
+        this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
       }
       if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
-        this.queryParams.params["beginUpdateTime"] = this.daterangeUpdateTime[0];
-        this.queryParams.params["endUpdateTime"] = this.daterangeUpdateTime[1];
+        this.queryParams.params['beginUpdateTime'] = this.daterangeUpdateTime[0]
+        this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
       }
       listAfterSaleOrderInfo(this.queryParams).then(response => {
-        this.afterSaleOrderInfoList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.afterSaleOrderInfoList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getAfterSaleOrderCount(this.queryParams).then(response => {
+        this.afterSaleOrderCount = response.data
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -379,73 +558,74 @@ export default {
         updateBy: null,
         updateTime: null,
         remark: null
-      };
-      this.resetForm("form");
+      }
+      this.resetForm('form')
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeAfterSaleTime = [];
-      this.daterangeCreateTime = [];
-      this.daterangeUpdateTime = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.daterangeAfterSaleTime = []
+      this.daterangeCreateTime = []
+      this.daterangeUpdateTime = []
+      this.resetForm('queryForm')
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加售后订单信息";
+      this.reset()
+      this.open = true
+      this.title = '添加售后订单信息'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const id = row.id || this.ids
       getAfterSaleOrderInfo(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改售后订单信息";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = '修改售后订单信息'
+      })
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
             updateAfterSaleOrderInfo(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('修改成功')
+              this.open = false
+              this.getList()
+            })
           } else {
             addAfterSaleOrderInfo(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('新增成功')
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
+      const ids = row.id || this.ids
       this.$modal.confirm('是否确认删除售后订单信息编号为"' + ids + '"的数据项？').then(function() {
-        return delAfterSaleOrderInfo(ids);
+        return delAfterSaleOrderInfo(ids)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess('删除成功')
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -454,5 +634,5 @@ export default {
       }, `afterSaleOrderInfo_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>

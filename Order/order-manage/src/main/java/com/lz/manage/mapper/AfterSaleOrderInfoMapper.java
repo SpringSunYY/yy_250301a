@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.AfterSaleOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo;
 
 /**
  * 售后订单信息Mapper接口
@@ -59,4 +60,15 @@ public interface AfterSaleOrderInfoMapper extends BaseMapper<AfterSaleOrderInfo>
      * @return 结果
      */
     public int deleteAfterSaleOrderInfoByIds(Long[] ids);
+
+    /**
+     * description: 获取售后订单统计
+     * author: YY
+     * method: getAfterSaleOrderCount
+     * date: 2025/3/9 16:07
+     * param:
+     * param: afterSaleOrderInfo
+     * return: com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo
+     **/
+    AfterSaleOrderCountVo getAfterSaleOrderCount(AfterSaleOrderInfo afterSaleOrderInfo);
 }

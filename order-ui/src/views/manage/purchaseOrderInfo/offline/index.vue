@@ -142,6 +142,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="是否售后" prop="hasAfterSale">
+        <el-select v-model="queryParams.hasAfterSale" placeholder="请选择是否售后" clearable>
+          <el-option
+            v-for="dict in dict.type.o_common_whether"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="客服" prop="userId">
         <el-select
           v-model="queryParams.userId"
@@ -424,18 +434,18 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
+                <el-form-item label="客服">
+                  <span>{{ props.row.userName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="部门">
+                  <span>{{ props.row.deptName }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
                 <el-form-item label="是否退货">
                   <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasReturn"/></span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="是否白嫖">
-                  <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasBP"/></span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="退货状态">
-                  <span><dict-tag :options="dict.type.o_return_order_status" :value="props.row.returnStatus"/></span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -454,6 +464,16 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
+                <el-form-item label="退货状态">
+                  <span><dict-tag :options="dict.type.o_return_order_status" :value="props.row.returnStatus"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="是否白嫖">
+                  <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasBP"/></span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
                 <el-form-item label="白嫖退款金额">
                   <span>{{ props.row.bPPrice }}</span>
                 </el-form-item>
@@ -461,6 +481,11 @@
               <el-col :span="6">
                 <el-form-item label="白嫖退款日期">
                   <span>{{ parseTime(props.row.bPTime, '{y}-{m}-{d}') }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="是否售后">
+                  <span><dict-tag :options="dict.type.o_common_whether" :value="props.row.hasAfterSale"/></span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -474,13 +499,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="部门">
-                  <span>{{ props.row.deptName }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="客服">
-                  <span>{{ props.row.userName }}</span>
+                <el-form-item label="售后凭证">
+                  <span><image-preview :src="props.row.afterSaleImage" :width="50" :height="50"/></span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -496,11 +516,6 @@
               <el-col :span="6">
                 <el-form-item label="更新时间">
                   <span>{{ parseTime(props.row.updateTime, '{y}-{m}-{d}') }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="售后凭证">
-                  <span><image-preview :src="props.row.afterSaleImage" :width="50" :height="50"/></span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -667,26 +682,31 @@
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.hasBP"/>
         </template>
       </el-table-column>
-      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[20].visible"
+      <el-table-column label="是否售后" align="center" v-if="columns[20].visible" prop="hasAfterSale">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.o_common_whether" :value="scope.row.hasAfterSale"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[21].visible"
                        prop="userName"
       />
-      <el-table-column label="创建时间" align="center" v-if="columns[21].visible" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" v-if="columns[22].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[22].visible"
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[23].visible"
                        prop="updateBy"
       />
-      <el-table-column label="更新时间" align="center" v-if="columns[23].visible" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" v-if="columns[24].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[24].visible"
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[25].visible"
                        prop="remark"
       />
-      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[25].visible"
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[26].visible"
                        prop="deptName"
       />
       <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
@@ -708,7 +728,7 @@
           >删除
           </el-button>
           <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
-                       v-hasPermi="['manage:returnOrderInfo:add','manage:bPOrderInfo:add']"
+                       v-hasPermi="['manage:returnOrderInfo:add','manage:bPOrderInfo:add','manage:afterSaleOrderInfo:add']"
           >
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -719,6 +739,10 @@
               <el-dropdown-item command="handleBPOrder"
                                 v-hasPermi="['manage:bPOrderInfo:add']"
               >白嫖订单
+              </el-dropdown-item>
+              <el-dropdown-item command="handleAfterSaleOrder"
+                                v-hasPermi="['manage:afterSaleOrderInfo:add']"
+              >售后订单
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -906,7 +930,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="是否退货" prop="hasReturn">
               <el-radio-group v-model="form.hasReturn">
                 <el-radio
@@ -918,9 +942,21 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="是否白嫖" prop="hasBP">
               <el-radio-group v-model="form.hasBP">
+                <el-radio
+                  v-for="dict in dict.type.o_common_whether"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否售后" prop="hasAfterSale">
+              <el-radio-group v-model="form.hasAfterSale">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
                   :key="dict.value"
@@ -1028,12 +1064,28 @@
         </el-form-item>
         <el-form-item label="白嫖退款日期" prop="bPTime">
           <el-date-picker clearable
-                          v-model="form.bPTime"
+                          v-model="form.bptime"
                           type="date"
                           value-format="yyyy-MM-dd"
                           placeholder="请选择白嫖退款日期"
           >
           </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitBPForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 添加或修改售后订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="afterSaleOrderOpen" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="采购编号" prop="orderNumber">
+          <el-input :readonly="true" v-model="form.orderNumber" placeholder="请输入采购编号"/>
         </el-form-item>
         <el-form-item label="售后金额" prop="afterSalePrice">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
@@ -1050,14 +1102,14 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="售后凭证" prop="afterSaleImage">
-          <image-upload :limit="9" v-model="form.afterSaleImage"/>
+          <image-upload v-model="form.afterSaleImage"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitBPForm">确 定</el-button>
+        <el-button type="primary" @click="submitAfterSaleForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -1084,6 +1136,7 @@ import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/a
 import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
 import { parseTime } from '@/utils/ruoyi'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
+import { addOrUpdateAfterSaleOrderInfo, getAfterSaleOrderInfoByOrderNumber } from '@/api/manage/afterSaleOrderInfo'
 
 export default {
   name: 'PurchaseOrderInfo',
@@ -1105,6 +1158,7 @@ export default {
         purchasePriceCount: 0,
         purchasePremiumCount: 0
       },
+      afterSaleOrderOpen: false,
       returnOrderOpen: false,
       bpOrderOpen: false,
       //部门相关信息
@@ -1157,12 +1211,13 @@ export default {
         { key: 17, label: '发货单号', visible: false },
         { key: 18, label: '是否退货', visible: false },
         { key: 19, label: '是否白嫖', visible: false },
-        { key: 20, label: '客服', visible: true },
-        { key: 21, label: '创建时间', visible: false },
-        { key: 22, label: '更新人', visible: false },
-        { key: 23, label: '更新时间', visible: false },
-        { key: 24, label: '备注', visible: false },
-        { key: 25, label: '部门', visible: false }
+        { key: 20, label: '是否售后', visible: false },
+        { key: 21, label: '客服', visible: true },
+        { key: 22, label: '创建时间', visible: false },
+        { key: 23, label: '更新人', visible: false },
+        { key: 24, label: '更新时间', visible: false },
+        { key: 25, label: '备注', visible: false },
+        { key: 26, label: '部门', visible: false }
       ],
       // 遮罩层
       loading: true,
@@ -1209,6 +1264,7 @@ export default {
         createTime: null,
         updateBy: null,
         updateTime: null,
+        hasAfterSale: null,
         deptId: null
       },
       // 表单参数
@@ -1263,6 +1319,9 @@ export default {
         case 'handleBPOrder':
           this.handleBPOrder(row)
           break
+        case 'handleAfterSaleOrder':
+          this.handleAfterSaleOrder(row)
+          break
         default:
           break
       }
@@ -1295,6 +1354,28 @@ export default {
         this.purchaseChannelInfoOptions.push(data)
       })
     },
+    /**
+     * 提交售后订单信息
+     */
+    submitAfterSaleForm() {
+      addOrUpdateAfterSaleOrderInfo(this.form).then(res => {
+        this.afterSaleOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
+        this.getList()
+      })
+    },
+    /** 打开售后信息 */
+    handleAfterSaleOrder(row) {
+      this.reset()
+      getAfterSaleOrderInfoByOrderNumber(row.orderNumber).then(res => {
+        this.title = '新增或者修改售后信息'
+        this.afterSaleOrderOpen = true
+        if (res.data) {
+          this.form = res.data
+        }
+        this.form.orderNumber = row.orderNumber
+      })
+    },
     /** 打开白嫖信息 */
     handleBPOrder(row) {
       this.reset()
@@ -1313,6 +1394,7 @@ export default {
     submitBPForm() {
       addOrUpdateBPOrderInfo(this.form).then(res => {
         this.bpOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
         this.getList()
       })
     },
@@ -1334,6 +1416,7 @@ export default {
     submitReturnForm() {
       addOrUpdateReturnOrderInfo(this.form).then(res => {
         this.returnOrderOpen = false
+        this.$modal.msgSuccess('操作成功')
         this.getList()
       })
     },
@@ -1486,6 +1569,7 @@ export default {
       this.open = false
       this.returnOrderOpen = false
       this.bpOrderOpen = false
+      this.afterSaleOrderOpen = false
       this.reset()
     },
     // 表单重置
@@ -1511,6 +1595,7 @@ export default {
         shipmentsOrder: null,
         hasReturn: '2',
         hasBP: '2',
+        hasAfterSale: '2',
         userId: null,
         createTime: null,
         updateBy: null,
@@ -1530,8 +1615,8 @@ export default {
       this.daterangePurchaseTime = []
       this.daterangeCreateTime = []
       this.daterangeUpdateTime = []
-      this.queryParams.purchaseChannelsId = null
       this.purchaseChannelQuery = {}
+      this.queryParams.purchaseChannelsId = null
       this.getChannelsTreeselect()
       this.purchaseAccountInfoQueryParams = {}
       this.getPurchaseAccountInfoList()
@@ -1652,6 +1737,6 @@ export default {
 .demo-table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
-  width: 50%;
+  width: 100%;
 }
 </style>

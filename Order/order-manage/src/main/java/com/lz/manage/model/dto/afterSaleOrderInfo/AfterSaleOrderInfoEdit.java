@@ -41,6 +41,11 @@ public class AfterSaleOrderInfoEdit implements Serializable
     private String afterSaleImage;
 
     /**
+     * 备注
+     */
+    private String remark;
+
+    /**
      * 对象转封装类
      *
      * @param afterSaleOrderInfoEdit 编辑对象

@@ -340,6 +340,8 @@ export default {
         pageSize: 100,
         storeName: ''
       },
+      //部门相关信息
+      deptOptions: [],
       //客服相关信息
       serviceUserInfoList: [],
       serviceUserLoading: false,
@@ -349,8 +351,6 @@ export default {
         pageNum: 1,
         pageSize: 100
       },
-      //部门相关信息
-      deptOptions: [],
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },

@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.StoreInfo;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo;
 import com.lz.manage.service.IPurchaseOrderInfoService;
 import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.manage.service.IStoreInfoService;
@@ -251,6 +252,19 @@ public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInf
             return Collections.emptyList();
         }
         return afterSaleOrderInfoList.stream().map(AfterSaleOrderInfoVo::objToVo).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public int addOrUpdateAfterSaleOrderInfo(AfterSaleOrderInfo afterSaleOrderInfo) {
+        PurchaseOrderInfo orderInfo = checkAfterOrder(afterSaleOrderInfo);
+        this.saveOrUpdate(afterSaleOrderInfo);
+        return orderInfoService.updatePurchaseOrderInfo(orderInfo);
+    }
+    @DataScope(userAlias = "tb_after_sale_order_info", deptAlias = "tb_after_sale_order_info")
+    @Override
+    public AfterSaleOrderCountVo getAfterSaleOrderCount(AfterSaleOrderInfo afterSaleOrderInfo) {
+        return afterSaleOrderInfoMapper.getAfterSaleOrderCount(afterSaleOrderInfo);
     }
 
 }

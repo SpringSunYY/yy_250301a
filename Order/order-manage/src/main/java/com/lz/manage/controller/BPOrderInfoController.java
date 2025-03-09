@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.annotation.Resource;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -118,7 +119,7 @@ public class BPOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:add')")
     @Log(title = "白嫖订单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody BPOrderInfoInsert bPOrderInfoInsert) {
+    public AjaxResult add(@RequestBody @Validated BPOrderInfoInsert bPOrderInfoInsert) {
         BPOrderInfo bPOrderInfo = BPOrderInfoInsert.insertToObj(bPOrderInfoInsert);
         return toAjax(bPOrderInfoService.insertBPOrderInfo(bPOrderInfo));
     }
@@ -129,7 +130,7 @@ public class BPOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:add')")
     @Log(title = "新增或者修改白嫖订单信息", businessType = BusinessType.INSERT)
     @PostMapping("/addOrUpdate")
-    public AjaxResult addOrUpdate(@RequestBody BPOrderInfoInsert bPOrderInfoInsert) {
+    public AjaxResult addOrUpdate(@RequestBody @Validated BPOrderInfoInsert bPOrderInfoInsert) {
         BPOrderInfo bPOrderInfo = BPOrderInfoInsert.insertToObj(bPOrderInfoInsert);
         return toAjax(bPOrderInfoService.addOrUpdateBPOrderInfo(bPOrderInfo));
     }

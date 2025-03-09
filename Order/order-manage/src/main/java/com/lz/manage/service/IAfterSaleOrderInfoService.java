@@ -3,6 +3,7 @@ package com.lz.manage.service;
 import java.util.List;
 
 import com.lz.manage.model.domain.AfterSaleOrderInfo;
+import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo;
 import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderInfoVo;
 import com.lz.manage.model.dto.afterSaleOrderInfo.AfterSaleOrderInfoQuery;
 
@@ -93,4 +94,26 @@ public interface IAfterSaleOrderInfoService extends IService<AfterSaleOrderInfo>
      * @return AfterSaleOrderInfoVO集合
      */
     List<AfterSaleOrderInfoVo> convertVoList(List<AfterSaleOrderInfo> afterSaleOrderInfoList);
+
+    /**
+     * description: 新增或者修改售后订单信息
+     * author: YY
+     * method: addOrUpdateAfterSaleOrderInfo
+     * date: 2025/3/9 15:36
+     * param:
+     * param: afterSaleOrderInfo
+     * return: int
+     **/
+    int addOrUpdateAfterSaleOrderInfo(AfterSaleOrderInfo afterSaleOrderInfo);
+
+    /**
+     * description: 获取售后订单统计
+     * author: YY
+     * method: getAfterSaleOrderCount
+     * date: 2025/3/9 16:06
+     * param:
+     * param: afterSaleOrderInfo
+     * return: com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo
+     **/
+    AfterSaleOrderCountVo getAfterSaleOrderCount(AfterSaleOrderInfo afterSaleOrderInfo);
 }

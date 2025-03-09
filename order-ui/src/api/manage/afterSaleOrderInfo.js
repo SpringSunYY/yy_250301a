@@ -9,11 +9,35 @@ export function listAfterSaleOrderInfo(query) {
   })
 }
 
+export function getAfterSaleOrderCount(query) {
+  return request({
+    url: '/manage/afterSaleOrderInfo/getAfterSaleOrderCount',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询售后订单信息详细
 export function getAfterSaleOrderInfo(id) {
   return request({
     url: '/manage/afterSaleOrderInfo/' + id,
     method: 'get'
+  })
+}
+
+// 查询售后订单信息详细
+export function getAfterSaleOrderInfoByOrderNumber(orderNumber) {
+  return request({
+    url: '/manage/afterSaleOrderInfo/orderNumber/' + orderNumber,
+    method: 'get'
+  })
+}
+
+export function addOrUpdateAfterSaleOrderInfo(data){
+  return request({
+    url: '/manage/afterSaleOrderInfo/addOrUpdate',
+    method: 'post',
+    data: data
   })
 }
 

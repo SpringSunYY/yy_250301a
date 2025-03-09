@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.annotation.Resource;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -119,7 +120,7 @@ public class ReturnOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:add')")
     @Log(title = "退货订单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert) {
+    public AjaxResult add(@RequestBody @Validated ReturnOrderInfoInsert returnOrderInfoInsert) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoInsert.insertToObj(returnOrderInfoInsert);
         return toAjax(returnOrderInfoService.insertReturnOrderInfo(returnOrderInfo));
     }
@@ -130,7 +131,7 @@ public class ReturnOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:add')")
     @Log(title = "新增或修改退货订单信息", businessType = BusinessType.INSERT)
     @PostMapping("/addOrUpdate")
-    public AjaxResult addOrUpdate(@RequestBody ReturnOrderInfoInsert returnOrderInfoInsert) {
+    public AjaxResult addOrUpdate(@RequestBody @Validated ReturnOrderInfoInsert returnOrderInfoInsert) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoInsert.insertToObj(returnOrderInfoInsert);
         return toAjax(returnOrderInfoService.mySaveOrUpdate(returnOrderInfo));
     }
