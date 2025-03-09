@@ -548,6 +548,8 @@ export default {
   created() {
     this.getList()
     this.getDeptList()
+    this.getUserInfoList()
+    this.getStoreInfoList()
   },
   methods: {
     /**
@@ -712,6 +714,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
+      this.form.userId = this.$store.state.user.id;
       this.open = true
       this.title = '添加补单明细'
     },
