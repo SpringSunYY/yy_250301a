@@ -170,6 +170,56 @@
         >展开/折叠
         </el-button>
       </el-col>
+      <el-col :span="15">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >总数：{{ purchaseOrderInfoCount.orderCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >订单利润：{{ purchaseOrderInfoCount.orderProfitCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >采购进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
+        >采购补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -207,7 +257,7 @@ import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
 import { listPurchaseAccountInfo } from '@/api/manage/purchaseAccountInfo'
 import { listStoreInfo } from '@/api/manage/storeInfo'
 import { allocatedUserList } from '@/api/system/role'
-import { getReport } from '@/api/manage/purchaseOrderInfo'
+import { getPurchaseOrderInfoCount, getReport } from '@/api/manage/purchaseOrderInfo'
 import { toPercentage } from '../../../../utils/common'
 
 export default {
@@ -216,6 +266,16 @@ export default {
   components: { Treeselect },
   data() {
     return {
+      //统计信息
+      purchaseOrderInfoCount: {
+        orderCount: 0,
+        orderProfitCount: 0,
+        salesNumberCount: 0,
+        salesPriceCount: 0,
+        purchasePriceCount: 0,
+        purchasePremiumCount: 0,
+        avgOrderProfitRate: 0
+      },
       reportList: [],
       //采购渠道相关信息
       purchaseChannelInfoOptions: [],
@@ -366,6 +426,12 @@ export default {
         console.log(response.data)
         this.reportList = this.handleTree(response.data, 'deptId')
         this.loading = false
+      })
+      this.getCount()
+    },
+    getCount() {
+      getPurchaseOrderInfoCount(this.queryParams).then(response => {
+        this.purchaseOrderInfoCount = response.data
       })
     },
     /** 查询采购渠道信息下拉树结构 */
