@@ -8,12 +8,14 @@ import com.lz.common.constant.UserConstants;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysMenu;
 import com.lz.common.utils.StringUtils;
+import lombok.Data;
 
 /**
  * Treeselect树结构实体类
  * 
  * @author ruoyi
  */
+@Data
 public class TreeSelect implements Serializable
 {
     private static final long serialVersionUID = 1L;

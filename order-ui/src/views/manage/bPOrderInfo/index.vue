@@ -86,7 +86,7 @@
           </el-col>
           <el-col :span="18">
             <treeselect v-model="queryParams.deptId"
-                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属部门"
 
             />
           </el-col>

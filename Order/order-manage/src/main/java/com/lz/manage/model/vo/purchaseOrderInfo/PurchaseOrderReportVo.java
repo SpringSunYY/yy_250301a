@@ -7,15 +7,32 @@ import java.math.BigDecimal;
 
 /**
  * Project: Order
- * Package: com.lz.manage.model.vo.PurchaseOrderInfoCountVo
+ * Package: com.lz.manage.model.vo.purchaseOrderInfo
  * Author: YY
- * CreateTime: 2025-03-06  20:31
- * Description: purchaseAccountInfoCountVo
+ * CreateTime: 2025-03-09  20:57
+ * Description: PurchaseOrderReportVo
+ * 采购订单报表
  * Version: 1.0
  */
 @Data
-public class PurchaseOrderInfoCountVo implements Serializable {
+public class PurchaseOrderReportVo implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 部门ID
+     */
+    private Long deptId;
+
+    /**
+     * 父部门ID
+     */
+    private Long parentId;
+
+    /**
+     * 部门名称
+     */
+    private String deptName;
+
     /**
      * 订单总数
      */
@@ -32,12 +49,12 @@ public class PurchaseOrderInfoCountVo implements Serializable {
     private Long salesNumberCount;
 
     /**
-     * 销售价格
+     * 销售总价格
      */
     private BigDecimal salesPriceCount;
 
     /**
-     * 销售价格
+     * 销售进价
      */
     private BigDecimal purchasePriceCount;
 

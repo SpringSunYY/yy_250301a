@@ -12,6 +12,7 @@ import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
 
 /**
  * 采购发货信息Service接口
@@ -127,4 +128,26 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * return: com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo
      **/
     PurchaseOrderInfoCountVo getPurchaseOrderInfoCount(PurchaseOrderInfo purchaseOrderInfo);
+
+    /**
+     * description: 获取报表
+     * author: YY
+     * method: getReport
+     * date: 2025/3/9 21:39
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo>
+     **/
+    List<PurchaseOrderReportVo> getReport(PurchaseOrderInfo purchaseOrderInfo);
+
+    /**
+     * description:  获取报表,根据部门分类
+     * author: YY
+     * method: getReportGroupByDept
+     * date: 2025/3/9 21:43
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo>
+     **/
+    List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo);
 }

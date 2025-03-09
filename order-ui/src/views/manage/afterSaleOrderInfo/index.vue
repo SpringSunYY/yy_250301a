@@ -91,7 +91,7 @@
           </el-col>
           <el-col :span="18">
             <treeselect v-model="queryParams.deptId"
-                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属位置"
+                        :options="deptOptions" :show-count="true" :normalizer="normalizer" placeholder="请选择所属部门"
 
             />
           </el-col>
@@ -527,6 +527,22 @@ export default {
         this.serviceUserInfoList = res?.rows
         this.serviceUserLoading = false
       })
+    },
+    /**
+     * 获取店铺列表推荐
+     * @param query
+     */
+    selectStoreInfoList(query) {
+      if (query !== '') {
+        this.storeInfoLoading = true
+        this.storeInfoQueryParams.storeName = query
+        setTimeout(() => {
+          this.getStoreInfoList()
+        }, 200)
+      } else {
+        this.storeInfoList = []
+        this.storeInfoQueryParams.storeId = null
+      }
     },
     /**
      * 获取店铺信息列表

@@ -299,10 +299,8 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }]
-      }
-      ,
-      user: {}
-      ,
+      },
+      user: {},
       // 版本号
       version: '3.8.9'
     }

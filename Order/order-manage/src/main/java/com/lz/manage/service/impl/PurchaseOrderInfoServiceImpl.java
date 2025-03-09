@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -28,9 +29,11 @@ import javax.annotation.Resource;
 import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -46,6 +49,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author YY
  * @date 2025-03-03
  */
+@Slf4j
 @Service
 public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoMapper, PurchaseOrderInfo> implements IPurchaseOrderInfoService {
     @Resource
@@ -517,6 +521,111 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             purchaseOrderInfoCount.setOrderCount(0L);
         }
         return purchaseOrderInfoCount;
+    }
+
+    @Override
+    public List<PurchaseOrderReportVo> getReport(PurchaseOrderInfo purchaseOrderInfo) {
+        // 1. 获取全量部门数据
+        List<SysDept> deptList = deptService.selectDeptList(new SysDept());
+
+        // 2. 初始化部门映射表
+        Map<Long, PurchaseOrderReportVo> reportMap = new LinkedHashMap<>();
+        deptList.forEach(dept -> {
+            PurchaseOrderReportVo vo = new PurchaseOrderReportVo();
+            vo.setDeptId(dept.getDeptId());
+            vo.setDeptName(dept.getDeptName());
+            vo.setParentId(dept.getParentId());
+            initZeroValues(vo);
+            reportMap.put(dept.getDeptId(), vo);
+        });
+
+        // 3. 合并统计结果
+        List<PurchaseOrderReportVo> countVos = this.getReportGroupByDept(purchaseOrderInfo);
+        countVos.forEach(vo -> mergeStatistics(reportMap.get(vo.getDeptId()), vo));
+
+        // 4. 按部门深度排序（叶子节点在前）
+        List<PurchaseOrderReportVo> sortedVos = reportMap.values().stream()
+                .sorted(Comparator.comparingInt(v -> -getDeptDepth(reportMap, v.getDeptId())))
+                .collect(Collectors.toList());
+
+        // 5. 安全聚合到父部门（父部门不存在时自动跳过）
+        sortedVos.forEach(vo -> aggregateToParentSafely(reportMap, vo));
+
+        // 6. 计算利润率
+        reportMap.values().forEach(this::calculateProfitRate);
+
+        return new ArrayList<>(reportMap.values());
+    }
+
+    // 初始化零值
+    private void initZeroValues(PurchaseOrderReportVo vo) {
+        vo.setOrderCount(0L);
+        vo.setSalesNumberCount(0L);
+        vo.setSalesPriceCount(BigDecimal.ZERO);
+        vo.setPurchasePriceCount(BigDecimal.ZERO);
+        vo.setPurchasePremiumCount(BigDecimal.ZERO);
+        vo.setOrderProfitCount(BigDecimal.ZERO);
+        vo.setAvgOrderProfitRate(BigDecimal.ZERO);
+    }
+
+    // 修改mergeStatistics方法保持空安全
+    private void mergeStatistics(PurchaseOrderReportVo target, PurchaseOrderReportVo source) {
+        if (StringUtils.isNull(target) || StringUtils.isNull(source)) return;
+
+        target.setOrderCount(source.getOrderCount());
+        target.setSalesNumberCount(source.getSalesNumberCount());
+        target.setSalesPriceCount(source.getSalesPriceCount());
+        target.setPurchasePriceCount(source.getPurchasePriceCount());
+        target.setPurchasePremiumCount(source.getPurchasePremiumCount());
+        target.setOrderProfitCount(source.getOrderProfitCount());
+    }
+
+    // 计算部门深度
+    private int getDeptDepth(Map<Long, PurchaseOrderReportVo> reportMap, Long deptId) {
+        int depth = 0;
+        Long currentId = deptId;
+        while (StringUtils.isNotNull(currentId) && currentId != 0L) {
+            PurchaseOrderReportVo vo = reportMap.get(currentId);
+            if (StringUtils.isNull(vo)) break;
+            currentId = vo.getParentId();
+            depth++;
+        }
+        return depth;
+    }
+
+    // 安全聚合方法（核心修改点）
+    private void aggregateToParentSafely(Map<Long, PurchaseOrderReportVo> reportMap, PurchaseOrderReportVo child) {
+        Long parentId = child.getParentId();
+        if (StringUtils.isNull(parentId) || parentId == 0L) {
+            return; // 根部门无需处理
+        }
+
+        PurchaseOrderReportVo parent = reportMap.get(parentId);
+        if (StringUtils.isNotNull(parent)) {
+            // 执行正常聚合
+            parent.setOrderCount(parent.getOrderCount() + child.getOrderCount());
+            parent.setSalesNumberCount(parent.getSalesNumberCount() + child.getSalesNumberCount());
+            parent.setSalesPriceCount(parent.getSalesPriceCount().add(child.getSalesPriceCount()));
+            parent.setPurchasePriceCount(parent.getPurchasePriceCount().add(child.getPurchasePriceCount()));
+            parent.setPurchasePremiumCount(parent.getPurchasePremiumCount().add(child.getPurchasePremiumCount()));
+            parent.setOrderProfitCount(parent.getOrderProfitCount().add(child.getOrderProfitCount()));
+        }
+    }
+
+    // 计算利润率
+    private void calculateProfitRate(PurchaseOrderReportVo vo) {
+        if (vo.getSalesPriceCount().compareTo(BigDecimal.ZERO) != 0) {
+            BigDecimal rate = vo.getOrderProfitCount()
+                    .divide(vo.getSalesPriceCount(), 4, RoundingMode.HALF_UP);
+            vo.setAvgOrderProfitRate(rate);
+        } else {
+            vo.setAvgOrderProfitRate(BigDecimal.ZERO);
+        }
+    }
+    @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
+    @Override
+    public List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo) {
+        return purchaseOrderInfoMapper.getReportGroupByDept(purchaseOrderInfo);
     }
 
 }

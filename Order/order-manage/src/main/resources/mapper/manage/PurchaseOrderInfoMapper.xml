@@ -200,6 +200,79 @@
             ${params.dataScope}
         </where>
     </select>
+    <select id="getReportGroupByDept"
+            resultType="com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo">
+        select
+        dept_id as deptId,
+        sum(sales_price) as salesPriceCount,
+        sum(sales_number) as salesNumberCount,
+        sum(purchase_price) as purchasePriceCount,
+        sum(purchase_premium) as purchasePremiumCount,
+        sum(order_profit) as orderProfitCount,
+        avg(order_profit_rate) as avgOrderProfitRate,
+        count(id) as orderCount from tb_purchase_order_info
+        <where>
+            <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+                and purchase_channels_id in
+                <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number like concat('%', #{orderNumber},
+                '%')
+            </if>
+            <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
+            <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
+                and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
+                #{params.endPurchaseTime}
+            </if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
+                '%')
+            </if>
+            <if test="purchaseChannelType != null  and purchaseChannelType != ''">and purchase_channel_type =
+                #{purchaseChannelType}
+            </if>
+            <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+                and purchase_channels_id in
+                <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="purchaseAccountId != null  and purchaseAccountId != ''">and purchase_account_id =
+                #{purchaseAccountId}
+            </if>
+            <if test="purchaseOrder != null  and purchaseOrder != ''">and purchase_order like concat('%',
+                #{purchaseOrder}, '%')
+            </if>
+            <if test="supplierName != null  and supplierName != ''">and supplier_name like concat('%', #{supplierName},
+                '%')
+            </if>
+            <if test="shipmentsOrder != null  and shipmentsOrder != ''">and shipments_order like concat('%',
+                #{shipmentsOrder}, '%')
+            </if>
+            <if test="hasReturn != null  and hasReturn != ''">and has_return = #{hasReturn}</if>
+            <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
+            <if test="hasAfterSale != null  and hasAfterSale != ''">and has_after_sale = #{hasAfterSale}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        group by dept_id
+    </select>
 
     <insert id="insertPurchaseOrderInfo" parameterType="PurchaseOrderInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_purchase_order_info

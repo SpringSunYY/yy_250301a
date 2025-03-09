@@ -18,6 +18,7 @@ import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderAllVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -225,5 +226,20 @@ public class PurchaseOrderInfoController extends BaseController {
         }
         PurchaseOrderInfoCountVo purchaseOrderInfoCountVo = purchaseOrderInfoService.getPurchaseOrderInfoCount(purchaseOrderInfo);
         return success(purchaseOrderInfoCountVo);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:report:index')")
+    @GetMapping("/getReport")
+    public AjaxResult getReport(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
+        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
+            List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
+            purchaseOrderInfo.setDeptIds(deptIds);
+        }
+        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchaseChannelsId())) {
+            purchaseOrderInfo.setPurchaseChannelsIds(channelInfoService.selectPurchaseChannelInfoReturnIds(purchaseOrderInfo.getPurchaseChannelsId()));
+        }
+        List<PurchaseOrderReportVo> purchaseOrderInfoReportVos = purchaseOrderInfoService.getReport(purchaseOrderInfo);
+        return success(purchaseOrderInfoReportVos);
     }
 }

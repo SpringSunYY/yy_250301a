@@ -4,6 +4,7 @@ import java.util.List;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
 
 /**
  * 采购发货信息Mapper接口
@@ -62,4 +63,6 @@ public interface PurchaseOrderInfoMapper extends BaseMapper<PurchaseOrderInfo>
     public int deletePurchaseOrderInfoByIds(Long[] ids);
 
     PurchaseOrderInfoCountVo getPurchaseOrderInfoCount(PurchaseOrderInfo purchaseOrderInfo);
+
+    List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo);
 }
