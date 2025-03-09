@@ -116,4 +116,15 @@ public interface IAfterSaleOrderInfoService extends IService<AfterSaleOrderInfo>
      * return: com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo
      **/
     AfterSaleOrderCountVo getAfterSaleOrderCount(AfterSaleOrderInfo afterSaleOrderInfo);
+
+    /**
+     * description: 导入售后订单信息
+     * author: YY
+     * method: importAfterSaleOrderInfo
+     * date: 2025/3/9 16:23
+     * param:
+     * param: list
+     * return: java.lang.String
+     **/
+    String importAfterSaleOrderInfo(List<AfterSaleOrderInfo> list);
 }

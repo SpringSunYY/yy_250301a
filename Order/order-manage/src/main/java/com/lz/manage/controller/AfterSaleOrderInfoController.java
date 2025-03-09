@@ -37,6 +37,7 @@ import com.lz.manage.model.dto.afterSaleOrderInfo.AfterSaleOrderInfoEdit;
 import com.lz.manage.service.IAfterSaleOrderInfoService;
 import com.lz.common.utils.poi.ExcelUtil;
 import com.lz.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 售后订单信息Controller
@@ -158,5 +159,22 @@ public class AfterSaleOrderInfoController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(afterSaleOrderInfoService.deleteAfterSaleOrderInfoByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:afterSaleOrderInfo:import')")
+    @Log(title = "导入售后订单信息", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception {
+        ExcelUtil<AfterSaleOrderInfo> util = new ExcelUtil<AfterSaleOrderInfo>(AfterSaleOrderInfo.class);
+        List<AfterSaleOrderInfo> list = util.importExcel(file.getInputStream());
+        String message = afterSaleOrderInfoService.importAfterSaleOrderInfo(list);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:afterSaleOrderInfo:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<AfterSaleOrderInfo> util = new ExcelUtil<AfterSaleOrderInfo>(AfterSaleOrderInfo.class);
+        util.importTemplateExcel(response, "售后订单数据");
     }
 }

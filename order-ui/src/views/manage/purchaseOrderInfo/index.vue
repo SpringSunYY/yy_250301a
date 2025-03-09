@@ -307,6 +307,13 @@
           type="success"
           plain
           size="mini"
+        >平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
+        </el-button>
+
+        <el-button
+          type="success"
+          plain
+          size="mini"
         >销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
         </el-button>
 
@@ -1156,7 +1163,8 @@ export default {
         salesNumberCount: 0,
         salesPriceCount: 0,
         purchasePriceCount: 0,
-        purchasePremiumCount: 0
+        purchasePremiumCount: 0,
+        avgOrderProfitRate: 0
       },
       afterSaleOrderOpen: false,
       returnOrderOpen: false,

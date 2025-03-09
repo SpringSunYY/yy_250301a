@@ -309,7 +309,6 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
 
         List<PurchaseOrderInfo> orderInfos = new ArrayList<>(bpOrderInfoList.size());
         for (BPOrderInfo info : bpOrderInfoList) {
-
             //未退货订单赋值并查询订单信息
             PurchaseOrderInfo orderInfo = checkBPOrder(info);
             ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(orderInfo.getOrderNumber());

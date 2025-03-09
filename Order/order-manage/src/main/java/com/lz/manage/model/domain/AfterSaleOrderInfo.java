@@ -31,7 +31,6 @@ public class AfterSaleOrderInfo implements Serializable {
     /**
      * 编号
      */
-    @Excel(name = "编号")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -45,13 +44,14 @@ public class AfterSaleOrderInfo implements Serializable {
      * 类型(1线上 2线下)
      */
     @Excel(name = "类型", readConverterExp = "0=其他,1=线上,2=线下",
-            prompt = "只能线上、线下")
+            prompt = "只能线上、线下",
+            type = Excel.Type.EXPORT)
     private String orderType;
 
     /**
      * 店铺名称
      */
-    @Excel(name = "店铺名称")
+    @Excel(name = "店铺名称", type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String storeName;
     private Long storeId;
@@ -59,14 +59,14 @@ public class AfterSaleOrderInfo implements Serializable {
     /**
      * 售后金额
      */
-    @Excel(name = "售后金额")
+    @Excel(name = "售后金额", prompt = "精确到两位小数", scale = 20)
     private BigDecimal afterSalePrice;
 
     /**
      * 售后日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "售后日期", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "售后日期", width = 30, dateFormat = "yyyy-MM-dd", prompt = "时间格式：yyyy-MM-dd 年-月-日")
     private Date afterSaleTime;
 
     /**
@@ -86,7 +86,7 @@ public class AfterSaleOrderInfo implements Serializable {
     /**
      * 部门
      */
-    @Excel(name = "部门")
+    @Excel(name = "部门", type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String deptName;
     private Long deptId;
@@ -95,7 +95,7 @@ public class AfterSaleOrderInfo implements Serializable {
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd",type = Excel.Type.EXPORT)
+    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd", type = Excel.Type.EXPORT)
     private Date createTime;
 
     /**

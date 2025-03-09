@@ -21,22 +21,18 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
-import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderCountVo;
-import com.lz.manage.service.IPurchaseOrderInfoService;
-import com.lz.manage.service.IReturnOrderInfoService;
-import com.lz.manage.service.IStoreInfoService;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.AfterSaleOrderInfoMapper;
-import com.lz.manage.model.domain.AfterSaleOrderInfo;
-import com.lz.manage.service.IAfterSaleOrderInfoService;
 import com.lz.manage.model.dto.afterSaleOrderInfo.AfterSaleOrderInfoQuery;
 import com.lz.manage.model.vo.afterSaleOrderInfo.AfterSaleOrderInfoVo;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +44,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author YY
  * @date 2025-03-09
  */
+@Slf4j
 @Service
 public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInfoMapper, AfterSaleOrderInfo> implements IAfterSaleOrderInfoService {
     @Resource
@@ -65,6 +62,10 @@ public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInf
     @Resource
     @Lazy
     private IReturnOrderInfoService returnOrderInfoService;
+
+    @Resource
+    @Lazy
+    private IBPOrderInfoService bpOrderInfoService;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -135,7 +136,7 @@ public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInf
         if (StringUtils.isNull(orderInfo)) {
             throw new ServiceException("订单不存在" + afterSaleOrderInfo.getOrderNumber());
         }
-        orderInfo.setHasReturn(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
+        orderInfo.setHasAfterSale(CommonWhetherEnum.COMMON_WHETHER_1.getValue());
         afterSaleOrderInfo.setStoreId(orderInfo.getStoreId());
         afterSaleOrderInfo.setDeptId(orderInfo.getDeptId());
         afterSaleOrderInfo.setUserId(orderInfo.getUserId());
@@ -261,10 +262,60 @@ public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInf
         this.saveOrUpdate(afterSaleOrderInfo);
         return orderInfoService.updatePurchaseOrderInfo(orderInfo);
     }
+
     @DataScope(userAlias = "tb_after_sale_order_info", deptAlias = "tb_after_sale_order_info")
     @Override
     public AfterSaleOrderCountVo getAfterSaleOrderCount(AfterSaleOrderInfo afterSaleOrderInfo) {
         return afterSaleOrderInfoMapper.getAfterSaleOrderCount(afterSaleOrderInfo);
+    }
+
+    @Override
+    public String importAfterSaleOrderInfo(List<AfterSaleOrderInfo> list) {
+        if (StringUtils.isEmpty(list)) {
+            return StringUtils.format("导入的文件没有数据");
+        }
+        Date nowDate = DateUtils.getNowDate();
+        //先校验是否已经存在订单了
+        // 获取所有的订单编号 然后根据订单编号校验是否已经有存在的订单
+        ArrayList<String> orderNumbers = new ArrayList<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            AfterSaleOrderInfo info = list.get(i);
+            int index = i + 1;
+            if (StringUtils.isEmpty(info.getOrderNumber())) {
+                return StringUtils.format("第{}行订单编号不能为空", index);
+            }
+            if (StringUtils.isNull(info.getAfterSalePrice())) {
+                info.setAfterSalePrice(BigDecimal.ZERO);
+            }
+            info.setCreateTime(nowDate);
+            orderNumbers.add(info.getOrderNumber());
+        }
+        if (StringUtils.isNotEmpty(orderNumbers)) {
+            List<AfterSaleOrderInfo> afterSaleOrderInfos = this.list(new LambdaQueryWrapper<AfterSaleOrderInfo>().in(AfterSaleOrderInfo::getOrderNumber, orderNumbers));
+            if (StringUtils.isNotEmpty(afterSaleOrderInfos)) {
+                return StringUtils.format("订单编号{}已存在", afterSaleOrderInfos.get(0).getOrderNumber());
+            }
+        }
+
+        //获取到所有的采购订单
+        ArrayList<PurchaseOrderInfo> purchaseOrderInfos = new ArrayList<>(list.size());
+        for (AfterSaleOrderInfo info : list) {
+            PurchaseOrderInfo orderInfo = checkAfterOrder(info);
+            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(info.getOrderNumber());
+            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(info.getOrderNumber());
+            orderInfo = orderInfoService.getOrderProfit(orderInfo, returnOrderInfo, bpOrderInfo, info);
+            purchaseOrderInfos.add(orderInfo);
+        }
+        transactionTemplate.execute(item -> {
+            try {
+                afterSaleOrderInfoMapper.insert(list);
+                return orderInfoService.updateBatchById(purchaseOrderInfos);
+            } catch (Exception e) {
+                log.error("导入售后订单数据失败，原因：", e);
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确,例如是否导入了重复的订单编号,数据格式是否和描述相同！！！");
+            }
+        });
+        return StringUtils.format("导入成功，成功导入{}条数据", list.size());
     }
 
 }

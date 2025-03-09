@@ -22,4 +22,5 @@ public class PurchaseOrderInfoCountVo implements Serializable {
     private BigDecimal salesPriceCount;
     private BigDecimal purchasePriceCount;
     private BigDecimal purchasePremiumCount;
+    private BigDecimal avgOrderProfitRate;
 }

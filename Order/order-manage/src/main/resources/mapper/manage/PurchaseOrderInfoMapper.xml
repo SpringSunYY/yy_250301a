@@ -137,6 +137,7 @@
         sum(purchase_price) as purchasePriceCount,
         sum(purchase_premium) as purchasePremiumCount,
         sum(order_profit) as orderProfitCount,
+        avg(order_profit_rate) as avgOrderProfitRate,
         count(id) as orderCount from tb_purchase_order_info
         <where>
             <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
