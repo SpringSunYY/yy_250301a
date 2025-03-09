@@ -1,5 +1,6 @@
 package com.lz.manage.service.impl;
 
+import com.lz.common.annotation.DataScope;
 import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.StringUtils;
 import com.lz.manage.mapper.StaticsMapper;
@@ -28,6 +29,7 @@ public class StaticsServiceImpl implements IStaticsService {
     @Resource
     private StaticsMapper staticsMapper;
 
+    @DataScope(userAlias = "poi", deptAlias = "poi")
     @Override
     public StaticsVo<StaticsVo<BigDecimal>> day(StaticsDto statics) {
         //如果开始时间或者结束时间为空

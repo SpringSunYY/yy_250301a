@@ -369,7 +369,6 @@ export default {
         this.queryParamsOnline.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
       }
       this.queryParamsOnline.orderType = '1'
-      this.queryParamsOnline.deptId = this.user.deptId
       getPurchaseOrderInfoCount(this.queryParamsOnline).then(response => {
         this.onlineOrderCount = response.data
       })
@@ -380,7 +379,6 @@ export default {
         this.queryParamsOffline.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
       }
       this.queryParamsOffline.orderType = '2'
-      this.queryParamsOffline.deptId = this.user.deptId
       getPurchaseOrderInfoCount(this.queryParamsOffline).then(response => {
         this.offlineOrderCount = response.data
       })

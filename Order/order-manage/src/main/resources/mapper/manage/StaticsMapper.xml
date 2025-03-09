@@ -8,26 +8,24 @@
         WITH RECURSIVE DateRange AS (SELECT CAST(#{startTime} AS DATE) AS date
         UNION ALL
         SELECT
-            date + INTERVAL 1 DAY
+        date + INTERVAL 1 DAY
         FROM
-            DateRange
+        DateRange
         WHERE
-            date
-         &lt; #{endTime}
-            )
-        SELECT dr.date       AS name,
-               COUNT(poi.order_profit) AS value
+        date
+        &lt; #{endTime}
+        )
+        SELECT dr.date AS name,
+        COUNT(poi.order_profit) AS value
         FROM DateRange dr
-                 LEFT JOIN
-             tb_purchase_order_info poi
-             ON dr.date = DATE (poi.purchase_time) and poi.order_type = #{orderType}
-             and poi.dept_id in
-                 <foreach collection="deptIds" item="deptId" separator="," open="(" close=")">
-                     #{deptId}
-                 </foreach>
+        LEFT JOIN
+        tb_purchase_order_info poi
+        ON dr.date = DATE (poi.purchase_time) and poi.order_type = #{orderType}
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
         GROUP BY
-            dr.date
+        dr.date
         ORDER BY
-            dr.date;
+        dr.date;
     </select>
 </mapper>

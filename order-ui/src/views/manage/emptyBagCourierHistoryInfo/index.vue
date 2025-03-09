@@ -525,6 +525,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
+      this.form.userId = this.$store.state.user.id;
       this.open = true
       this.title = '添加空包/快递充值记录'
     },

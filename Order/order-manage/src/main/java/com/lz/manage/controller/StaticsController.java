@@ -26,8 +26,6 @@ import java.util.List;
 public class StaticsController  extends BaseController {
     @Resource
     private IStaticsService staticsService;
-    @Resource
-    private ISysDeptService deptService;
 
     /**
      * 近三十日统计
@@ -36,10 +34,6 @@ public class StaticsController  extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
     @PostMapping("/day")
     public AjaxResult day(@RequestBody StaticsDto staticsDto) {
-        List<Long> deptIds = deptService.selectDeptByIdReturnIds(SecurityUtils.getDeptId());
-        deptIds.add(SecurityUtils.getDeptId());
-        staticsDto.setDeptIds(deptIds);
-
         return success(staticsService.day(staticsDto));
     }
 }

@@ -1,60 +1,25 @@
 package com.lz.manage.model.statics;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+@Data
 public class StaticsDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startTime;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endTime;
     private String orderType;
-    private List<Long> deptIds;
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(String orderType) {
-        this.orderType = orderType;
-    }
-
-    public List<Long> getDeptIds() {
-        return deptIds;
-    }
-
-    public void setDeptIds(List<Long> deptIds) {
-        this.deptIds = deptIds;
-    }
-
-    @Override
-    public String toString() {
-        return "StaticsDto{" +
-                "startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", orderType='" + orderType + '\'' +
-                ", deptIds=" + deptIds +
-                '}';
-    }
+    /** 请求参数 */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, Object> params;
 }
