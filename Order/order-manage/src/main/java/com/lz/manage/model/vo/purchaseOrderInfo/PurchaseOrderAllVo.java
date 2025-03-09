@@ -175,6 +175,12 @@ public class PurchaseOrderAllVo implements Serializable {
             type = Excel.Type.EXPORT)
     private String hasBP;
 
+    @Excel(name = "是否售后",
+            readConverterExp = "1=是,2=否",
+            prompt = "只能填入：是、否",
+            type = Excel.Type.EXPORT)
+    private String hasAfterSale;
+
     /**
      * 退货状态
      */

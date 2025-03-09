@@ -1,8 +1,8 @@
 package com.lz.manage.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
+import com.lz.manage.model.domain.AfterSaleOrderInfo;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
@@ -49,12 +49,13 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
     /**
      * 计算订单利润（包含退货和BP订单信息）
      *
-     * @param purchaseOrderInfo 采购订单信息
-     * @param returnOrderInfo   退货订单信息
-     * @param bpOrderInfo       BP订单信息
+     * @param purchaseOrderInfo  采购订单信息
+     * @param returnOrderInfo    退货订单信息 没有则new
+     * @param bpOrderInfo        BP订单信息 没有则new
+     * @param afterSaleOrderInfo 售后订单信息 没有则new
      * @return 订单利润 PurchaseOrderInfo
      */
-    public PurchaseOrderInfo getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo);
+    public PurchaseOrderInfo getOrderProfit(PurchaseOrderInfo purchaseOrderInfo, ReturnOrderInfo returnOrderInfo, BPOrderInfo bpOrderInfo, AfterSaleOrderInfo afterSaleOrderInfo);
 
     /**
      * 修改采购发货信息

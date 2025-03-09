@@ -131,6 +131,11 @@ public class PurchaseOrderInfoVo implements Serializable
     private String hasBP;
 
     /**
+     * 是否售后
+     */
+    private String hasAfterSale;
+
+    /**
      * 创建人
      */
     @TableField(exist = false)

@@ -180,11 +180,19 @@ public class PurchaseOrderInfo implements Serializable {
             prompt = "只能填入：是、否",
             type = Excel.Type.EXPORT)
     private String hasBP;
+    /**
+     * 是否售后
+     */
+    @Excel(name = "是否售后",
+            readConverterExp = "1=是,2=否",
+            prompt = "只能填入：是、否",
+            type = Excel.Type.EXPORT)
+    private String hasAfterSale;
 
     /**
      * 创建人
      */
-    @Excel(name = "创建人", prompt = "客服账号")
+    @Excel(name = "客服", prompt = "客服账号")
     @TableField(exist = false)
     private String userName;
     private Long userId;

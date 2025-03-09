@@ -68,17 +68,6 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="售后日期">
-        <el-date-picker
-          v-model="daterangeAfterSaleTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -180,13 +169,6 @@
           size="mini"
         >退款金额：{{ bpOrderCount.bppriceCount }}
         </el-button>
-
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >售后金额：{{ bpOrderCount.afterSalePriceCount }}
-        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -213,39 +195,26 @@
           <span>{{ parseTime(scope.row.bptime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="售后金额" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
-                       prop="afterSalePrice"
-      />
-      <el-table-column label="售后日期" align="center" v-if="columns[7].visible" prop="afterSaleTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.afterSaleTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="售后凭证" align="center" v-if="columns[8].visible" prop="afterSaleImage" width="100">
-        <template slot-scope="scope">
-          <image-preview :src="scope.row.afterSaleImage" :width="50" :height="50"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[9].visible"
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
                        prop="userName"
       />
-      <el-table-column label="创建时间" align="center" v-if="columns[10].visible" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" v-if="columns[7].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[11].visible"
+      <el-table-column label="更新人" :show-overflow-tooltip="true" align="center" v-if="columns[8].visible"
                        prop="updateBy"
       />
-      <el-table-column label="更新时间" align="center" v-if="columns[12].visible" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" v-if="columns[9].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[13].visible"
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
                        prop="remark"
       />
-      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
+      <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[11].visible"
                        prop="deptName"
       />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -295,23 +264,6 @@
                           placeholder="请选择白嫖退款日期"
           >
           </el-date-picker>
-        </el-form-item>
-        <el-form-item label="售后金额" prop="afterSalePrice">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
-                           placeholder="请输入售后金额"
-          />
-        </el-form-item>
-        <el-form-item label="售后日期" prop="afterSaleTime">
-          <el-date-picker clearable
-                          v-model="form.afterSaleTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择售后日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="售后凭证" prop="afterSaleImage">
-          <image-upload :limit="9" v-model="form.afterSaleImage"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
@@ -379,7 +331,6 @@ export default {
       bpOrderCount: {
         orderCount: 0,
         bppriceCount: 0,
-        afterSalePriceCount: 0
       },
       //店铺信息
       storeInfoList: [],
@@ -408,15 +359,12 @@ export default {
         { key: 3, label: '店铺名称', visible: true },
         { key: 4, label: '白嫖退款金额', visible: true },
         { key: 5, label: '白嫖退款日期', visible: true },
-        { key: 6, label: '售后金额', visible: true },
-        { key: 7, label: '售后日期', visible: true },
-        { key: 8, label: '售后凭证', visible: true },
-        { key: 9, label: '客服', visible: true },
-        { key: 10, label: '创建时间', visible: false },
-        { key: 11, label: '更新人', visible: false },
-        { key: 12, label: '更新时间', visible: false },
-        { key: 13, label: '备注', visible: false },
-        { key: 14, label: '部门', visible: true }
+        { key: 6, label: '客服', visible: true },
+        { key: 7, label: '创建时间', visible: false },
+        { key: 8, label: '更新人', visible: false },
+        { key: 9, label: '更新时间', visible: false },
+        { key: 10, label: '备注', visible: false },
+        { key: 11, label: '部门', visible: true }
       ],
       // 遮罩层
       loading: true,
@@ -439,8 +387,6 @@ export default {
       // 部门时间范围
       daterangeBPTime: [],
       // 部门时间范围
-      daterangeAfterSaleTime: [],
-      // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围
       daterangeUpdateTime: [],
@@ -452,7 +398,6 @@ export default {
         orderType: null,
         storeId: null,
         bptime: null,
-        afterSaleTime: null,
         userId: null,
         createTime: null,
         updateBy: null,
@@ -591,10 +536,6 @@ export default {
         this.queryParams.params['beginBPTime'] = this.daterangeBPTime[0]
         this.queryParams.params['endBPTime'] = this.daterangeBPTime[1]
       }
-      if (null != this.daterangeAfterSaleTime && '' != this.daterangeAfterSaleTime) {
-        this.queryParams.params['beginAfterSaleTime'] = this.daterangeAfterSaleTime[0]
-        this.queryParams.params['endAfterSaleTime'] = this.daterangeAfterSaleTime[1]
-      }
       if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
         this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
         this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
@@ -629,9 +570,6 @@ export default {
         storeId: null,
         bpprice: null,
         bptime: null,
-        afterSalePrice: null,
-        afterSaleTime: null,
-        afterSaleImage: null,
         userId: null,
         createTime: null,
         updateBy: null,
@@ -649,7 +587,6 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.daterangeBPTime = []
-      this.daterangeAfterSaleTime = []
       this.daterangeCreateTime = []
       this.daterangeUpdateTime = []
       this.resetForm('queryForm')

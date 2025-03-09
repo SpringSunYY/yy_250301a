@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lz.manage.mapper.AfterSaleOrderInfoMapper">
+    
+    <resultMap type="AfterSaleOrderInfo" id="AfterSaleOrderInfoResult">
+        <result property="id"    column="id"    />
+        <result property="orderNumber"    column="order_number"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="afterSalePrice"    column="after_sale_price"    />
+        <result property="afterSaleTime"    column="after_sale_time"    />
+        <result property="afterSaleImage"    column="after_sale_image"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectAfterSaleOrderInfoVo">
+        select id, order_number, order_type, store_id, after_sale_price, after_sale_time, after_sale_image, user_id, dept_id, create_time, update_by, update_time, remark from tb_after_sale_order_info
+    </sql>
+
+    <select id="selectAfterSaleOrderInfoList" parameterType="AfterSaleOrderInfo" resultMap="AfterSaleOrderInfoResult">
+        <include refid="selectAfterSaleOrderInfoVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="orderNumber != null  and orderNumber != ''">and order_number = #{orderNumber}</if>
+            <if test="orderType != null  and orderType != ''">and order_type = #{orderType}</if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="afterSalePrice != null ">and after_sale_price = #{afterSalePrice}</if>
+            <if test="params.beginAfterSaleTime != null and params.beginAfterSaleTime != '' and params.endAfterSaleTime != null and params.endAfterSaleTime != ''">
+                and DATE_FORMAT(after_sale_time, '%Y-%m-%d') between #{params.beginAfterSaleTime} and #{params.endAfterSaleTime}
+            </if>
+            <if test="afterSaleImage != null  and afterSaleImage != ''">and after_sale_image = #{afterSaleImage}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">and update_by like concat('%', #{updateBy}, '%')</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+                and DATE_FORMAT(update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
+            </if>
+            <if test="remark != null  and remark != ''">and remark = #{remark}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        order by after_sale_time desc
+    </select>
+    
+    <select id="selectAfterSaleOrderInfoById" parameterType="Long" resultMap="AfterSaleOrderInfoResult">
+        <include refid="selectAfterSaleOrderInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAfterSaleOrderInfo" parameterType="AfterSaleOrderInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_after_sale_order_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">order_number,</if>
+            <if test="orderType != null and orderType != ''">order_type,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="afterSalePrice != null">after_sale_price,</if>
+            <if test="afterSaleTime != null">after_sale_time,</if>
+            <if test="afterSaleImage != null">after_sale_image,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">#{orderNumber},</if>
+            <if test="orderType != null and orderType != ''">#{orderType},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="afterSalePrice != null">#{afterSalePrice},</if>
+            <if test="afterSaleTime != null">#{afterSaleTime},</if>
+            <if test="afterSaleImage != null">#{afterSaleImage},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAfterSaleOrderInfo" parameterType="AfterSaleOrderInfo">
+        update tb_after_sale_order_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNumber != null and orderNumber != ''">order_number = #{orderNumber},</if>
+            <if test="orderType != null and orderType != ''">order_type = #{orderType},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="afterSalePrice != null">after_sale_price = #{afterSalePrice},</if>
+            <if test="afterSaleTime != null">after_sale_time = #{afterSaleTime},</if>
+            <if test="afterSaleImage != null">after_sale_image = #{afterSaleImage},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAfterSaleOrderInfoById" parameterType="Long">
+        delete from tb_after_sale_order_info where id = #{id}
+    </delete>
+
+    <delete id="deleteAfterSaleOrderInfoByIds" parameterType="String">
+        delete from tb_after_sale_order_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

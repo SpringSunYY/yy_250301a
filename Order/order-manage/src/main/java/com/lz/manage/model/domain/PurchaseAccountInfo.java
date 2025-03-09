@@ -53,7 +53,7 @@ public class PurchaseAccountInfo implements Serializable
     private String purchaseAccount;
 
     /** 创建人 */
-    @Excel(name = "创建人")
+    @Excel(name = "客服")
     @TableField(exist = false)
     private String userName;
     private Long userId;

@@ -4,14 +4,18 @@ import java.util.Map;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.BeanUtils;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
+
 /**
  * 采购发货信息Query对象 tb_purchase_order_info
  *
@@ -19,68 +23,110 @@ import com.lz.manage.model.domain.PurchaseOrderInfo;
  * @date 2025-03-03
  */
 @Data
-public class PurchaseOrderInfoQuery implements Serializable
-{
+public class PurchaseOrderInfoQuery implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
-    /** 采购编号 */
+    /**
+     * 采购编号
+     */
     private String orderNumber;
 
-    /** 销售类型（0=其他 1=线上 2=线下） */
+    /**
+     * 销售类型（0=其他 1=线上 2=线下）
+     */
     private String orderType;
 
-    /** 采购日期 */
+    /**
+     * 采购日期
+     */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date purchaseTime;
 
-    /** 店铺名称 */
+    /**
+     * 店铺名称
+     */
     private Long storeId;
 
-    /** 买家 */
+    /**
+     * 买家
+     */
     private String buyerNumber;
 
-    /** 采购渠道分类 */
+    /**
+     * 采购渠道分类
+     */
     private String purchaseChannelType;
 
-    /** 采购渠道 */
+    /**
+     * 采购渠道
+     */
     private Long purchaseChannelsId;
 
-    /** 采购账号 */
+    /**
+     * 采购账号
+     */
     private Long purchaseAccountId;
 
-    /** 采购订单编号 */
+    /**
+     * 采购订单编号
+     */
     private String purchaseOrder;
 
-    /** 供应商名称 */
+    /**
+     * 供应商名称
+     */
     private String supplierName;
 
-    /** 发货单号 */
+    /**
+     * 发货单号
+     */
     private String shipmentsOrder;
 
-    /** 是否退货 */
+    /**
+     * 是否退货
+     */
     private String hasReturn;
 
-    /** 是否白嫖 */
+    /**
+     * 是否白嫖
+     */
     private String hasBP;
 
-    /** 创建人 */
+    /**
+     * 是否售后
+     */
+    private String hasAfterSale;
+
+    /**
+     * 创建人
+     */
     private Long userId;
 
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createTime;
 
-    /** 更新人 */
+    /**
+     * 更新人
+     */
     private String updateBy;
 
-    /** 更新时间 */
+    /**
+     * 更新时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date updateTime;
 
-    /** 部门 */
+    /**
+     * 部门
+     */
     private Long deptId;
 
-    /** 请求参数 */
+    /**
+     * 请求参数
+     */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     private Map<String, Object> params;

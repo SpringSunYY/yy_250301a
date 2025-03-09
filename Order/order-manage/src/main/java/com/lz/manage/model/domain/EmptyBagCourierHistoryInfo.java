@@ -46,7 +46,7 @@ public class EmptyBagCourierHistoryInfo implements Serializable
     private BigDecimal price;
 
     /** 创建人 */
-    @Excel(name = "创建人")
+    @Excel(name = "客服")
     @TableField(exist = false)
     private String userName;
     private Long userId;

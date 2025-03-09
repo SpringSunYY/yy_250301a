@@ -25,6 +25,7 @@
         <result property="shipmentsOrder" column="shipments_order"/>
         <result property="hasReturn" column="has_return"/>
         <result property="hasBP" column="has_b_p"/>
+        <result property="hasAfterSale" column="has_after_sale"/>
         <result property="userId" column="user_id"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -54,6 +55,7 @@
                shipments_order,
                has_return,
                has_b_p,
+               has_after_sale,
                user_id,
                create_time,
                update_by,
@@ -102,6 +104,7 @@
             </if>
             <if test="hasReturn != null  and hasReturn != ''">and has_return = #{hasReturn}</if>
             <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
+            <if test="hasAfterSale != null  and hasAfterSale != ''">and has_after_sale = #{hasAfterSale}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
                 and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
@@ -177,6 +180,7 @@
             </if>
             <if test="hasReturn != null  and hasReturn != ''">and has_return = #{hasReturn}</if>
             <if test="hasBP != null  and hasBP != ''">and has_b_p = #{hasBP}</if>
+            <if test="hasAfterSale != null  and hasAfterSale != ''">and has_after_sale = #{hasAfterSale}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
                 and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
@@ -218,6 +222,7 @@
             <if test="shipmentsOrder != null">shipments_order,</if>
             <if test="hasReturn != null">has_return,</if>
             <if test="hasBP != null">has_b_p,</if>
+            <if test="hasAfterSale != null">has_after_sale,</if>
             <if test="userId != null">user_id,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
@@ -245,6 +250,7 @@
             <if test="shipmentsOrder != null">#{shipmentsOrder},</if>
             <if test="hasReturn != null">#{hasReturn},</if>
             <if test="hasBP != null">#{hasBP},</if>
+            <if test="hasAfterSale != null">#{hasAfterSale},</if>
             <if test="userId != null">#{userId},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -276,6 +282,7 @@
             <if test="shipmentsOrder != null">shipments_order = #{shipmentsOrder},</if>
             <if test="hasReturn != null">has_return = #{hasReturn},</if>
             <if test="hasBP != null">has_b_p = #{hasBP},</if>
+            <if test="hasAfterSale != null">has_after_sale = #{hasAfterSale},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

@@ -7,19 +7,18 @@ import com.lz.common.core.page.TableDataInfo;
 import com.lz.common.enums.BusinessType;
 import com.lz.common.utils.StringUtils;
 import com.lz.common.utils.poi.ExcelUtil;
+import com.lz.manage.model.domain.AfterSaleOrderInfo;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoEdit;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoInsert;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
+import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderAllVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
-import com.lz.manage.service.IBPOrderInfoService;
-import com.lz.manage.service.IPurchaseChannelInfoService;
-import com.lz.manage.service.IPurchaseOrderInfoService;
-import com.lz.manage.service.IReturnOrderInfoService;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +53,9 @@ public class PurchaseOrderInfoController extends BaseController {
     @Resource
     private IPurchaseChannelInfoService channelInfoService;
 
+    @Resource
+    private IAfterSaleOrderInfoService afterSaleOrderInfoService;
+
     /**
      * 查询采购发货信息列表
      */
@@ -72,20 +74,29 @@ public class PurchaseOrderInfoController extends BaseController {
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
         List<PurchaseOrderAllVo> listVo = list.stream().map(PurchaseOrderAllVo::objToVo).collect(Collectors.toList());
         for (PurchaseOrderAllVo vo : listVo) {
-            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
-            if (StringUtils.isNotNull(returnOrderInfo)) {
-                vo.setReturnStatus(returnOrderInfo.getReturnStatus());
-                vo.setReturnPrice(returnOrderInfo.getReturnPrice());
-                vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
-                vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+            if (vo.getHasReturn().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(returnOrderInfo)) {
+                    vo.setReturnStatus(returnOrderInfo.getReturnStatus());
+                    vo.setReturnPrice(returnOrderInfo.getReturnPrice());
+                    vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
+                    vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+                }
             }
-            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
-            if (StringUtils.isNotNull(bpOrderInfo)) {
-                vo.setBPPrice(bpOrderInfo.getBPPrice());
-                vo.setBPTime(bpOrderInfo.getBPTime());
-                vo.setAfterSalePrice(bpOrderInfo.getAfterSalePrice());
-                vo.setAfterSaleTime(bpOrderInfo.getAfterSaleTime());
-                vo.setAfterSaleImage(bpOrderInfo.getAfterSaleImage());
+            if (vo.getHasBP().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(bpOrderInfo)) {
+                    vo.setBPPrice(bpOrderInfo.getBPPrice());
+                    vo.setBPTime(bpOrderInfo.getBPTime());
+                }
+            }
+            if (vo.getHasAfterSale().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                AfterSaleOrderInfo afterSaleOrderInfo = afterSaleOrderInfoService.selectAfterSaleOrderInfoByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(afterSaleOrderInfo)) {
+                    vo.setAfterSalePrice(afterSaleOrderInfo.getAfterSalePrice());
+                    vo.setAfterSaleTime(afterSaleOrderInfo.getAfterSaleTime());
+                    vo.setAfterSaleImage(afterSaleOrderInfo.getAfterSaleImage());
+                }
             }
         }
         TableDataInfo table = getDataTable(list);
@@ -113,20 +124,29 @@ public class PurchaseOrderInfoController extends BaseController {
         PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
         List<PurchaseOrderAllVo> listVo = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo).stream().map(PurchaseOrderAllVo::objToVo).collect(Collectors.toList());
         for (PurchaseOrderAllVo vo : listVo) {
-            ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
-            if (StringUtils.isNotNull(returnOrderInfo)) {
-                vo.setReturnStatus(returnOrderInfo.getReturnStatus());
-                vo.setReturnPrice(returnOrderInfo.getReturnPrice());
-                vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
-                vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+            if (vo.getHasReturn().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(returnOrderInfo)) {
+                    vo.setReturnStatus(returnOrderInfo.getReturnStatus());
+                    vo.setReturnPrice(returnOrderInfo.getReturnPrice());
+                    vo.setLastReturnPrice(returnOrderInfo.getLastReturnPrice());
+                    vo.setReturnAccomplishTime(returnOrderInfo.getReturnAccomplishTime());
+                }
             }
-            BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
-            if (StringUtils.isNotNull(bpOrderInfo)) {
-                vo.setBPPrice(bpOrderInfo.getBPPrice());
-                vo.setBPTime(bpOrderInfo.getBPTime());
-                vo.setAfterSalePrice(bpOrderInfo.getAfterSalePrice());
-                vo.setAfterSaleTime(bpOrderInfo.getAfterSaleTime());
-                vo.setAfterSaleImage(bpOrderInfo.getAfterSaleImage());
+            if (vo.getHasBP().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(bpOrderInfo)) {
+                    vo.setBPPrice(bpOrderInfo.getBPPrice());
+                    vo.setBPTime(bpOrderInfo.getBPTime());
+                }
+            }
+            if (vo.getHasAfterSale().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
+                AfterSaleOrderInfo afterSaleOrderInfo = afterSaleOrderInfoService.selectAfterSaleOrderInfoByOrderNumber(vo.getOrderNumber());
+                if (StringUtils.isNotNull(afterSaleOrderInfo)) {
+                    vo.setAfterSalePrice(afterSaleOrderInfo.getAfterSalePrice());
+                    vo.setAfterSaleTime(afterSaleOrderInfo.getAfterSaleTime());
+                    vo.setAfterSaleImage(afterSaleOrderInfo.getAfterSaleImage());
+                }
             }
         }
         ExcelUtil<PurchaseOrderAllVo> util = new ExcelUtil<PurchaseOrderAllVo>(PurchaseOrderAllVo.class);

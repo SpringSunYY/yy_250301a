@@ -20,22 +20,17 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
-import com.lz.manage.model.domain.BPOrderInfo;
-import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderCountVo;
-import com.lz.manage.service.IBPOrderInfoService;
-import com.lz.manage.service.IPurchaseOrderInfoService;
-import com.lz.manage.service.IStoreInfoService;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.ReturnOrderInfoMapper;
-import com.lz.manage.model.domain.ReturnOrderInfo;
-import com.lz.manage.service.IReturnOrderInfoService;
 import com.lz.manage.model.dto.returnOrderInfo.ReturnOrderInfoQuery;
 import com.lz.manage.model.vo.returnOrderInfo.ReturnOrderInfoVo;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +61,11 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
 
     @Resource
     private IBPOrderInfoService bpOrderInfoService;
+
+
+    @Resource
+    @Lazy
+    private IAfterSaleOrderInfoService afterSaleOrderInfoService;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -248,7 +248,8 @@ public class ReturnOrderInfoServiceImpl extends ServiceImpl<ReturnOrderInfoMappe
             //未退货订单赋值并查询订单信息
             PurchaseOrderInfo orderInfo = checkReturnOrder(info);
             BPOrderInfo bpOrderInfo = bpOrderInfoService.selectBPOrderInfoByOrderNumber(orderInfo.getOrderNumber());
-            orderInfo = orderInfoService.getOrderProfit(orderInfo, info, bpOrderInfo);
+            AfterSaleOrderInfo afterSaleOrderInfo = afterSaleOrderInfoService.selectAfterSaleOrderInfoByOrderNumber(orderInfo.getOrderNumber());
+            orderInfo = orderInfoService.getOrderProfit(orderInfo, info, bpOrderInfo, afterSaleOrderInfo);
             orderInfos.add(orderInfo);
         }
         transactionTemplate.execute(item -> {

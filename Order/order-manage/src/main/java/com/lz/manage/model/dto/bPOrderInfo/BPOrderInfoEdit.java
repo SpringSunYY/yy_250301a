@@ -37,16 +37,6 @@ public class BPOrderInfoEdit implements Serializable
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date bPTime;
 
-    /** 售后金额 */
-    private BigDecimal afterSalePrice;
-
-    /** 售后日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date afterSaleTime;
-
-    /** 售后凭证 */
-    private String afterSaleImage;
-
     /** 创建人 */
     private Long userId;
 

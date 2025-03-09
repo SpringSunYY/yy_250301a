@@ -20,14 +20,10 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
-import com.lz.manage.model.domain.PurchaseOrderInfo;
-import com.lz.manage.model.domain.ReturnOrderInfo;
-import com.lz.manage.model.domain.StoreInfo;
+import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.vo.bPOrderInfo.BPOrderCountVo;
-import com.lz.manage.service.IPurchaseOrderInfoService;
-import com.lz.manage.service.IReturnOrderInfoService;
-import com.lz.manage.service.IStoreInfoService;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +32,6 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.BPOrderInfoMapper;
-import com.lz.manage.model.domain.BPOrderInfo;
-import com.lz.manage.service.IBPOrderInfoService;
 import com.lz.manage.model.dto.bPOrderInfo.BPOrderInfoQuery;
 import com.lz.manage.model.vo.bPOrderInfo.BPOrderInfoVo;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +61,10 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
     @Resource
     @Lazy
     private IReturnOrderInfoService returnOrderInfoService;
+
+    @Resource
+    @Lazy
+    private IAfterSaleOrderInfoService afterSaleOrderInfoService;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -163,6 +161,7 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
      * @param bPOrderInfo 白嫖订单信息
      * @return 结果
      */
+    @Transactional
     @Override
     public int updateBPOrderInfo(BPOrderInfo bPOrderInfo) {
         BPOrderInfo old = this.selectBPOrderInfoByOrderNumber(bPOrderInfo.getOrderNumber());
@@ -241,9 +240,6 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
         Date bPTime = bPOrderInfoQuery.getBPTime();
         queryWrapper.between(StringUtils.isNotNull(params.get("beginBPTime")) && StringUtils.isNotNull(params.get("endBPTime")), "b_p_time", params.get("beginBPTime"), params.get("endBPTime"));
 
-        Date afterSaleTime = bPOrderInfoQuery.getAfterSaleTime();
-        queryWrapper.between(StringUtils.isNotNull(params.get("beginAfterSaleTime")) && StringUtils.isNotNull(params.get("endAfterSaleTime")), "after_sale_time", params.get("beginAfterSaleTime"), params.get("endAfterSaleTime"));
-
         Long userId = bPOrderInfoQuery.getUserId();
         queryWrapper.eq(StringUtils.isNotNull(userId), "user_id", userId);
 
@@ -300,9 +296,6 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
             if (StringUtils.isNull(info.getBPPrice())) {
                 info.setBPPrice(BigDecimal.ZERO);
             }
-            if (StringUtils.isNull(info.getAfterSalePrice())) {
-                info.setAfterSalePrice(BigDecimal.ZERO);
-            }
             info.setCreateTime(nowDate);
 
             orderNumbers.add(info.getOrderNumber());
@@ -320,7 +313,8 @@ public class BPOrderInfoServiceImpl extends ServiceImpl<BPOrderInfoMapper, BPOrd
             //未退货订单赋值并查询订单信息
             PurchaseOrderInfo orderInfo = checkBPOrder(info);
             ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(orderInfo.getOrderNumber());
-            orderInfo = orderInfoService.getOrderProfit(orderInfo, returnOrderInfo, info);
+            AfterSaleOrderInfo afterSaleOrderInfo = afterSaleOrderInfoService.selectAfterSaleOrderInfoByOrderNumber(orderInfo.getOrderNumber());
+            orderInfo = orderInfoService.getOrderProfit(orderInfo, returnOrderInfo, info, afterSaleOrderInfo);
             orderInfos.add(orderInfo);
         }
 

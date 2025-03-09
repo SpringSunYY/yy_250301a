@@ -682,6 +682,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         return sb.toString();
     }
 
+
+    public static String toPercentage(double value) {
+        return toPercentage(value, 2);
+    }
+
     /**
      * 将小数转换为百分比字符串
      * @param value 小数值，例如 0.8 或 1

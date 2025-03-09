@@ -22,10 +22,4 @@ public class BPOrderCountVo implements Serializable {
      * 白嫖退款金额
      */
     private BigDecimal bppriceCount;
-
-    /**
-     * 售后金额
-     */
-    private BigDecimal afterSalePriceCount;
-
 }

@@ -3,16 +3,10 @@ package com.lz.manage.model.vo.bPOrderInfo;
 import java.io.Serializable;
 import java.util.Date;
 import java.math.BigDecimal;
-import java.util.Date;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import com.lz.common.annotation.Excel;
 import org.springframework.beans.BeanUtils;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lz.manage.model.domain.BPOrderInfo;
 /**
  * 白嫖订单信息Vo对象 tb_b_p_order_info
@@ -44,15 +38,6 @@ public class BPOrderInfoVo implements Serializable
 
     /** 白嫖退款日期 */
     private Date bPTime;
-
-    /** 售后金额 */
-    private BigDecimal afterSalePrice;
-
-    /** 售后日期 */
-    private Date afterSaleTime;
-
-    /** 售后凭证 */
-    private String afterSaleImage;
 
     /** 创建人 */
     private String userName;
