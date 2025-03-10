@@ -38,7 +38,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              订单利润
+              订单总利润
             </div>
             <count-to :start-val="0"
                       :end-val="Number(Number(onlineOrderCount.orderProfitCount)+Number(offlineOrderCount.orderProfitCount))"
@@ -55,7 +55,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              销售价
+              总销售价
             </div>
             <count-to :start-val="0"
                       :end-val="Number(Number(onlineOrderCount.salesPriceCount)+Number(offlineOrderCount.salesPriceCount))"
@@ -72,7 +72,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              订单销量
+              订单总销量
             </div>
             <count-to :start-val="0"
                       :end-val="Number(Number(onlineOrderCount.salesNumberCount)+Number(offlineOrderCount.salesNumberCount))"
@@ -104,7 +104,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线上订单利润
+              线上订单总利润
             </div>
             <count-to :start-val="0" :end-val="Number(onlineOrderCount.orderProfitCount)" :duration="3000"
                       class="card-panel-num"
@@ -119,7 +119,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线上销售价
+              线上总销售价
             </div>
             <count-to :start-val="0" :end-val="Number(onlineOrderCount.salesPriceCount)" :duration="3200"
                       class="card-panel-num"
@@ -134,7 +134,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线上订单销量
+              线上订单总销量
             </div>
             <count-to :start-val="0" :end-val="Number(onlineOrderCount.salesNumberCount)" :duration="3600"
                       class="card-panel-num"
@@ -167,7 +167,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线下订单利润
+              线下订单总利润
             </div>
             <count-to :start-val="0" :end-val="Number(offlineOrderCount.orderProfitCount)" :duration="3000"
                       class="card-panel-num"
@@ -182,7 +182,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线下销售价
+              线下总销售价
             </div>
             <count-to :start-val="0" :end-val="Number(offlineOrderCount.salesPriceCount)" :duration="3200"
                       class="card-panel-num"
@@ -197,7 +197,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              线下订单销量
+              线下订单总销量
             </div>
             <count-to :start-val="0" :end-val="Number(offlineOrderCount.salesNumberCount)" :duration="3600"
                       class="card-panel-num"
@@ -218,8 +218,14 @@ import LineChartComponent from '@/views/dashboard/LineChartComponent.vue'
 import { getUserProfile } from '@/api/system/user'
 import { getPurchaseOrderInfoCount } from '@/api/manage/purchaseOrderInfo'
 import { getPurchaseOrderStaticData } from '@/api/manage/statics'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: {
     LineChartComponent,
     CountTo
@@ -252,54 +258,7 @@ export default {
         orderType: '2',
         params: {}
       },
-      daterangePurchaseTime: (() => {
-        const today = new Date()
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 2)
-        return [firstDayOfMonth.toISOString().split('T')[0], today.toISOString().split('T')[0]]
-      })(),
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近半年',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一年',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
+      daterangePurchaseTime: (() => currentMonth())(),
       user: {},
       // 版本号
       version: '3.8.9'

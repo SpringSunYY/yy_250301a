@@ -37,6 +37,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="微信号" prop="wxNumber">
@@ -93,6 +94,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
@@ -350,25 +352,25 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-<!--        <el-form-item label="操作人" prop="userId">-->
-<!--          <el-select-->
-<!--            v-model="form.userId"-->
-<!--            filterable-->
-<!--            remote-->
-<!--            reserve-keyword-->
-<!--            placeholder="请输入用户账号"-->
-<!--            :remote-method="selectUserInfoList"-->
-<!--            :loading="userLoading"-->
-<!--          >-->
-<!--            <el-option-->
-<!--              v-for="item in userInfoList"-->
-<!--              :key="item.userId"-->
-<!--              :label="item.userName"-->
-<!--              :value="item.userId"-->
-<!--            >-->
-<!--            </el-option>-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人" prop="userId">-->
+        <!--          <el-select-->
+        <!--            v-model="form.userId"-->
+        <!--            filterable-->
+        <!--            remote-->
+        <!--            reserve-keyword-->
+        <!--            placeholder="请输入用户账号"-->
+        <!--            :remote-method="selectUserInfoList"-->
+        <!--            :loading="userLoading"-->
+        <!--          >-->
+        <!--            <el-option-->
+        <!--              v-for="item in userInfoList"-->
+        <!--              :key="item.userId"-->
+        <!--              :label="item.userName"-->
+        <!--              :value="item.userId"-->
+        <!--            >-->
+        <!--            </el-option>-->
+        <!--          </el-select>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -425,9 +427,15 @@ import { listStoreInfo } from '@/api/manage/storeInfo'
 import { listDept } from '@/api/system/dept'
 import { allocatedUserList } from '@/api/system/role'
 import { getToken } from '@/utils/auth'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'ReplacementOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_replacement_status'],
   data() {
@@ -495,7 +503,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangeDateTime: [],
+      daterangeDateTime:  (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围

@@ -67,6 +67,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
@@ -317,9 +318,15 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getToken } from '@/utils/auth'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'PurchaseAccountInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_purchase_channel_type'],
   data() {
@@ -373,7 +380,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangeCreateTime: [],
+      daterangeCreateTime:  (() => currentMonth())(),
       // 部门时间范围
       daterangeUpdateTime: [],
       // 查询参数

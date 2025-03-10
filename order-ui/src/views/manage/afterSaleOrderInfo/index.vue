@@ -63,6 +63,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="客服" prop="userId">
@@ -106,6 +107,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="更新人" prop="updateBy">
@@ -115,17 +117,6 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="更新时间">
-        <el-date-picker
-          v-model="daterangeUpdateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -367,9 +358,15 @@ import { listStoreInfo } from '@/api/manage/storeInfo'
 import { listDept } from '@/api/system/dept'
 import { allocatedUserList } from '@/api/system/role'
 import { getToken } from '@/utils/auth'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'AfterSaleOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_order_type'],
   data() {
@@ -432,7 +429,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 备注时间范围
-      daterangeAfterSaleTime: [],
+      daterangeAfterSaleTime:  (() => currentMonth())(),
       // 备注时间范围
       daterangeCreateTime: [],
       // 备注时间范围

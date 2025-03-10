@@ -66,6 +66,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="创建时间">
@@ -77,6 +78,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
@@ -321,16 +323,22 @@ import { listDept } from '@/api/system/dept'
 import { listStoreInfo } from '@/api/manage/storeInfo'
 import { getToken } from '@/utils/auth'
 import { allocatedUserList } from '@/api/system/role'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'BPOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_order_type'],
   data() {
     return {
       bpOrderCount: {
         orderCount: 0,
-        bppriceCount: 0,
+        bppriceCount: 0
       },
       //店铺信息
       storeInfoList: [],
@@ -385,7 +393,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangeBPTime: [],
+      daterangeBPTime: (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围

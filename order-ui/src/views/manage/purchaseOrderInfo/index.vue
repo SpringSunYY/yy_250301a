@@ -28,6 +28,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
@@ -171,17 +172,18 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <!--      <el-form-item label="创建时间">-->
-      <!--        <el-date-picker-->
-      <!--          v-model="daterangeCreateTime"-->
-      <!--          style="width: 240px"-->
-      <!--          value-format="yyyy-MM-dd"-->
-      <!--          type="daterange"-->
-      <!--          range-separator="-"-->
-      <!--          start-placeholder="开始日期"-->
-      <!--          end-placeholder="结束日期"-->
-      <!--        ></el-date-picker>-->
-      <!--      </el-form-item>-->
+            <el-form-item label="创建时间">
+              <el-date-picker
+                v-model="daterangeCreateTime"
+                style="width: 240px"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+              ></el-date-picker>
+            </el-form-item>
       <!--      <el-form-item label="更新人" prop="updateBy">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.updateBy"-->
@@ -1144,9 +1146,15 @@ import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manag
 import { parseTime } from '@/utils/ruoyi'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
 import { addOrUpdateAfterSaleOrderInfo, getAfterSaleOrderInfoByOrderNumber } from '@/api/manage/afterSaleOrderInfo'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'PurchaseOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
@@ -1246,7 +1254,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangePurchaseTime: [],
+      daterangePurchaseTime:  (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围

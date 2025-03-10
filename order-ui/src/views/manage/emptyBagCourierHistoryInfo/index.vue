@@ -10,6 +10,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="客服" prop="userId">
@@ -40,6 +41,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
@@ -295,9 +297,15 @@ import { listDept } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getToken } from '@/utils/auth'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'EmptyBagCourierHistoryInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   data() {
     return {
@@ -348,7 +356,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangeDateTime: [],
+      daterangeDateTime:  (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围

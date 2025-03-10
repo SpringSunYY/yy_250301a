@@ -6,9 +6,9 @@
  */
 export function toPercentage(value, decimalPlaces = 2) {
   if (typeof value !== 'number') {
-    throw new Error('输入值必须是数字');
+    return '0%'
   }
-  const factor = Math.pow(10, decimalPlaces); // 使用 10 的次方计算因子
-  const percentage = Math.round(value * 100 * factor) / factor;
-  return `${percentage}%`;
+  const factor = Math.pow(10, decimalPlaces) // 使用 10 的次方计算因子
+  const percentage = Math.round(value * 100 * factor) / factor
+  return `${percentage}%`
 }
