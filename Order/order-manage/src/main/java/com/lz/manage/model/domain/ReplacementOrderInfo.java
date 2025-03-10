@@ -38,7 +38,7 @@ public class ReplacementOrderInfo implements Serializable {
     /**
      * 采购编号
      */
-    @Excel(name = "采购编号")
+    @Excel(name = "订单编号")
     private String orderNumber;
 
     /**

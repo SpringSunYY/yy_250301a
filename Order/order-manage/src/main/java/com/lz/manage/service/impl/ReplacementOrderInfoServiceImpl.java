@@ -108,8 +108,13 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
      */
     @Override
     public int insertReplacementOrderInfo(ReplacementOrderInfo replacementOrderInfo) {
+        //判断订单号是否存在
+        ReplacementOrderInfo orderInfo = this.getOne(new LambdaQueryWrapper<ReplacementOrderInfo>().eq(ReplacementOrderInfo::getOrderNumber, replacementOrderInfo.getOrderNumber()));
+        if (StringUtils.isNotNull(orderInfo)) {
+            throw new ServiceException("订单号已存在");
+        }
         checkReplacementOrder(replacementOrderInfo);
-
+        replacementOrderInfo.setUserId(SecurityUtils.getUserId());
         replacementOrderInfo.setCreateTime(DateUtils.getNowDate());
         return replacementOrderInfoMapper.insertReplacementOrderInfo(replacementOrderInfo);
     }
@@ -152,6 +157,10 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
      */
     @Override
     public int updateReplacementOrderInfo(ReplacementOrderInfo replacementOrderInfo) {
+        ReplacementOrderInfo orderInfo = this.getOne(new LambdaQueryWrapper<ReplacementOrderInfo>().eq(ReplacementOrderInfo::getOrderNumber, replacementOrderInfo.getOrderNumber()));
+        if (StringUtils.isNotNull(orderInfo) && !orderInfo.getId().equals(replacementOrderInfo.getId())) {
+            throw new ServiceException("订单编号不可修改");
+        }
         checkReplacementOrder(replacementOrderInfo);
         replacementOrderInfo.setUpdateTime(DateUtils.getNowDate());
         return replacementOrderInfoMapper.updateReplacementOrderInfo(replacementOrderInfo);

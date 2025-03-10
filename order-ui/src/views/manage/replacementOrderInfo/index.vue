@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="采购编号" prop="orderNumber">
+      <el-form-item label="订单编号" prop="orderNumber">
         <el-input
           v-model="queryParams.orderNumber"
-          placeholder="请输入采购编号"
+          placeholder="请输入订单编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -65,7 +65,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="客服" prop="userId">
+      <el-form-item label="操作人" prop="userId">
         <el-select
           v-model="queryParams.userId"
           filterable
@@ -206,7 +206,7 @@
     <el-table v-loading="loading" :data="replacementOrderInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
-      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+      <el-table-column label="订单编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
       />
       <el-table-column label="店铺名称" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
@@ -237,7 +237,7 @@
           <dict-tag :options="dict.type.o_replacement_status" :value="scope.row.returnStatus"/>
         </template>
       </el-table-column>
-      <el-table-column label="客服" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
+      <el-table-column label="操作人" :show-overflow-tooltip="true" align="center" v-if="columns[10].visible"
                        prop="userName"
       />
       <el-table-column label="创建时间" align="center" v-if="columns[11].visible" prop="createTime" width="180">
@@ -292,8 +292,8 @@
     <!-- 添加或修改补单明细对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="采购编号" prop="orderNumber">
-          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        <el-form-item label="订单编号" prop="orderNumber">
+          <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
         <el-form-item label="店铺名称" prop="storeId">
           <el-select
@@ -330,12 +330,12 @@
           <el-input v-model="form.tbNumber" placeholder="请输入旺旺号"/>
         </el-form-item>
         <el-form-item label="实付金额" prop="actuallyPrice">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.actuallyPrice"
+          <el-input-number :precision="2" :step="0.1" v-model="form.actuallyPrice"
                            placeholder="请输入实付金额"
           />
         </el-form-item>
         <el-form-item label="佣金" prop="commission">
-          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.commission" placeholder="请输入佣金"/>
+          <el-input-number :precision="2" :step="0.1" v-model="form.commission" placeholder="请输入佣金"/>
         </el-form-item>
         <!--        <el-form-item label="合计金额" prop="totalPrice">-->
         <!--          <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.totalPrice" placeholder="请输入合计金额"/>-->
@@ -350,25 +350,25 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="客服" prop="userId">
-          <el-select
-            v-model="form.userId"
-            filterable
-            remote
-            reserve-keyword
-            placeholder="请输入用户账号"
-            :remote-method="selectUserInfoList"
-            :loading="userLoading"
-          >
-            <el-option
-              v-for="item in userInfoList"
-              :key="item.userId"
-              :label="item.userName"
-              :value="item.userId"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="操作人" prop="userId">-->
+<!--          <el-select-->
+<!--            v-model="form.userId"-->
+<!--            filterable-->
+<!--            remote-->
+<!--            reserve-keyword-->
+<!--            placeholder="请输入用户账号"-->
+<!--            :remote-method="selectUserInfoList"-->
+<!--            :loading="userLoading"-->
+<!--          >-->
+<!--            <el-option-->
+<!--              v-for="item in userInfoList"-->
+<!--              :key="item.userId"-->
+<!--              :label="item.userName"-->
+<!--              :value="item.userId"-->
+<!--            >-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -451,7 +451,7 @@ export default {
       userLoading: false,
       userQueryParams: {
         userName: '',
-        roleId: 102,
+        // roleId: 102,
         pageNum: 1,
         pageSize: 100
       },
@@ -460,7 +460,7 @@ export default {
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },
-        { key: 1, label: '采购编号', visible: true },
+        { key: 1, label: '订单编号', visible: true },
         { key: 2, label: '店铺名称', visible: true },
         { key: 3, label: '日期', visible: true },
         { key: 4, label: '微信号', visible: true },
@@ -469,7 +469,7 @@ export default {
         { key: 7, label: '佣金', visible: true },
         { key: 8, label: '合计金额', visible: true },
         { key: 9, label: '返款状态', visible: true },
-        { key: 10, label: '客服', visible: false },
+        { key: 10, label: '操作人', visible: true },
         { key: 11, label: '创建时间', visible: false },
         { key: 12, label: '更新人', visible: false },
         { key: 13, label: '更新时间', visible: false },
@@ -521,13 +521,36 @@ export default {
       // 表单校验
       rules: {
         orderNumber: [
-          { required: true, message: '采购编号不能为空', trigger: 'blur' }
+          { required: true, message: '订单编号不能为空', trigger: 'blur' }
         ],
         userId: [
-          { required: true, message: '客服不能为空', trigger: 'blur' }
+          { required: true, message: '操作人不能为空', trigger: 'blur' }
         ],
-        createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+        dateTime: [
+          { required: true, message: '日期不能为空', trigger: 'blur' }
+        ],
+        actuallyPrice: [
+          { required: true, message: '实付金额不能为空', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              // 将值转换为数值类型后检查是否为 0
+              if (Number(value) === 0) {
+                callback(new Error('实付金额不能为0'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur' // 触发时机与必填规则一致
+          }
+        ],
+        returnStatus: [
+          { required: true, message: '退货状态不能为空', trigger: 'change' }
+        ],
+        storeId: [
+          { required: true, message: '店铺名称不能为空', trigger: 'blur' }
+        ],
+        tbNumber: [
+          { required: true, message: '旺旺号不能为空', trigger: 'blur' }
         ]
       },
       // 退货订单导入参数
@@ -714,7 +737,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
-      this.form.userId = this.$store.state.user.id;
+      this.form.userId = this.$store.state.user.id
       this.open = true
       this.title = '添加补单明细'
     },
