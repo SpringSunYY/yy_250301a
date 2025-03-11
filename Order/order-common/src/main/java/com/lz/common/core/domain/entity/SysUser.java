@@ -28,6 +28,7 @@ public class SysUser extends BaseEntity
     /** 部门ID */
     @Excel(name = "部门编号", type = Type.IMPORT)
     private Long deptId;
+    private List<Long> deptIds;
 
     /** 用户账号 */
     @Excel(name = "登录名称")
@@ -92,6 +93,14 @@ public class SysUser extends BaseEntity
     public SysUser()
     {
 
+    }
+
+    public List<Long> getDeptIds() {
+        return deptIds;
+    }
+
+    public void setDeptIds(List<Long> deptIds) {
+        this.deptIds = deptIds;
     }
 
     public SysUser(Long userId)

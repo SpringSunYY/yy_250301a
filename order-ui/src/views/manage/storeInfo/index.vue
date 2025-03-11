@@ -509,6 +509,7 @@
               <treeselect v-model="form.deptId"
                           :options="deptOptions" :show-count="true" :normalizer="normalizer"
                           placeholder="请选择所属部门"
+                          @input="deptInput"
 
               />
             </el-form-item>
@@ -1073,6 +1074,14 @@ export default {
     this.getOperationUserInfoList()
   },
   methods: {
+    deptInput() {
+      this.principalUserQueryParams.deptId = this.form.deptId
+      this.getPrincipalUserInfoList()
+      this.serviceUserQueryParams.deptId = this.form.deptId
+      this.getServiceUserInfoList()
+      this.operationUserQueryParams.deptId = this.form.deptId
+      this.getOperationUserInfoList()
+    },
     /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {

@@ -96,6 +96,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="userName != null and userName != ''">
             AND u.user_name like concat('%', #{userName}, '%')
         </if>
+        <if test="deptIds != null and deptIds.size > 0">
+            and u.dept_id in
+            <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
         <if test="userId != null and userId != 0">
             AND u.user_id = #{userId}
         </if>

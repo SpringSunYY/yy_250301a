@@ -196,6 +196,10 @@ public class SysRoleController extends BaseController
     @GetMapping("/authUser/allocatedList")
     public TableDataInfo allocatedList(SysUser user)
     {
+        if (StringUtils.isNotNull(user.getDeptId())) {
+            List<Long> dept = deptService.selectDeptByIdReturnIds(user.getDeptId());
+            user.setDeptIds(dept);
+        }
         startPage();
         List<SysUser> list = userService.selectAllocatedList(user);
         return getDataTable(list);
