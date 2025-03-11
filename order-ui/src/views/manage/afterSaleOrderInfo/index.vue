@@ -9,10 +9,10 @@
 <!--          @keyup.enter.native="handleQuery"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="采购编号" prop="orderNumber">
+      <el-form-item label="订单编号" prop="orderNumber">
         <el-input
           v-model="queryParams.orderNumber"
-          placeholder="请输入采购编号"
+          placeholder="请输入订单编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -202,7 +202,7 @@
     <el-table v-loading="loading" :data="afterSaleOrderInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
-      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+      <el-table-column label="订单编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
       />
       <el-table-column label="类型" align="center" v-if="columns[2].visible" prop="orderType">
@@ -281,8 +281,8 @@
     <!-- 添加或修改售后订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="采购编号" prop="orderNumber">
-          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        <el-form-item label="订单编号" prop="orderNumber">
+          <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
         <el-form-item label="售后金额" prop="afterSalePrice">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
@@ -397,7 +397,7 @@ export default {
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },
-        { key: 1, label: '采购编号', visible: true },
+        { key: 1, label: '订单编号', visible: true },
         { key: 2, label: '类型', visible: true },
         { key: 3, label: '店铺名称', visible: true },
         { key: 4, label: '售后金额', visible: true },
@@ -457,7 +457,7 @@ export default {
       // 表单校验
       rules: {
         orderNumber: [
-          { required: true, message: '采购编号不能为空', trigger: 'blur' }
+          { required: true, message: '订单编号不能为空', trigger: 'blur' }
         ],
         orderType: [
           { required: true, message: '类型不能为空', trigger: 'change' }

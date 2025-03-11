@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="采购编号" prop="orderNumber">
+      <el-form-item label="订单编号" prop="orderNumber">
         <el-input
           v-model="queryParams.orderNumber"
-          placeholder="请输入采购编号"
+          placeholder="请输入订单编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -28,6 +28,7 @@
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
@@ -171,17 +172,18 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <!--      <el-form-item label="创建时间">-->
-      <!--        <el-date-picker-->
-      <!--          v-model="daterangeCreateTime"-->
-      <!--          style="width: 240px"-->
-      <!--          value-format="yyyy-MM-dd"-->
-      <!--          type="daterange"-->
-      <!--          range-separator="-"-->
-      <!--          start-placeholder="开始日期"-->
-      <!--          end-placeholder="结束日期"-->
-      <!--        ></el-date-picker>-->
-      <!--      </el-form-item>-->
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="daterangeCreateTime"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+      </el-form-item>
       <!--      <el-form-item label="更新人" prop="updateBy">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.updateBy"-->
@@ -354,7 +356,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="采购编号">
+                <el-form-item label="订单编号">
                   <span>{{ props.row.orderNumber }}</span>
                 </el-form-item>
               </el-col>
@@ -536,7 +538,7 @@
       </el-table-column>
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
-      <el-table-column label="采购编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+      <el-table-column label="订单编号" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="orderNumber"
       >
         <template slot="header">
@@ -655,7 +657,21 @@
       />
       <el-table-column label="供应商名称" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
                        prop="supplierName"
-      />
+      >
+        <template slot="header">
+          <div class="custom-header">
+            <span>供应商名称</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="供应商名称（线下）"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="采购进价" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible"
                        prop="purchasePrice"
       />
@@ -767,11 +783,24 @@
 
     <!-- 添加或修改采购发货信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="1280px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="110px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="采购编号" prop="orderNumber">
-              <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
+            <el-form-item label="订单编号" prop="orderNumber">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>订单编号</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="线下的订单直接用发货快递单号"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
+              <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -850,6 +879,19 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="供应商名称" prop="supplierName">
+              <template slot="label">
+                <div class="custom-label">
+                  <span>供应商名称</span>
+                  <el-tooltip
+                    effect="light"
+                    placement="top"
+                    content="供应商名称（线下必填）"
+                  >
+                    <!-- 红色问号图标 -->
+                    <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+                  </el-tooltip>
+                </div>
+              </template>
               <el-input v-model="form.supplierName" placeholder="请输入供应商名称"/>
             </el-form-item>
           </el-col>
@@ -878,6 +920,19 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="买家" prop="buyerNumber">
+              <template slot="label">
+                <span class="custom-label">
+                  <span>买家</span>
+                  <el-tooltip
+                    effect="light"
+                    placement="top"
+                    content="线上买家旺旺（id）/线下客户名称"
+                  >
+                    <!-- 红色问号图标 -->
+                    <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+                  </el-tooltip>
+                </span>
+              </template>
               <el-input v-model="form.buyerNumber" placeholder="请输入买家"/>
             </el-form-item>
           </el-col>
@@ -916,6 +971,19 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="销售价" prop="salesPrice">
+              <template slot="label">
+                <span class="custom-label">
+                  <span>销售价</span>
+                  <el-tooltip
+                    effect="light"
+                    placement="top"
+                    content="销售价 【含运费】"
+                  >
+                    <!-- 红色问号图标 -->
+                    <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+                  </el-tooltip>
+                </span>
+              </template>
               <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.salesPrice"
                                placeholder="请输入销售价"
               />
@@ -930,7 +998,20 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="采购补价" prop="purchasePremium">
-              <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.purchasePremium"
+              <template slot="label">
+                <span class="custom-label">
+                  <span>采购补价</span>
+                  <el-tooltip
+                    effect="light"
+                    placement="top"
+                    content="采购补价（运费或者加收等【支出+，收入-}】）"
+                  >
+                    <!-- 红色问号图标 -->
+                    <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+                  </el-tooltip>
+                </span>
+              </template>
+              <el-input-number :precision="2" :step="0.1" v-model="form.purchasePremium"
                                placeholder="请输入采购补价"
               />
             </el-form-item>
@@ -1063,8 +1144,8 @@
     <!-- 添加或修改白嫖订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="bpOrderOpen" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="采购编号" prop="orderNumber">
-          <el-input v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        <el-form-item label="订单编号" prop="orderNumber">
+          <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
         <el-form-item label="白嫖退款金额" prop="bpprice">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.bpprice" placeholder="请输入白嫖退款金额"/>
@@ -1091,8 +1172,8 @@
     <!-- 添加或修改售后订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="afterSaleOrderOpen" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="采购编号" prop="orderNumber">
-          <el-input :readonly="true" v-model="form.orderNumber" placeholder="请输入采购编号"/>
+        <el-form-item label="订单编号" prop="orderNumber">
+          <el-input :readonly="true" v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
         <el-form-item label="售后金额" prop="afterSalePrice">
           <el-input-number :precision="2" :step="0.1" :min="0" v-model="form.afterSalePrice"
@@ -1144,9 +1225,15 @@ import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manag
 import { parseTime } from '@/utils/ruoyi'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
 import { addOrUpdateAfterSaleOrderInfo, getAfterSaleOrderInfoByOrderNumber } from '@/api/manage/afterSaleOrderInfo'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
   name: 'PurchaseOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
   dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
@@ -1164,7 +1251,7 @@ export default {
         salesPriceCount: 0,
         purchasePriceCount: 0,
         purchasePremiumCount: 0,
-        avgOrderProfitRate: 0,
+        avgOrderProfitRate: 0
       },
       afterSaleOrderOpen: false,
       returnOrderOpen: false,
@@ -1200,7 +1287,7 @@ export default {
       //表格展示列
       columns: [
         { key: 0, label: '编号', visible: false },
-        { key: 1, label: '采购编号', visible: true },
+        { key: 1, label: '订单编号', visible: true },
         { key: 2, label: '销售类型', visible: true },
         { key: 3, label: '订单利润', visible: true },
         { key: 4, label: '利润率', visible: true },
@@ -1214,8 +1301,8 @@ export default {
         { key: 12, label: '采购账号', visible: true },
         { key: 13, label: '采购订单编号', visible: false },
         { key: 14, label: '供应商名称', visible: false },
-        { key: 15, label: '采购进价', visible: false },
-        { key: 16, label: '采购补价', visible: false },
+        { key: 15, label: '采购进价', visible: true },
+        { key: 16, label: '采购补价', visible: true },
         { key: 17, label: '发货单号', visible: false },
         { key: 18, label: '是否退货', visible: false },
         { key: 19, label: '是否白嫖', visible: false },
@@ -1246,7 +1333,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangePurchaseTime: [],
+      daterangePurchaseTime: (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围
@@ -1280,10 +1367,55 @@ export default {
       // 表单校验
       rules: {
         orderNumber: [
-          { required: true, message: '采购编号不能为空', trigger: 'blur' }
+          { required: true, message: '订单编号不能为空', trigger: 'blur' }
         ],
         orderType: [
           { required: true, message: '销售类型不能为空', trigger: 'change' }
+        ],
+        purchaseTime: [
+          { required: true, message: '采购日期不能为空', trigger: 'blur' }
+        ],
+        storeId: [
+          { required: true, message: '店铺不能为空', trigger: 'change' }
+        ],
+        buyerNumber: [
+          { required: true, message: '买家不能为空', trigger: 'blur' }
+        ],
+        purchaseChannelType: [
+          { required: true, message: '采购渠道分类不能为空', trigger: 'change' }
+        ],
+        purchaseChannelsId: [
+          { required: true, message: '采购渠道不能为空', trigger: 'change' }
+        ],
+        purchaseAccountId: [
+          { required: true, message: '采购账号不能为空', trigger: 'change' }
+        ],
+        purchaseOrder: [
+          { required: true, message: '采购订单编号不能为空', trigger: 'blur' }
+        ],
+        hasReturn: [
+          { required: true, message: '是否退货不能为空', trigger: 'change' }
+        ],
+        hasBP: [
+          { required: true, message: '是否白嫖不能为空', trigger: 'change' }
+        ],
+        hasAfterSale: [
+          { required: true, message: '是否售后不能为空', trigger: 'change' }
+        ],
+        salesPrice: [
+          { required: true, message: '销售价不能为空', trigger: 'blur' }
+        ],
+        purchasePrice: [
+          { required: true, message: '采购进价不能为空', trigger: 'blur' }
+        ],
+        purchasePremium: [
+          { required: true, message: '采购补价不能为空', trigger: 'blur' }
+        ],
+        salesNumber: [
+          { required: true, message: '销售量不能为空', trigger: 'blur' }
+        ],
+        shipmentsOrder: [
+          { required: true, message: '发货单号不能为空', trigger: 'blur' }
         ],
         userId: [
           { required: true, message: '客服不能为空', trigger: 'blur' }
@@ -1640,7 +1772,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
-      this.form.userId = this.$store.state.user.id;
+      this.form.userId = this.$store.state.user.id
       this.open = true
       this.title = '添加采购发货信息'
     },

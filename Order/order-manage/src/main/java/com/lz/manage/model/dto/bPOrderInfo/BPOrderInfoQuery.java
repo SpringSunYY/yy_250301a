@@ -20,7 +20,7 @@ public class BPOrderInfoQuery implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private Long id;
-    /** 采购编号 */
+    /** 订单编号 */
     private String orderNumber;
 
     /** 类型 */

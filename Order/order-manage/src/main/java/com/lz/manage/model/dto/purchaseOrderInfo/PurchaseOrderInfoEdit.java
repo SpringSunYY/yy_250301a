@@ -25,7 +25,7 @@ public class PurchaseOrderInfoEdit implements Serializable {
     private Long id;
 
     /**
-     * 采购编号
+     * 订单编号
      */
     private String orderNumber;
 

@@ -21,7 +21,7 @@ public class ReplacementOrderInfoInsert implements Serializable
     /** 编号 */
     private Long id;
 
-    /** 采购编号 */
+    /** 订单编号 */
     private String orderNumber;
 
     /** 店铺名称 */

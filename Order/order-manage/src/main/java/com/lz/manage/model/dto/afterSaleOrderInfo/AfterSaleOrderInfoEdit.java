@@ -21,7 +21,7 @@ public class AfterSaleOrderInfoEdit implements Serializable
     /** 编号 */
     private Long id;
 
-    /** 采购编号 */
+    /** 订单编号 */
     private String orderNumber;
 
     /** 类型(1线上 2线下) */

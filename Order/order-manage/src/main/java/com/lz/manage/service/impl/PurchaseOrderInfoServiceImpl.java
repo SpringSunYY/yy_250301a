@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
+import com.lz.manage.model.enums.PurchaseChannelTypeEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
 import com.lz.manage.service.*;
@@ -151,6 +152,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     private void checkOrder(PurchaseOrderInfo purchaseOrderInfo) {
+        if (purchaseOrderInfo.getPurchaseChannelType().equals(PurchaseChannelTypeEnum.PURCHASE_CHANNEL_TYPE_2.getValue()) && StringUtils.isEmpty(purchaseOrderInfo.getSupplierName())) {
+            throw new ServiceException("线下渠道供应商名称不能为空");
+        }
         ReplacementOrderInfo replacementOrderInfo = replacementOrderInfoService.selectReplacementOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
         if (StringUtils.isNotNull(replacementOrderInfo)) {
             throw new ServiceException("已经存在返款订单");
@@ -479,7 +483,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
                 return true;
             } catch (Exception e) {
                 log.error("导入采购订单数据失败，原因：", e);
-                throw new ServiceException("导入数据失败，请检查数据结构是否正确，或者查看是否有相同的采购编号,数据格式是否和描述相同！！！");
+                throw new ServiceException("导入数据失败，请检查数据结构是否正确，或者查看是否有相同的订单编号,数据格式是否和描述相同！！！");
             }
         });
         return StringUtils.format("导入成功。成功导入{}条数据！！！", purchaseOrderInfoList.size());
