@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="编号" prop="id">
-        <el-input
-          v-model="queryParams.id"
-          placeholder="请输入编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="编号" prop="id">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.id"-->
+<!--          placeholder="请输入编号"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="采购编号" prop="orderNumber">
         <el-input
           v-model="queryParams.orderNumber"

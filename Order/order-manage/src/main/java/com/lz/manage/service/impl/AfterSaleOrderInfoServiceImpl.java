@@ -175,7 +175,25 @@ public class AfterSaleOrderInfoServiceImpl extends ServiceImpl<AfterSaleOrderInf
      */
     @Override
     public int deleteAfterSaleOrderInfoByIds(Long[] ids) {
-        return afterSaleOrderInfoMapper.deleteAfterSaleOrderInfoByIds(ids);
+        ArrayList<PurchaseOrderInfo> purchaseOrderInfos = new ArrayList<PurchaseOrderInfo>(ids.length);
+        for (Long id : ids) {
+            AfterSaleOrderInfo afterSaleOrderInfo = this.selectAfterSaleOrderInfoById(id);
+            if (StringUtils.isNotNull(afterSaleOrderInfo)) {
+                PurchaseOrderInfo orderInfo = orderInfoService.selectPurchaseOrderInfoByOrderNumber(afterSaleOrderInfo.getOrderNumber());
+                if (StringUtils.isNotNull(orderInfo)) {
+                    orderInfo.setHasAfterSale(CommonWhetherEnum.COMMON_WHETHER_2.getValue());
+                    purchaseOrderInfos.add(orderInfo);
+                }
+            }
+        }
+        transactionTemplate.execute(item -> {
+            afterSaleOrderInfoMapper.deleteAfterSaleOrderInfoByIds(ids);
+            for (PurchaseOrderInfo orderInfo : purchaseOrderInfos) {
+                orderInfoService.updatePurchaseOrderInfo(orderInfo);
+            }
+            return 1;
+        });
+        return 1;
     }
 
     /**

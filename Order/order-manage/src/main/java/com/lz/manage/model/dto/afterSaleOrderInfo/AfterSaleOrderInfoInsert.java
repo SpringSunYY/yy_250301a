@@ -58,6 +58,7 @@ public class AfterSaleOrderInfoInsert implements Serializable {
     /**
      * 售后凭证
      */
+    @NotNull(message = "售后凭证不能为空")
     private String afterSaleImage;
 
     /**

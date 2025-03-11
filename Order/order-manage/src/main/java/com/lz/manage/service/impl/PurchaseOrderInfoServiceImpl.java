@@ -289,6 +289,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         }
         ibpOrderInfoService.remove(new LambdaQueryWrapper<BPOrderInfo>().in(BPOrderInfo::getOrderNumber, numbers));
         returnOrderInfoService.remove(new LambdaQueryWrapper<ReturnOrderInfo>().in(ReturnOrderInfo::getOrderNumber, numbers));
+        afterSaleOrderInfoService.remove(new LambdaQueryWrapper<AfterSaleOrderInfo>().in(AfterSaleOrderInfo::getOrderNumber, numbers));
         return purchaseOrderInfoMapper.deletePurchaseOrderInfoByIds(ids);
     }
 
@@ -622,6 +623,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             vo.setAvgOrderProfitRate(BigDecimal.ZERO);
         }
     }
+
     @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     @Override
     public List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo) {
