@@ -292,7 +292,7 @@
 
     <!-- 添加或修改退货订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="110px">
         <el-form-item label="订单编号" prop="orderNumber">
           <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
@@ -483,6 +483,15 @@ export default {
         ],
         returnStatus: [
           { required: true, message: '退货状态不能为空', trigger: 'change' }
+        ],
+        returnAccomplishTime: [
+          { required: true, message: '退货完成日期不能为空', trigger: 'blur' }
+        ],
+        returnPrice: [
+          { required: true, message: '客户退货金额不能为空', trigger: 'blur' }
+        ],
+        lastReturnPrice: [
+          { required: true, message: '上家退款金额不能为空', trigger: 'blur' }
         ],
         userId: [
           { required: true, message: '客服不能为空', trigger: 'blur' }

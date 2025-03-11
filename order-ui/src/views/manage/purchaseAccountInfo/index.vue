@@ -380,7 +380,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 部门时间范围
-      daterangeCreateTime:  (() => currentMonth())(),
+      daterangeCreateTime: (() => currentMonth())(),
       // 部门时间范围
       daterangeUpdateTime: [],
       // 查询参数
@@ -400,8 +400,17 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        nickName: [
+          { required: true, message: '名称不能为空', trigger: 'blur' }
+        ],
         purchaseAccount: [
           { required: true, message: '采购账号不能为空', trigger: 'blur' }
+        ],
+        purchaseChannelsId: [
+          { required: true, message: '采购渠道不能为空', trigger: 'blur' }
+        ],
+        accountType: [
+          { required: true, message: '账号类型不能为空', trigger: 'blur' }
         ],
         userId: [
           { required: true, message: '客服不能为空', trigger: 'blur' }
@@ -411,32 +420,42 @@ export default {
         ]
       },
       // 采购账号导入参数
-      upload: {
-        // 是否显示弹出层（用户导入）
-        open: false,
-        // 弹出层标题（用户导入）
-        title: '',
-        // 是否禁用上传
-        isUploading: false,
-        // 设置上传的请求头部
-        headers: { Authorization: 'Bearer ' + getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + '/manage/purchaseAccountInfo/importData'
-      }
+      upload:
+        {
+          // 是否显示弹出层（用户导入）
+          open: false,
+          // 弹出层标题（用户导入）
+          title:
+            '',
+          // 是否禁用上传
+          isUploading:
+            false,
+          // 设置上传的请求头部
+          headers:
+            {
+              Authorization: 'Bearer ' + getToken()
+            }
+          ,
+          // 上传的地址
+          url: process.env.VUE_APP_BASE_API + '/manage/purchaseAccountInfo/importData'
+        }
     }
-  },
+  }
+  ,
   created() {
     this.getList()
     this.getDeptList()
     this.getUserInfoList()
     this.getChannelsTreeselect()
-  },
+  }
+  ,
   methods: {
     accountTypeSelectChange() {
       this.purchaseChannelQuery.channelType = this.form.accountType
       this.form.purchaseChannelsId = null
       this.getChannelsTreeselect()
-    },
+    }
+    ,
     /** 转换采购渠道信息数据结构 */
     normalizerChannels(node) {
       if (node.children && !node.children.length) {
@@ -447,7 +466,8 @@ export default {
         label: node.channelName,
         children: node.children
       }
-    },
+    }
+    ,
     /** 查询采购渠道信息下拉树结构 */
     getChannelsTreeselect() {
       listPurchaseChannelInfo(this.purchaseChannelQuery).then(response => {
@@ -456,13 +476,15 @@ export default {
         data.children = this.handleTree(response.data, 'id', 'parentId')
         this.purchaseChannelInfoOptions.push(data)
       })
-    },
+    }
+    ,
     /** 查询部门列表 */
     getDeptList() {
       listDept().then(response => {
         this.deptOptions = this.handleTree(response.data, 'deptId')
       })
-    },
+    }
+    ,
     /** 转换部门数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
@@ -473,7 +495,8 @@ export default {
         label: node.deptName,
         children: node.children
       }
-    },
+    }
+    ,
     /**
      * 获取主管用户列表推荐
      * @param query
@@ -489,7 +512,8 @@ export default {
         this.userInfoList = []
         this.userQueryParams.userName = null
       }
-    },
+    }
+    ,
     /**
      * 获取主管用户信息列表
      */
@@ -507,7 +531,8 @@ export default {
         this.userInfoList = res?.rows
         this.userLoading = false
       })
-    },
+    }
+    ,
     /** 查询采购账号信息列表 */
     getList() {
       this.loading = true
@@ -525,12 +550,14 @@ export default {
         this.total = response.total
         this.loading = false
       })
-    },
+    }
+    ,
     // 取消按钮
     cancel() {
       this.open = false
       this.reset()
-    },
+    }
+    ,
     // 表单重置
     reset() {
       this.form = {
@@ -547,12 +574,14 @@ export default {
         purchaseChannelsId: null
       }
       this.resetForm('form')
-    },
+    }
+    ,
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1
       this.getList()
-    },
+    }
+    ,
     /** 重置按钮操作 */
     resetQuery() {
       this.daterangeCreateTime = []
@@ -562,20 +591,23 @@ export default {
       this.purchaseChannelQuery = {}
       this.getChannelsTreeselect()
       this.handleQuery()
-    },
+    }
+    ,
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
+    }
+    ,
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
       this.open = true
-      this.form.userId = this.$store.state.user.id;
+      this.form.userId = this.$store.state.user.id
       this.title = '添加采购账号信息'
-    },
+    }
+    ,
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
@@ -588,7 +620,8 @@ export default {
         this.open = true
         this.title = '修改采购账号信息'
       })
-    },
+    }
+    ,
     /** 提交按钮 */
     submitForm() {
       this.$refs['form'].validate(valid => {
@@ -608,7 +641,8 @@ export default {
           }
         }
       })
-    },
+    }
+    ,
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
@@ -619,26 +653,31 @@ export default {
         this.$modal.msgSuccess('删除成功')
       }).catch(() => {
       })
-    },
+    }
+    ,
     /** 导出按钮操作 */
     handleExport() {
       this.download('manage/purchaseAccountInfo/export', {
         ...this.queryParams
       }, `purchaseAccountInfo_${new Date().getTime()}.xlsx`)
-    },
+    }
+    ,
     /** 导入按钮操作 */
     handleImport() {
       this.upload.title = '采购账号导入'
       this.upload.open = true
-    },
+    }
+    ,
     /** 下载模板操作 */
     importTemplate() {
       this.download('manage/purchaseAccountInfo/importTemplate', {}, `purchaseAccountInfo_template_${new Date().getTime()}.xlsx`)
-    },
+    }
+    ,
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true
-    },
+    }
+    ,
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
       this.upload.open = false
@@ -646,7 +685,8 @@ export default {
       this.$refs.upload.clearFiles()
       this.$alert(response.msg, '导入结果', { dangerouslyUseHTMLString: true })
       this.getList()
-    },
+    }
+    ,
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()

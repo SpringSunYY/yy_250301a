@@ -462,6 +462,18 @@ export default {
         orderType: [
           { required: true, message: '类型不能为空', trigger: 'change' }
         ],
+        storeId: [
+          { required: true, message: '店铺不能为空', trigger: 'blur' }
+        ],
+        afterSalePrice: [
+          { required: true, message: '售后金额不能为空', trigger: 'blur' }
+        ],
+        afterSaleTime: [
+          { required: true, message: '售后日期不能为空', trigger: 'blur' }
+        ],
+        afterSaleImage: [
+          { required: true, message: '售后凭证不能为空', trigger: 'blur' }
+        ],
         userId: [
           { required: true, message: '客服不能为空', trigger: 'blur' }
         ],
