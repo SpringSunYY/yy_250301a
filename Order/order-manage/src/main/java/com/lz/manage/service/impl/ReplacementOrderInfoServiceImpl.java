@@ -157,9 +157,10 @@ public class ReplacementOrderInfoServiceImpl extends ServiceImpl<ReplacementOrde
      */
     @Override
     public int updateReplacementOrderInfo(ReplacementOrderInfo replacementOrderInfo) {
-        ReplacementOrderInfo orderInfo = this.getOne(new LambdaQueryWrapper<ReplacementOrderInfo>().eq(ReplacementOrderInfo::getOrderNumber, replacementOrderInfo.getOrderNumber()));
-        if (StringUtils.isNotNull(orderInfo) && !orderInfo.getId().equals(replacementOrderInfo.getId())) {
-            throw new ServiceException("订单编号不可修改");
+        ReplacementOrderInfo myOld = this.selectReplacementOrderInfoById(replacementOrderInfo.getId());
+        ReplacementOrderInfo old = this.getOne(new LambdaQueryWrapper<ReplacementOrderInfo>().eq(ReplacementOrderInfo::getOrderNumber, replacementOrderInfo.getOrderNumber()));
+        if (StringUtils.isNotNull(old) && !old.getId().equals(myOld.getId())) {
+            throw new ServiceException("订单编号已存在" + replacementOrderInfo.getOrderNumber());
         }
         checkReplacementOrder(replacementOrderInfo);
         replacementOrderInfo.setUpdateTime(DateUtils.getNowDate());

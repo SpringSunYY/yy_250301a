@@ -142,6 +142,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int insertPurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
+        PurchaseOrderInfo orderInfo = this.selectPurchaseOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
+        if (StringUtils.isNotNull(orderInfo)) {
+            throw new ServiceException("订单编号已经存在");
+        }
         checkOrder(purchaseOrderInfo);
         //查询白嫖和退货订单
         getOrderProfit(purchaseOrderInfo, new ReturnOrderInfo(), new BPOrderInfo(), new AfterSaleOrderInfo());
@@ -262,6 +266,14 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
      */
     @Override
     public int updatePurchaseOrderInfo(PurchaseOrderInfo purchaseOrderInfo) {
+        PurchaseOrderInfo myOld = this.selectPurchaseOrderInfoById(purchaseOrderInfo.getId());
+        if (StringUtils.isNull(myOld)) {
+            throw new ServiceException("订单不存在！！！");
+        }
+        PurchaseOrderInfo old = this.selectPurchaseOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
+        if (StringUtils.isNotNull(old) && !old.getId().equals(myOld.getId())) {
+            throw new ServiceException("订单号已存在！！！");
+        }
         checkOrder(purchaseOrderInfo);
         BPOrderInfo bpOrderInfo = ibpOrderInfoService.selectBPOrderInfoByOrderNumber(purchaseOrderInfo.getOrderNumber());
         ReturnOrderInfo returnOrderInfo = returnOrderInfoService.selectReturnOrderByOrderNumber(purchaseOrderInfo.getOrderNumber());

@@ -151,8 +151,13 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
      */
     @Override
     public int updatePurchaseAccountInfo(PurchaseAccountInfo purchaseAccountInfo) {
-        PurchaseAccountInfo purchaseAccount = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
-        if (StringUtils.isNotNull(purchaseAccount) && !purchaseAccount.getPurchaseAccount().equals(purchaseAccountInfo.getPurchaseAccount())) {
+        PurchaseAccountInfo myOld = this.selectPurchaseAccountInfoById(purchaseAccountInfo.getId());
+        if (StringUtils.isNull(myOld)) {
+            throw new ServiceException("数据不存在!!!");
+        }
+        PurchaseAccountInfo old = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
+        //说明不是自己 且更新
+        if (StringUtils.isNotNull(old) && !old.getPurchaseAccount().equals(myOld.getPurchaseAccount())) {
             throw new ServiceException("账号已存在!!!");
         }
         checkPurchaseAccountInfo(purchaseAccountInfo);

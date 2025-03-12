@@ -157,6 +157,9 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
     @Override
     public int updateStoreInfo(StoreInfo storeInfo) {
         StoreInfo myOld = this.selectStoreInfoById(storeInfo.getId());
+        if (StringUtils.isNull(myOld)) {
+            throw new ServiceException("店铺信息不存在！！！");
+        }
         StoreInfo old = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, storeInfo.getStoreName()));
         //如果店铺名已存在且不等于传过来的店铺名 如果等于则表示不修改
         if (StringUtils.isNotNull(old) && !old.getStoreName().equals(myOld.getStoreName())) {
