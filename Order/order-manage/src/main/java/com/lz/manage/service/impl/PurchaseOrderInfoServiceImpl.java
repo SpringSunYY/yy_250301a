@@ -28,9 +28,7 @@ import javax.annotation.Resource;
 import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.enums.PurchaseChannelTypeEnum;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.*;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
@@ -41,7 +39,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.PurchaseOrderInfoMapper;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -645,6 +642,31 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             }
         }
         return serviceReport;
+    }
+
+    @Override
+    public List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo) {
+        List<PurchaseOrderReportByStoreVo> storeReport = purchaseOrderInfoMapper.getStoreReport(purchaseOrderInfo);
+        storeReport.forEach(report -> {
+            StoreInfo storeInfo = storeInfoService.selectStoreInfoById(report.getStoreId());
+            if (StringUtils.isNotNull(storeInfo)) {
+                //设置默认值
+                report.setStoreName(storeInfo.getStoreName());
+                SysUser principal = userService.selectUserById(storeInfo.getPrincipalId());
+                if (StringUtils.isNotNull(principal)) {
+                    report.setPrincipalName(principal.getUserName());
+                }
+                SysUser operation = userService.selectUserById(storeInfo.getOperationId());
+                if (StringUtils.isNotNull(operation)) {
+                    report.setOperationName(operation.getUserName());
+                }
+                SysUser service = userService.selectUserById(storeInfo.getServiceId());
+                if (StringUtils.isNotNull(service)) {
+                    report.setServiceName(service.getUserName());
+                }
+            }
+        });
+        return storeReport;
     }
 
 }

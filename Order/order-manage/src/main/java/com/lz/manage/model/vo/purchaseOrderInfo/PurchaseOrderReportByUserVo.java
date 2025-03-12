@@ -29,6 +29,9 @@ public class PurchaseOrderReportByUserVo implements Serializable {
      */
     private String userName;
 
+    /**
+     * 关联的店铺数量
+     */
     private Long storeCount;
 
     /**

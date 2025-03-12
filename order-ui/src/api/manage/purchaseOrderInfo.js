@@ -33,6 +33,14 @@ export function getServiceReport(query) {
     params: query
   })
 }
+// 查询采购发货信息报表-店铺
+export function getStoreReport(query) {
+  return request({
+    url: '/manage/purchaseOrderInfo/store/getReport',
+    method: 'get',
+    params: query
+  })
+}
 
 // 查询采购发货信息详细
 export function getPurchaseOrderInfo(id) {

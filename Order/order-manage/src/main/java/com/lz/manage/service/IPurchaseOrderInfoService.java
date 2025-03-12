@@ -6,14 +6,11 @@ import com.lz.manage.model.domain.AfterSaleOrderInfo;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.*;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo;
 
 /**
  * 采购发货信息Service接口
@@ -162,4 +159,15 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo>
      **/
     List<PurchaseOrderReportByUserVo> getServiceReport(PurchaseOrderInfo purchaseOrderInfo);
+
+    /**
+     * description:  获取报表 根据店铺
+     * author: YY
+     * method: getStoreReport
+     * date: 2025/3/12 16:04
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo>
+     **/
+    List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo);
 }

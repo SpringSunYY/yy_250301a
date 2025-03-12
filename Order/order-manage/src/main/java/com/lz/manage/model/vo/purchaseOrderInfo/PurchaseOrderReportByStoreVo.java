@@ -1,5 +1,6 @@
 package com.lz.manage.model.vo.purchaseOrderInfo;
 
+import com.lz.common.annotation.Excel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,17 +20,35 @@ public class PurchaseOrderReportByStoreVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户ID 客服  运营
+     * 店铺
      */
-    private Long userId;
+    private Long storeId;
 
 
     /**
-     * 用户名称
+     * 店铺名称
      */
-    private String userName;
+    private String storeName;
 
-    private Long storeCount;
+
+    /**
+     * 主管
+     */
+    private String principalName;
+    private Long principalId;
+
+    /**
+     * 运营
+     */
+    private String operationName;
+    private Long operationId;
+
+    /**
+     * 客服
+     */
+    private String serviceName;
+    private Long serviceId;
+
 
     /**
      * 订单总数

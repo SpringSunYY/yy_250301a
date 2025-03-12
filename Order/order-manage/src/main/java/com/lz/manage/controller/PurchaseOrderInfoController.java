@@ -60,7 +60,7 @@ public class PurchaseOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
     @GetMapping("/list")
     public TableDataInfo list(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
             purchaseOrderInfo.setDeptIds(deptIds);
@@ -109,7 +109,7 @@ public class PurchaseOrderInfoController extends BaseController {
     @Log(title = "采购发货信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         List<PurchaseOrderInfo> list = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo);
         ExcelUtil<PurchaseOrderInfo> util = new ExcelUtil<PurchaseOrderInfo>(PurchaseOrderInfo.class);
         util.exportExcel(response, list, "采购发货信息数据");
@@ -119,7 +119,7 @@ public class PurchaseOrderInfoController extends BaseController {
     @Log(title = "采购发货详细信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export/detail")
     public void exportDetail(HttpServletResponse response, PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         List<PurchaseOrderAllVo> listVo = purchaseOrderInfoService.selectPurchaseOrderInfoList(purchaseOrderInfo).stream().map(PurchaseOrderAllVo::objToVo).collect(Collectors.toList());
         for (PurchaseOrderAllVo vo : listVo) {
             if (vo.getHasReturn().equals(CommonWhetherEnum.COMMON_WHETHER_1.getValue())) {
@@ -213,7 +213,7 @@ public class PurchaseOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
     @GetMapping("/getPurchaseOrderInfoCount")
     public AjaxResult getPurchaseOrderInfoCount(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
             purchaseOrderInfo.setDeptIds(deptIds);
@@ -228,7 +228,7 @@ public class PurchaseOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:report:dept:index')")
     @GetMapping("/dept/getReport")
     public AjaxResult getDeptReport(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
             List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
             purchaseOrderInfo.setDeptIds(deptIds);
@@ -243,15 +243,20 @@ public class PurchaseOrderInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:report:service:index')")
     @GetMapping("/service/getReport")
     public TableDataInfo getServiceReport(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
-        PurchaseOrderInfo purchaseOrderInfo = PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
-        if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
-            List<Long> deptIds = deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId());
-            purchaseOrderInfo.setDeptIds(deptIds);
-        }
-        if (StringUtils.isNotNull(purchaseOrderInfo.getPurchaseChannelsId())) {
-            purchaseOrderInfo.setPurchaseChannelsIds(channelInfoService.selectPurchaseChannelInfoReturnIds(purchaseOrderInfo.getPurchaseChannelsId()));
-        }
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
         List<PurchaseOrderReportByUserVo> purchaseOrderReportByUserVos = purchaseOrderInfoService.getServiceReport(purchaseOrderInfo);
         return getDataTable(purchaseOrderReportByUserVos);
+    }
+
+    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:report:store:index')")
+    @GetMapping("/store/getReport")
+    public TableDataInfo getStoreReport(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
+        PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);
+        List<PurchaseOrderReportByStoreVo> storeReport = purchaseOrderInfoService.getStoreReport(purchaseOrderInfo);
+        return getDataTable(storeReport);
+    }
+
+    private static PurchaseOrderInfo getPurchaseOrderInfo(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
+        return PurchaseOrderInfoQuery.queryToObj(purchaseOrderInfoQuery);
     }
 }

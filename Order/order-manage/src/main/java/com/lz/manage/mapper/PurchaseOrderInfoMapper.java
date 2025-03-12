@@ -5,6 +5,7 @@ import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo;
 
 /**
@@ -68,4 +69,6 @@ public interface PurchaseOrderInfoMapper extends BaseMapper<PurchaseOrderInfo>
     List<PurchaseOrderReportByDeptVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo);
 
     List<PurchaseOrderReportByUserVo> getServiceReport(PurchaseOrderInfo purchaseOrderInfo);
+
+    List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo);
 }

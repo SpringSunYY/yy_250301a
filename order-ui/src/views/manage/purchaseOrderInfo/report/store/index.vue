@@ -227,8 +227,17 @@
 
     <el-table v-loading="loading" :data="reportList" :border="true"
     >
+      <el-table-column label="店铺" :show-overflow-tooltip="true" align="center"
+                       prop="storeName"
+      />
+      <el-table-column label="主管" :show-overflow-tooltip="true" align="center"
+                       prop="principalName"
+      />
+      <el-table-column label="运营" :show-overflow-tooltip="true" align="center"
+                       prop="operationName"
+      />
       <el-table-column label="客服" :show-overflow-tooltip="true" align="center"
-                       prop="userName"
+                       prop="serviceName"
       />
       <el-table-column label="订单总数" sortable :show-overflow-tooltip="true" align="center"
                        prop="orderCount"
@@ -265,7 +274,7 @@
 import {
   addPurchaseOrderInfo,
   delPurchaseOrderInfo,
-  getPurchaseOrderInfo, getPurchaseOrderInfoCount, getServiceReport,
+  getPurchaseOrderInfo, getPurchaseOrderInfoCount, getServiceReport, getStoreReport,
   listPurchaseOrderInfo,
   updatePurchaseOrderInfo
 } from '@/api/manage/purchaseOrderInfo'
@@ -524,7 +533,7 @@ export default {
         this.queryParams.params['beginUpdateTime'] = this.daterangeUpdateTime[0]
         this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
       }
-      getServiceReport(this.queryParams).then(response => {
+      getStoreReport(this.queryParams).then(response => {
         this.reportList = response.rows
         this.loading = false
       })
