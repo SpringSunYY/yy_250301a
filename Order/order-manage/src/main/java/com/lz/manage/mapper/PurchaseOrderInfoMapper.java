@@ -3,6 +3,7 @@ package com.lz.manage.mapper;
 import java.util.List;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoAndStoreQuery;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo;
@@ -71,4 +72,6 @@ public interface PurchaseOrderInfoMapper extends BaseMapper<PurchaseOrderInfo>
     List<PurchaseOrderReportByUserVo> getServiceReport(PurchaseOrderInfo purchaseOrderInfo);
 
     List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo);
+
+    List<PurchaseOrderReportByUserVo> getOperationReport(PurchaseOrderInfoAndStoreQuery purchaseOrderInfo);
 }

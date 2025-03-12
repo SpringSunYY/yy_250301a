@@ -26,6 +26,7 @@ import com.lz.common.utils.DateUtils;
 import javax.annotation.Resource;
 
 import com.lz.manage.model.domain.*;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoAndStoreQuery;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.enums.PurchaseChannelTypeEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.*;
@@ -667,6 +668,18 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             }
         });
         return storeReport;
+    }
+
+    @Override
+    public List<PurchaseOrderReportByUserVo> getOperationReport(PurchaseOrderInfoAndStoreQuery purchaseOrderInfo) {
+        List<PurchaseOrderReportByUserVo> operationReport = purchaseOrderInfoMapper.getOperationReport(purchaseOrderInfo);
+        for (PurchaseOrderReportByUserVo report : operationReport) {
+            SysUser user = userService.selectUserById(report.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                report.setUserName(user.getUserName());
+            }
+        }
+        return operationReport;
     }
 
 }

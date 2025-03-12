@@ -6,6 +6,7 @@ import com.lz.manage.model.domain.AfterSaleOrderInfo;
 import com.lz.manage.model.domain.BPOrderInfo;
 import com.lz.manage.model.domain.PurchaseOrderInfo;
 import com.lz.manage.model.domain.ReturnOrderInfo;
+import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoAndStoreQuery;
 import com.lz.manage.model.vo.purchaseOrderInfo.*;
 import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 
@@ -170,4 +171,15 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo>
      **/
     List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo);
+
+    /**
+     * description:  获取报表 根据运营
+     * author: YY
+     * method: getOperationReport
+     * date: 2025/3/12 16:30
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo>
+     **/
+    List<PurchaseOrderReportByUserVo> getOperationReport(PurchaseOrderInfoAndStoreQuery purchaseOrderInfoQuery);
 }

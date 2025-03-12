@@ -421,6 +421,95 @@
         group by storeId
         order by salesPriceCount desc;
     </select>
+    <select id="getOperationReport"
+            parameterType="com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoAndStoreQuery"
+            resultType="com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo">
+        SELECT s.operation_id AS userId,
+        COUNT(DISTINCT s.id) AS storeCount,
+        COALESCE(SUM(po.sales_price), 0) AS salesPriceCount,
+        COALESCE(SUM(po.sales_number), 0) AS salesNumberCount,
+        COALESCE(SUM(po.purchase_price), 0) AS purchasePriceCount,
+        COALESCE(SUM(po.purchase_premium), 0) AS purchasePremiumCount,
+        COALESCE(SUM(po.order_profit), 0) AS orderProfitCount,
+        COALESCE(AVG(po.order_profit_rate), 0) AS avgOrderProfitRate,
+        COUNT(po.id) AS orderCount
+        FROM tb_store_info s
+        LEFT JOIN
+        tb_purchase_order_info po ON s.id = po.store_id
+        <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+            and po.purchase_channels_id in
+            <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+        <if test="orderNumber != null  and orderNumber != ''">and po.order_number like concat('%', #{orderNumber},
+            '%')
+        </if>
+        <if test="orderType != null  and orderType != ''">and po.order_type = #{orderType}</if>
+        <if test="params.beginPurchaseTime != null and params.beginPurchaseTime != '' and params.endPurchaseTime != null and params.endPurchaseTime != ''">
+            and DATE_FORMAT(po.purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
+            #{params.endPurchaseTime}
+        </if>
+        <if test="storeId != null ">and po.store_id = #{storeId}</if>
+        <if test="buyerNumber != null  and buyerNumber != ''">and po.buyer_number like concat('%', #{buyerNumber},
+            '%')
+        </if>
+        <if test="purchaseChannelType != null  and purchaseChannelType != ''">and po.purchase_channel_type =
+            #{purchaseChannelType}
+        </if>
+        <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
+            and po.purchase_channels_id in
+            <foreach collection="purchaseChannelsIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+        <if test="purchaseAccountId != null  and purchaseAccountId != ''">and po.purchase_account_id =
+            #{purchaseAccountId}
+        </if>
+        <if test="purchaseOrder != null  and purchaseOrder != ''">and po.purchase_order like concat('%',
+            #{purchaseOrder}, '%')
+        </if>
+        <if test="supplierName != null  and supplierName != ''">and po.supplier_name like concat('%', #{supplierName},
+            '%')
+        </if>
+        <if test="shipmentsOrder != null  and shipmentsOrder != ''">and po.shipments_order like concat('%',
+            #{shipmentsOrder}, '%')
+        </if>
+        <if test="hasReturn != null  and hasReturn != ''">and po.has_return = #{hasReturn}</if>
+        <if test="hasBP != null  and hasBP != ''">and po.has_b_p = #{hasBP}</if>
+        <if test="hasAfterSale != null  and hasAfterSale != ''">and po.has_after_sale = #{hasAfterSale}</if>
+        <if test="userId != null ">and po.user_id = #{userId}</if>
+        <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+            and DATE_FORMAT(po.create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+        </if>
+        <if test="updateBy != null  and updateBy != ''">and po.update_by like concat('%', #{updateBy}, '%')</if>
+        <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''">
+            and DATE_FORMAT(po.update_time, '%Y-%m-%d') between #{params.beginUpdateTime} and #{params.endUpdateTime}
+        </if>
+        <if test="deptIds != null and deptIds.size > 0">
+            and po.dept_id in
+            <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        <where>
+            <if test="storeId != null">and s.id = #{storeId}</if>
+            <if test="principalId != null ">and s.principal_id = #{principalId}</if>
+            <if test="operationId != null ">and s.operation_id = #{operationId}</if>
+            <if test="serviceId != null ">and s.service_id = #{serviceId}</if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and s.dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY userId
+        ORDER BY salesPriceCount DESC;
+
+    </select>
 
     <insert id="insertPurchaseOrderInfo" parameterType="PurchaseOrderInfo" useGeneratedKeys="true" keyProperty="id">
         insert into tb_purchase_order_info

@@ -131,6 +131,10 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     @Override
     public int insertStoreInfo(StoreInfo storeInfo) {
+        StoreInfo old = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, storeInfo.getStoreName()));
+        if (StringUtils.isNotNull(old)) {
+            throw new ServiceException("店铺名称已存在，请重新输入！！！");
+        }
         // 校验用户和部门是否存在
         checkUserAndDept(storeInfo);
 
@@ -152,6 +156,12 @@ public class StoreInfoServiceImpl extends ServiceImpl<StoreInfoMapper, StoreInfo
      */
     @Override
     public int updateStoreInfo(StoreInfo storeInfo) {
+        StoreInfo myOld = this.selectStoreInfoById(storeInfo.getId());
+        StoreInfo old = this.getOne(new LambdaQueryWrapper<StoreInfo>().eq(StoreInfo::getStoreName, storeInfo.getStoreName()));
+        //如果店铺名已存在且不等于传过来的店铺名 如果等于则表示不修改
+        if (StringUtils.isNotNull(old) && !old.getStoreName().equals(myOld.getStoreName())) {
+            throw new ServiceException("店铺名称已存在，请重新输入！！！");
+        }
         // 校验用户和部门是否存在
         checkUserAndDept(storeInfo);
         storeInfo.setUpdateBy(SecurityUtils.getUsername());
