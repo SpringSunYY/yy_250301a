@@ -49,7 +49,7 @@ public class StoreInfoController extends BaseController
     /**
      * 查询店铺信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:storeInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:storeInfo:list,manage:storeInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(StoreInfoQuery storeInfoQuery)
     {

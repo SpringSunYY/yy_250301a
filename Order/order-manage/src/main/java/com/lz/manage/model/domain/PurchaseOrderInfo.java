@@ -82,6 +82,8 @@ public class PurchaseOrderInfo implements Serializable {
     @TableField(exist = false)
     private String storeName;
     private Long storeId;
+    @TableField(exist = false)
+    private List<Long> storeIds;
 
     /**
      * 买家

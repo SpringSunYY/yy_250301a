@@ -166,14 +166,25 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             purchaseOrderInfo.setUserId(SecurityUtils.getUserId());
         }
         //查询店铺是否存在
-        if (StringUtils.isNotNull(purchaseOrderInfo.getStoreId())) {
-            StoreInfo storeInfo = storeInfoService.selectStoreInfoById(purchaseOrderInfo.getStoreId());
-            if (StringUtils.isNull(storeInfo)) {
-                throw new ServiceException("店铺不存在！！！");
-            }
-            //赋值店铺部门
-            purchaseOrderInfo.setDeptId(storeInfo.getDeptId());
+        StoreInfo storeInfo = storeInfoService.selectStoreInfoById(purchaseOrderInfo.getStoreId());
+        if (StringUtils.isNull(storeInfo)) {
+            throw new ServiceException("店铺不存在！！！");
         }
+        //赋值店铺部门
+        Long deptId = storeInfo.getDeptId();
+        purchaseOrderInfo.setDeptId(deptId);
+        SysUser serviceUser = userService.selectUserById(purchaseOrderInfo.getUserId());
+        if (StringUtils.isNull(serviceUser)) {
+            throw new ServiceException("客服不存在！！！");
+        }
+        List<Long> deptIds = new ArrayList<>();
+        deptIds = deptService.selectChildrenDeptById(serviceUser.getDeptId())
+                .stream().map(SysDept::getDeptId).collect(Collectors.toList());
+        deptIds.add(serviceUser.getDeptId());
+        if (!deptIds.contains(deptId)) {
+            throw new ServiceException("客服和店铺部门不一致！！！");
+        }
+
 
         PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoById(purchaseOrderInfo.getPurchaseAccountId());
         if (StringUtils.isNull(purchaseAccountInfo)) {
@@ -461,7 +472,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
             SysUser user = userService.selectUserByUserName(info.getUserName());
             if (StringUtils.isNull(user)) {
-                return StringUtils.format("第{}行创建人不存在", index);
+                return StringUtils.format("第{}行客服不存在", index);
             }
             info.setUserId(user.getUserId());
 
@@ -657,23 +668,28 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         return serviceReport;
     }
 
+    @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     @Override
     public List<PurchaseOrderReportByStoreVo> getStoreReport(PurchaseOrderInfo purchaseOrderInfo) {
+        StoreInfo storeInfo = new StoreInfo();
+        storeInfo.setId(purchaseOrderInfo.getStoreId());
+        List<StoreInfo> storeInfos = storeInfoService.selectStoreInfoList(storeInfo);
+        purchaseOrderInfo.setStoreIds(storeInfos.stream().map(StoreInfo::getId).collect(Collectors.toList()));
         List<PurchaseOrderReportByStoreVo> storeReport = purchaseOrderInfoMapper.getStoreReport(purchaseOrderInfo);
         storeReport.forEach(report -> {
-            StoreInfo storeInfo = storeInfoService.selectStoreInfoById(report.getStoreId());
-            if (StringUtils.isNotNull(storeInfo)) {
+            StoreInfo store = storeInfoService.selectStoreInfoById(report.getStoreId());
+            if (StringUtils.isNotNull(store)) {
                 //设置默认值
-                report.setStoreName(storeInfo.getStoreName());
-                SysUser principal = userService.selectUserById(storeInfo.getPrincipalId());
+                report.setStoreName(store.getStoreName());
+                SysUser principal = userService.selectUserById(store.getPrincipalId());
                 if (StringUtils.isNotNull(principal)) {
                     report.setPrincipalName(principal.getUserName());
                 }
-                SysUser operation = userService.selectUserById(storeInfo.getOperationId());
+                SysUser operation = userService.selectUserById(store.getOperationId());
                 if (StringUtils.isNotNull(operation)) {
                     report.setOperationName(operation.getUserName());
                 }
-                SysUser service = userService.selectUserById(storeInfo.getServiceId());
+                SysUser service = userService.selectUserById(store.getServiceId());
                 if (StringUtils.isNotNull(service)) {
                     report.setServiceName(service.getUserName());
                 }
@@ -684,6 +700,16 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
     @Override
     public List<PurchaseOrderReportByUserVo> getOperationReport(PurchaseOrderInfoAndStoreQuery purchaseOrderInfo) {
+        //查到自己部门下面的店铺
+        StoreInfo storeInfo = new StoreInfo();
+        if (StringUtils.isNotNull(purchaseOrderInfo.getDeptId())) {
+            storeInfo.setDeptIds(deptService.selectDeptByIdReturnIds(purchaseOrderInfo.getDeptId()));
+        } else {
+            storeInfo.setDeptIds(deptService.selectDeptByIdReturnIds(SecurityUtils.getDeptId()));
+        }
+        storeInfo.setId(purchaseOrderInfo.getStoreId());
+        List<StoreInfo> storeInfos = storeInfoService.selectStoreInfoList(storeInfo);
+        purchaseOrderInfo.setStoreIds(storeInfos.stream().map(StoreInfo::getId).collect(Collectors.toList()));
         List<PurchaseOrderReportByUserVo> operationReport = purchaseOrderInfoMapper.getOperationReport(purchaseOrderInfo);
         for (PurchaseOrderReportByUserVo report : operationReport) {
             SysUser user = userService.selectUserById(report.getUserId());

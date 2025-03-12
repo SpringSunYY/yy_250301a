@@ -58,7 +58,7 @@ public class PurchaseOrderInfoController extends BaseController {
     /**
      * 查询采购发货信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:purchaseOrderInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:purchaseOrderInfo:list,manage:purchaseOrderInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(PurchaseOrderInfoQuery purchaseOrderInfoQuery) {
         PurchaseOrderInfo purchaseOrderInfo = getPurchaseOrderInfo(purchaseOrderInfoQuery);

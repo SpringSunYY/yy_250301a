@@ -226,7 +226,11 @@
                 and DATE_FORMAT(purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
                 #{params.endPurchaseTime}
             </if>
-            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="storeIds != null and storeIds.size > 0">and store_id in
+                <foreach collection="storeIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
             <if test="buyerNumber != null  and buyerNumber != ''">and buyer_number like concat('%', #{buyerNumber},
                 '%')
             </if>
@@ -275,14 +279,14 @@
     </select>
     <select id="getServiceReport"
             resultType="com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo">
-        SELECT user_id                             AS userId,
-               COALESCE(SUM(sales_price), 0)       AS salesPriceCount,
-               COALESCE(SUM(sales_number), 0)      AS salesNumberCount,
-               COALESCE(SUM(purchase_price), 0)    AS purchasePriceCount,
-               COALESCE(SUM(purchase_premium), 0)  AS purchasePremiumCount,
-               COALESCE(SUM(order_profit), 0)      AS orderProfitCount,
-               COALESCE(AVG(order_profit_rate), 0) AS avgOrderProfitRate,
-               COUNT(id)                           AS orderCount
+        SELECT user_id AS userId,
+        COALESCE(SUM(sales_price), 0) AS salesPriceCount,
+        COALESCE(SUM(sales_number), 0) AS salesNumberCount,
+        COALESCE(SUM(purchase_price), 0) AS purchasePriceCount,
+        COALESCE(SUM(purchase_premium), 0) AS purchasePremiumCount,
+        COALESCE(SUM(order_profit), 0) AS orderProfitCount,
+        COALESCE(AVG(order_profit_rate), 0) AS avgOrderProfitRate,
+        COUNT(id) AS orderCount
         FROM tb_purchase_order_info
         <where>
             <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
@@ -349,14 +353,14 @@
     </select>
     <select id="getStoreReport"
             resultType="com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo">
-        select store_id                            as storeId,
-               COALESCE(SUM(sales_price), 0)       AS salesPriceCount,
-               COALESCE(SUM(sales_number), 0)      AS salesNumberCount,
-               COALESCE(SUM(purchase_price), 0)    AS purchasePriceCount,
-               COALESCE(SUM(purchase_premium), 0)  AS purchasePremiumCount,
-               COALESCE(SUM(order_profit), 0)      AS orderProfitCount,
-               COALESCE(AVG(order_profit_rate), 0) AS avgOrderProfitRate,
-               COUNT(id)                           AS orderCount
+        select store_id as storeId,
+        COALESCE(SUM(sales_price), 0) AS salesPriceCount,
+        COALESCE(SUM(sales_number), 0) AS salesNumberCount,
+        COALESCE(SUM(purchase_price), 0) AS purchasePriceCount,
+        COALESCE(SUM(purchase_premium), 0) AS purchasePremiumCount,
+        COALESCE(SUM(order_profit), 0) AS orderProfitCount,
+        COALESCE(AVG(order_profit_rate), 0) AS avgOrderProfitRate,
+        COUNT(id) AS orderCount
         from tb_purchase_order_info
         <where>
             <if test="purchaseChannelsIds != null and purchaseChannelsIds.size > 0">
@@ -450,7 +454,6 @@
             and DATE_FORMAT(po.purchase_time, '%Y-%m-%d') between #{params.beginPurchaseTime} and
             #{params.endPurchaseTime}
         </if>
-        <if test="storeId != null ">and po.store_id = #{storeId}</if>
         <if test="buyerNumber != null  and buyerNumber != ''">and po.buyer_number like concat('%', #{buyerNumber},
             '%')
         </if>
@@ -492,16 +495,13 @@
                 #{id}
             </foreach>
         </if>
-        <!-- 数据范围过滤 -->
-        ${params.dataScope}
         <where>
-            <if test="storeId != null">and s.id = #{storeId}</if>
             <if test="principalId != null ">and s.principal_id = #{principalId}</if>
             <if test="operationId != null ">and s.operation_id = #{operationId}</if>
             <if test="serviceId != null ">and s.service_id = #{serviceId}</if>
-            <if test="deptIds != null and deptIds.size > 0">
-                and s.dept_id in
-                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+            <if test="storeIds != null and storeIds.size > 0">
+                and s.id in
+                <foreach collection="storeIds" open="(" close=")" separator="," item="id">
                     #{id}
                 </foreach>
             </if>

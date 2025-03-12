@@ -596,7 +596,7 @@ export default {
         }, 200)
       } else {
         this.storeInfoList = []
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
     },
     /**
@@ -607,10 +607,10 @@ export default {
       if (this.form.storeId != null) {
         this.storeInfoQueryParams.storeId = this.form.storeId
       } else {
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
       if (this.storeInfoQueryParams.storeName !== '') {
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
       listStoreInfo(this.storeInfoQueryParams).then(res => {
         this.storeInfoList = res?.rows

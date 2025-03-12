@@ -50,7 +50,7 @@ public class ReplacementOrderInfoController extends BaseController {
     /**
      * 查询补单明细列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:replacementOrderInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:replacementOrderInfo:list,manage:replacementOrderInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(ReplacementOrderInfoQuery replacementOrderInfoQuery) {
         ReplacementOrderInfo replacementOrderInfo = ReplacementOrderInfoQuery.queryToObj(replacementOrderInfoQuery);

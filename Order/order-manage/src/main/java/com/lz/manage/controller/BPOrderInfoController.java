@@ -52,7 +52,7 @@ public class BPOrderInfoController extends BaseController {
     /**
      * 查询白嫖订单信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:bPOrderInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:bPOrderInfo:list,manage:bPOrderInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(BPOrderInfoQuery bPOrderInfoQuery) {
         BPOrderInfo bPOrderInfo = BPOrderInfoQuery.queryToObj(bPOrderInfoQuery);

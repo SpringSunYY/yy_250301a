@@ -49,7 +49,7 @@ public class EmptyBagCourierHistoryInfoController extends BaseController
     /**
      * 查询空包/快递充值记录列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:emptyBagCourierHistoryInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:emptyBagCourierHistoryInfo:list,manage:emptyBagCourierHistoryInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(EmptyBagCourierHistoryInfoQuery emptyBagCourierHistoryInfoQuery)
     {

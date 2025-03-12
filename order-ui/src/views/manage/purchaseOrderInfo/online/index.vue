@@ -290,7 +290,10 @@
         >导入
         </el-button>
       </el-col>
-      <el-col :span="20" style="margin-top:10px">
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="20" style="margin-bottom:10px">
         <el-button
           type="success"
           plain
@@ -340,7 +343,6 @@
         >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="purchaseOrderInfoList" :border="true"
@@ -1621,7 +1623,7 @@ export default {
         }, 200)
       } else {
         this.storeInfoList = []
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
     },
     /**
@@ -1635,7 +1637,7 @@ export default {
         this.storeInfoQueryParams.id = null
       }
       if (this.storeInfoQueryParams.storeName !== '') {
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
       listStoreInfo(this.storeInfoQueryParams).then(res => {
         this.storeInfoList = res?.rows

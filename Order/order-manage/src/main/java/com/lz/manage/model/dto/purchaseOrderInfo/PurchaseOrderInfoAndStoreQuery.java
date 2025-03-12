@@ -44,6 +44,7 @@ public class PurchaseOrderInfoAndStoreQuery implements Serializable {
      * 店铺名称
      */
     private Long storeId;
+    private List<Long> storeIds;
 
     /**
      * 买家

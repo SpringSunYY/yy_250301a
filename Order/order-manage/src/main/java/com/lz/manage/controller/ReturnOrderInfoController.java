@@ -53,7 +53,7 @@ public class ReturnOrderInfoController extends BaseController {
     /**
      * 查询退货订单信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:returnOrderInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:returnOrderInfo:list,manage:returnOrderInfo:qiery')")
     @GetMapping("/list")
     public TableDataInfo list(ReturnOrderInfoQuery returnOrderInfoQuery) {
         ReturnOrderInfo returnOrderInfo = ReturnOrderInfoQuery.queryToObj(returnOrderInfoQuery);

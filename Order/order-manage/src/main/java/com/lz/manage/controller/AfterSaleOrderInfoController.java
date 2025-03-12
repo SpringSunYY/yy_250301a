@@ -57,7 +57,7 @@ public class AfterSaleOrderInfoController extends BaseController {
     /**
      * 查询售后订单信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:afterSaleOrderInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:afterSaleOrderInfo:list,manage:afterSaleOrderInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(AfterSaleOrderInfoQuery afterSaleOrderInfoQuery) {
         AfterSaleOrderInfo afterSaleOrderInfo = AfterSaleOrderInfoQuery.queryToObj(afterSaleOrderInfoQuery);

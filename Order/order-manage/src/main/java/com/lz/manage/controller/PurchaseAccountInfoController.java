@@ -54,7 +54,7 @@ public class PurchaseAccountInfoController extends BaseController
     /**
      * 查询采购账号信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:purchaseAccountInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:purchaseAccountInfo:list,manage:purchaseAccountInfo:query')")
     @GetMapping("/list")
     public TableDataInfo list(PurchaseAccountInfoQuery purchaseAccountInfoQuery)
     {

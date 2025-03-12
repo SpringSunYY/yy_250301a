@@ -471,7 +471,7 @@ export default {
         }, 200)
       } else {
         this.storeInfoList = []
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
     },
     /**

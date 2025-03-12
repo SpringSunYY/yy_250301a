@@ -163,59 +163,59 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="20" style="margin-top:10px">
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >总数：{{ purchaseOrderInfoCount.orderCount }}
-        </el-button>
+<!--    <el-row :gutter="10" class="mb8">-->
+<!--      <el-col :span="20" style="margin-top:10px">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >总数：{{ purchaseOrderInfoCount.orderCount }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}
-        </el-button>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
-        </el-button>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
-        </el-button>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
-        </el-button>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
-        </el-button>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}-->
+<!--        </el-button>-->
 
-        <el-button
-          type="success"
-          plain
-          size="mini"
-        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
+<!--    </el-row>-->
 
     <el-table v-loading="loading" :data="reportList" :border="true"
     >
@@ -491,7 +491,7 @@ export default {
         }, 200)
       } else {
         this.storeInfoList = []
-        this.storeInfoQueryParams.storeId = null
+        this.storeInfoQueryParams.id = null
       }
     },
     /**
@@ -548,7 +548,7 @@ export default {
         this.reportList = response.rows
         this.loading = false
       })
-      this.getCount()
+      // this.getCount()
     },
     getCount() {
       getPurchaseOrderInfoCount(this.queryParams).then(response => {

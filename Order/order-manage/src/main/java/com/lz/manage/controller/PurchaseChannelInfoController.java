@@ -41,7 +41,7 @@ public class PurchaseChannelInfoController extends BaseController
     /**
      * 查询采购渠道信息列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:purchaseChannelInfo:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:purchaseChannelInfo:list,manage:purchaseChannelInfo:query')")
     @GetMapping("/list")
     public AjaxResult list(PurchaseChannelInfoQuery purchaseChannelInfoQuery)
     {
