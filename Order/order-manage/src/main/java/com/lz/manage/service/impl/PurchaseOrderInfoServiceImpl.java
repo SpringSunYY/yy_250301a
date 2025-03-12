@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -30,7 +29,8 @@ import com.lz.manage.model.domain.*;
 import com.lz.manage.model.enums.CommonWhetherEnum;
 import com.lz.manage.model.enums.PurchaseChannelTypeEnum;
 import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderInfoCountVo;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo;
 import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
@@ -529,14 +529,14 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     @Override
-    public List<PurchaseOrderReportVo> getReport(PurchaseOrderInfo purchaseOrderInfo) {
+    public List<PurchaseOrderReportByDeptVo> getDeptReport(PurchaseOrderInfo purchaseOrderInfo) {
         // 1. 获取全量部门数据
         List<SysDept> deptList = deptService.selectDeptList(new SysDept());
 
         // 2. 初始化部门映射表
-        Map<Long, PurchaseOrderReportVo> reportMap = new LinkedHashMap<>();
+        Map<Long, PurchaseOrderReportByDeptVo> reportMap = new LinkedHashMap<>();
         deptList.forEach(dept -> {
-            PurchaseOrderReportVo vo = new PurchaseOrderReportVo();
+            PurchaseOrderReportByDeptVo vo = new PurchaseOrderReportByDeptVo();
             vo.setDeptId(dept.getDeptId());
             vo.setDeptName(dept.getDeptName());
             vo.setParentId(dept.getParentId());
@@ -545,11 +545,11 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         });
 
         // 3. 合并统计结果
-        List<PurchaseOrderReportVo> countVos = this.getReportGroupByDept(purchaseOrderInfo);
+        List<PurchaseOrderReportByDeptVo> countVos = this.getReportGroupByDept(purchaseOrderInfo);
         countVos.forEach(vo -> mergeStatistics(reportMap.get(vo.getDeptId()), vo));
 
         // 4. 按部门深度排序（叶子节点在前）
-        List<PurchaseOrderReportVo> sortedVos = reportMap.values().stream()
+        List<PurchaseOrderReportByDeptVo> sortedVos = reportMap.values().stream()
                 .sorted(Comparator.comparingInt(v -> -getDeptDepth(reportMap, v.getDeptId())))
                 .collect(Collectors.toList());
 
@@ -563,7 +563,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     // 初始化零值
-    private void initZeroValues(PurchaseOrderReportVo vo) {
+    private void initZeroValues(PurchaseOrderReportByDeptVo vo) {
         vo.setOrderCount(0L);
         vo.setSalesNumberCount(0L);
         vo.setSalesPriceCount(BigDecimal.ZERO);
@@ -574,7 +574,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     // 修改mergeStatistics方法保持空安全
-    private void mergeStatistics(PurchaseOrderReportVo target, PurchaseOrderReportVo source) {
+    private void mergeStatistics(PurchaseOrderReportByDeptVo target, PurchaseOrderReportByDeptVo source) {
         if (StringUtils.isNull(target) || StringUtils.isNull(source)) return;
 
         target.setOrderCount(source.getOrderCount());
@@ -586,11 +586,11 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     // 计算部门深度
-    private int getDeptDepth(Map<Long, PurchaseOrderReportVo> reportMap, Long deptId) {
+    private int getDeptDepth(Map<Long, PurchaseOrderReportByDeptVo> reportMap, Long deptId) {
         int depth = 0;
         Long currentId = deptId;
         while (StringUtils.isNotNull(currentId) && currentId != 0L) {
-            PurchaseOrderReportVo vo = reportMap.get(currentId);
+            PurchaseOrderReportByDeptVo vo = reportMap.get(currentId);
             if (StringUtils.isNull(vo)) break;
             currentId = vo.getParentId();
             depth++;
@@ -599,13 +599,13 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     // 安全聚合方法（核心修改点）
-    private void aggregateToParentSafely(Map<Long, PurchaseOrderReportVo> reportMap, PurchaseOrderReportVo child) {
+    private void aggregateToParentSafely(Map<Long, PurchaseOrderReportByDeptVo> reportMap, PurchaseOrderReportByDeptVo child) {
         Long parentId = child.getParentId();
         if (StringUtils.isNull(parentId) || parentId == 0L) {
             return; // 根部门无需处理
         }
 
-        PurchaseOrderReportVo parent = reportMap.get(parentId);
+        PurchaseOrderReportByDeptVo parent = reportMap.get(parentId);
         if (StringUtils.isNotNull(parent)) {
             // 执行正常聚合
             parent.setOrderCount(parent.getOrderCount() + child.getOrderCount());
@@ -618,7 +618,7 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
     }
 
     // 计算利润率
-    private void calculateProfitRate(PurchaseOrderReportVo vo) {
+    private void calculateProfitRate(PurchaseOrderReportByDeptVo vo) {
         if (vo.getSalesPriceCount().compareTo(BigDecimal.ZERO) != 0) {
             BigDecimal rate = vo.getOrderProfitCount()
                     .divide(vo.getSalesPriceCount(), 4, RoundingMode.HALF_UP);
@@ -630,8 +630,21 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
 
     @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
     @Override
-    public List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo) {
+    public List<PurchaseOrderReportByDeptVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo) {
         return purchaseOrderInfoMapper.getReportGroupByDept(purchaseOrderInfo);
+    }
+
+    @Override
+    @DataScope(userAlias = "tb_purchase_order_info", deptAlias = "tb_purchase_order_info")
+    public List<PurchaseOrderReportByUserVo> getServiceReport(PurchaseOrderInfo purchaseOrderInfo) {
+        List<PurchaseOrderReportByUserVo> serviceReport = purchaseOrderInfoMapper.getServiceReport(purchaseOrderInfo);
+        for (PurchaseOrderReportByUserVo report : serviceReport) {
+            SysUser user = userService.selectUserById(report.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                report.setUserName(user.getUserName());
+            }
+        }
+        return serviceReport;
     }
 
 }

@@ -17,9 +17,18 @@ export function getPurchaseOrderInfoCount(query) {
   })
 }
 // 查询采购发货信息报表
-export function getReport(query) {
+export function getDeptReport(query) {
   return request({
-    url: '/manage/purchaseOrderInfo/getReport',
+    url: '/manage/purchaseOrderInfo/dept/getReport',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询采购发货信息报表-客服
+export function getServiceReport(query) {
+  return request({
+    url: '/manage/purchaseOrderInfo/service/getReport',
     method: 'get',
     params: query
   })

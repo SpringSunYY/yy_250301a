@@ -290,7 +290,7 @@
         >导入
         </el-button>
       </el-col>
-      <el-col :span="15">
+      <el-col :span="20" style="margin-top:10px">
         <el-button
           type="success"
           plain
@@ -302,42 +302,42 @@
           type="success"
           plain
           size="mini"
-        >订单利润：{{ purchaseOrderInfoCount.orderProfitCount }}
+        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
+        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
+        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
+        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >采购进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
+        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >采购补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
+        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>

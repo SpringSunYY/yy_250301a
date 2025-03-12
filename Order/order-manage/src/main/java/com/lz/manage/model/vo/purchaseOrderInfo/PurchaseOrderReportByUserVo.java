@@ -11,27 +11,25 @@ import java.math.BigDecimal;
  * Author: YY
  * CreateTime: 2025-03-09  20:57
  * Description: PurchaseOrderReportVo
- * 采购订单报表
+ * 采购订单根据用户报表
  * Version: 1.0
  */
 @Data
-public class PurchaseOrderReportVo implements Serializable {
+public class PurchaseOrderReportByUserVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 部门ID
+     * 用户ID 客服  运营
      */
-    private Long deptId;
+    private Long userId;
+
 
     /**
-     * 父部门ID
+     * 用户名称
      */
-    private Long parentId;
+    private String userName;
 
-    /**
-     * 部门名称
-     */
-    private String deptName;
+    private Long storeCount;
 
     /**
      * 订单总数

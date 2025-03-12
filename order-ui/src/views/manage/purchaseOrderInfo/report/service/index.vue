@@ -11,18 +11,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="采购日期">
-        <el-date-picker
-          v-model="daterangePurchaseTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :picker-options="pickerOptions"
-        ></el-date-picker>
-      </el-form-item>
       <el-form-item label="店铺名称" prop="storeId">
         <el-select
           v-model="queryParams.storeId"
@@ -52,18 +40,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="" prop="deptId" style="width: 25%">
-        <el-row :gutter="24">
-          <el-col :span="6">
-            <span style=" font-weight: bold;color: rgb(96, 98, 102)">采购渠道</span>
-          </el-col>
-          <el-col :span="18">
-            <treeselect v-model="queryParams.purchaseChannelsId" :options="purchaseChannelInfoOptions"
-                        :normalizer="normalizerChannels" placeholder="请选择渠道"
-            />
-          </el-col>
-        </el-row>
-      </el-form-item>
       <el-form-item label="采购账号" prop="purchaseAccountId">
         <el-select
           v-model="queryParams.purchaseAccountId"
@@ -83,10 +59,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="名称" prop="supplierName">
+      <el-form-item label="发货单号" prop="shipmentsOrder">
         <el-input
-          v-model="queryParams.supplierName"
-          placeholder="请输入供应商名称"
+          v-model="queryParams.shipmentsOrder"
+          placeholder="请输入发货单号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -140,6 +116,30 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="采购日期">
+        <el-date-picker
+          v-model="daterangePurchaseTime"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+      </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="daterangeCreateTime"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+      </el-form-item>
       <el-form-item label="" prop="deptId" style="width: 25%">
         <el-row :gutter="24">
           <el-col :span="6">
@@ -153,6 +153,18 @@
           </el-col>
         </el-row>
       </el-form-item>
+      <el-form-item label="" prop="deptId" style="width: 25%">
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <span style=" font-weight: bold;color: rgb(96, 98, 102)">采购渠道</span>
+          </el-col>
+          <el-col :span="18">
+            <treeselect v-model="queryParams.purchaseChannelsId" :options="purchaseChannelInfoOptions"
+                        :normalizer="normalizerChannels" placeholder="请选择渠道"
+            />
+          </el-col>
+        </el-row>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -160,17 +172,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="el-icon-sort"
-          size="mini"
-          @click="toggleExpandAll"
-        >展开/折叠
-        </el-button>
-      </el-col>
-      <el-col :span="15">
+      <el-col :span="20" style="margin-top:10px">
         <el-button
           type="success"
           plain
@@ -182,90 +184,122 @@
           type="success"
           plain
           size="mini"
-        >订单利润：{{ purchaseOrderInfoCount.orderProfitCount }}
+        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
+        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
+        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
+        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >采购进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
+        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}
         </el-button>
 
         <el-button
           type="success"
           plain
           size="mini"
-        >采购补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
+        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table
-      :border="true"
-      v-if="refreshTable"
-      v-loading="loading"
-      :data="reportList"
-      row-key="deptId"
-      :default-expand-all="isExpandAll"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    <el-table v-loading="loading" :data="reportList" :border="true"
     >
-      <el-table-column prop="deptName" label="部门名称"></el-table-column>
-      <el-table-column prop="orderCount" label="订单总数"></el-table-column>
-      <el-table-column prop="orderProfitCount" label="总利润"></el-table-column>
-      <el-table-column prop="salesNumberCount" label="销售数量"></el-table-column>
-      <el-table-column prop="salesPriceCount" label="销售总价格"></el-table-column>
-      <el-table-column prop="purchasePriceCount" label="采购进价"></el-table-column>
-      <el-table-column prop="purchasePremiumCount" label="采购补价"></el-table-column>
-      <el-table-column prop="avgOrderProfitRate" label="平均利润">
+      <el-table-column label="客服" :show-overflow-tooltip="true" align="center"
+                       prop="userName"
+      />
+      <el-table-column label="订单总数" sortable :show-overflow-tooltip="true" align="center"
+                       prop="orderCount"
+      />
+      <el-table-column label="订单总利润" sortable :show-overflow-tooltip="true" align="center"
+                       prop="orderProfitCount"
+      />
+      <el-table-column label="销售总数量" sortable :show-overflow-tooltip="true" align="center"
+                       prop="salesNumberCount"
+      />
+      <el-table-column label="销售总价格" sortable :show-overflow-tooltip="true" align="center"
+                       prop="salesPriceCount"
+      />
+      <el-table-column label="销售总进价" sortable :show-overflow-tooltip="true" align="center"
+                       prop="purchasePriceCount"
+      />
+      <el-table-column label="采购总补价" sortable :show-overflow-tooltip="true" align="center"
+                       prop="purchasePremiumCount"
+      />
+      <el-table-column label="订单平均利润率" sortable :show-overflow-tooltip="true" align="center"
+                       prop="avgOrderProfitRate"
+      >
         <template slot-scope="scope">
           <span>{{ toPercentage(scope.row.avgOrderProfitRate) }}</span>
         </template>
       </el-table-column>
     </el-table>
 
+
   </div>
 </template>
 
 <script>
-import { listDept } from '@/api/system/dept'
+import {
+  addPurchaseOrderInfo,
+  delPurchaseOrderInfo,
+  getPurchaseOrderInfo, getPurchaseOrderInfoCount, getServiceReport,
+  listPurchaseOrderInfo,
+  updatePurchaseOrderInfo
+} from '@/api/manage/purchaseOrderInfo'
+import { allocatedUserList } from '@/api/system/role'
+import { listStoreInfo } from '@/api/manage/storeInfo'
+import { listPurchaseAccountInfo } from '@/api/manage/purchaseAccountInfo'
+import { toPercentage } from '@/utils/common'
+import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { listDept } from '@/api/system/dept'
+import { addOrUpdateReturnOrderInfo, getReturnOrderInfoByOrderNumber } from '@/api/manage/returnOrderInfo'
+import { addOrUpdateBPOrderInfo, getBPOrderInfoByOrderNumber } from '@/api/manage/bPOrderInfo'
+import { parseTime } from '@/utils/ruoyi'
 import { listPurchaseChannelInfo } from '@/api/manage/purchaseChannelInfo'
-import { listPurchaseAccountInfo } from '@/api/manage/purchaseAccountInfo'
-import { listStoreInfo } from '@/api/manage/storeInfo'
-import { allocatedUserList } from '@/api/system/role'
-import { getPurchaseOrderInfoCount, getReport } from '@/api/manage/purchaseOrderInfo'
-import { toPercentage } from '../../../../utils/common'
+import { addOrUpdateAfterSaleOrderInfo, getAfterSaleOrderInfoByOrderNumber } from '@/api/manage/afterSaleOrderInfo'
+import { currentMonth, pickerOptions } from '@/constants/datetime'
 
 export default {
-  name: 'Dept',
-  dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
+  name: 'PurchaseOrderInfo',
+  computed: {
+    pickerOptions() {
+      return pickerOptions
+    }
+  },
   components: { Treeselect },
+  dicts: ['o_purchase_channel_type', 'o_purchase_channels', 'o_order_type', 'o_common_whether', 'o_return_order_status'],
   data() {
     return {
+      //采购渠道相关信息
+      purchaseChannelInfoOptions: [],
+      purchaseChannelQuery: {
+        channelType: null
+      },
       //统计信息
       purchaseOrderInfoCount: {
         orderCount: 0,
@@ -276,12 +310,11 @@ export default {
         purchasePremiumCount: 0,
         avgOrderProfitRate: 0
       },
-      reportList: [],
-      //采购渠道相关信息
-      purchaseChannelInfoOptions: [],
-      purchaseChannelQuery: {
-        channelType: null
-      },
+      afterSaleOrderOpen: false,
+      returnOrderOpen: false,
+      bpOrderOpen: false,
+      //部门相关信息
+      deptOptions: [],
       //采购账号信息
       purchaseAccountInfoList: [],
       purchaseAccountInfoLoading: false,
@@ -312,69 +345,22 @@ export default {
       loading: true,
       // 显示搜索条件
       showSearch: true,
-      // 部门树选项
-      deptOptions: [],
+      // 采购发货信息表格数据
+      reportList: [],
+      // 弹出层标题
+      title: '',
       // 是否显示弹出层
       open: false,
-      // 是否展开，默认全部展开
-      isExpandAll: true,
-      // 重新渲染表格状态
-      refreshTable: true,
-      // 采购时间时间范围
-      daterangePurchaseTime: (() => {
-        const today = new Date()
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 2)
-        return [firstDayOfMonth.toISOString().split('T')[0], today.toISOString().split('T')[0]]
-      })(),
+      // 部门时间范围
+      daterangePurchaseTime: (() => currentMonth())(),
       // 部门时间范围
       daterangeCreateTime: [],
       // 部门时间范围
       daterangeUpdateTime: [],
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近半年',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一年',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
       // 查询参数
       queryParams: {
+        pageNum: 1,
+        pageSize: 10,
         orderNumber: null,
         orderType: null,
         purchaseTime: null,
@@ -406,33 +392,18 @@ export default {
     this.getChannelsTreeselect()
   },
   methods: {
+    parseTime,
     toPercentage,
-    getList() {
-      // this.loading = true
-      this.queryParams.params = {}
-      if (null != this.daterangePurchaseTime && '' != this.daterangePurchaseTime) {
-        this.queryParams.params['beginPurchaseTime'] = this.daterangePurchaseTime[0]
-        this.queryParams.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
+    /** 转换采购渠道信息数据结构 */
+    normalizerChannels(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
       }
-      if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
-        this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
+      return {
+        id: node.id,
+        label: node.channelName,
+        children: node.children
       }
-      if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
-        this.queryParams.params['beginUpdateTime'] = this.daterangeUpdateTime[0]
-        this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
-      }
-      getReport(this.queryParams).then(response => {
-        console.log(response.data)
-        this.reportList = this.handleTree(response.data, 'deptId')
-        this.loading = false
-      })
-      this.getCount()
-    },
-    getCount() {
-      getPurchaseOrderInfoCount(this.queryParams).then(response => {
-        this.purchaseOrderInfoCount = response.data
-      })
     },
     /** 查询采购渠道信息下拉树结构 */
     getChannelsTreeselect() {
@@ -442,6 +413,24 @@ export default {
         data.children = this.handleTree(response.data, 'id', 'parentId')
         this.purchaseChannelInfoOptions.push(data)
       })
+    },
+
+    /** 查询部门列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, 'deptId')
+      })
+    },
+    /** 转换部门数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      }
     },
     /**
      * 获取采购账号推荐列表
@@ -457,19 +446,12 @@ export default {
         this.purchaseAccountInfoList = []
       }
     },
-    /** 转换采购渠道信息数据结构 */
-    normalizerChannels(node) {
-      if (node.children && !node.children.length) {
-        delete node.children
-      }
-      return {
-        id: node.id,
-        label: node.channelName,
-        children: node.children
-      }
-    },
     /** 获取采购账号信息列表 */
     getPurchaseAccountInfoList() {
+
+      if (this.purchaseAccountInfoQueryParams.purchaseAccount !== '') {
+        this.purchaseAccountInfoQueryParams.id = null
+      }
       listPurchaseAccountInfo(this.purchaseAccountInfoQueryParams).then(res => {
         this.purchaseAccountInfoList = res?.rows
         this.purchaseAccountInfoLoading = false
@@ -526,41 +508,68 @@ export default {
         this.serviceUserLoading = false
       })
     },
-    /** 查询部门列表 */
-    getDeptList() {
-      listDept(this.queryParams).then(response => {
-        this.deptOptions = this.handleTree(response.data, 'deptId')
+    /** 查询采购发货信息列表 */
+    getList() {
+      this.loading = true
+      this.queryParams.params = {}
+      if (null != this.daterangePurchaseTime && '' != this.daterangePurchaseTime) {
+        this.queryParams.params['beginPurchaseTime'] = this.daterangePurchaseTime[0]
+        this.queryParams.params['endPurchaseTime'] = this.daterangePurchaseTime[1]
+      }
+      if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
+        this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
+        this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
+      }
+      if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
+        this.queryParams.params['beginUpdateTime'] = this.daterangeUpdateTime[0]
+        this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
+      }
+      getServiceReport(this.queryParams).then(response => {
+        this.reportList = response.rows
+        this.total = response.total
+        this.loading = false
       })
+      this.getCount()
     },
-    /** 转换部门数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children
-      }
-      return {
-        id: node.deptId,
-        label: node.deptName,
-        children: node.children
-      }
-    },
-    /** 展开/折叠操作 */
-    toggleExpandAll() {
-      this.refreshTable = false
-      this.isExpandAll = !this.isExpandAll
-      this.$nextTick(() => {
-        this.refreshTable = true
+    getCount() {
+      getPurchaseOrderInfoCount(this.queryParams).then(response => {
+        this.purchaseOrderInfoCount = response.data
       })
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.queryParams.pageNum = 1
       this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm('queryForm')
+      this.daterangePurchaseTime = []
+      this.daterangeCreateTime = []
+      this.daterangeUpdateTime = []
+      this.purchaseChannelQuery = {}
       this.queryParams.purchaseChannelsId = null
+      this.getChannelsTreeselect()
+      this.purchaseAccountInfoQueryParams = {}
+      this.getPurchaseAccountInfoList()
+      this.resetForm('queryForm')
       this.handleQuery()
     }
   }
 }
 </script>
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+</style>

@@ -12,7 +12,8 @@ import com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoQuery;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByDeptVo;
+import com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo;
 
 /**
  * 采购发货信息Service接口
@@ -138,7 +139,7 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * param: purchaseOrderInfo
      * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo>
      **/
-    List<PurchaseOrderReportVo> getReport(PurchaseOrderInfo purchaseOrderInfo);
+    List<PurchaseOrderReportByDeptVo> getDeptReport(PurchaseOrderInfo purchaseOrderInfo);
 
     /**
      * description:  获取报表,根据部门分类
@@ -149,5 +150,16 @@ public interface IPurchaseOrderInfoService extends IService<PurchaseOrderInfo> {
      * param: purchaseOrderInfo
      * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportVo>
      **/
-    List<PurchaseOrderReportVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo);
+    List<PurchaseOrderReportByDeptVo> getReportGroupByDept(PurchaseOrderInfo purchaseOrderInfo);
+
+    /**
+     * description: 获取报表 根据客服
+     * author: YY
+     * method: getServiceReport
+     * date: 2025/3/12 15:33
+     * param:
+     * param: purchaseOrderInfo
+     * return: java.util.List<com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByUserVo>
+     **/
+    List<PurchaseOrderReportByUserVo> getServiceReport(PurchaseOrderInfo purchaseOrderInfo);
 }
