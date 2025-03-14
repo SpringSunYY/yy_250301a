@@ -23,6 +23,11 @@ public class PurchaseOrderReportByUserVo implements Serializable {
      */
     private Long userId;
 
+    /**
+     * 部门名称
+     */
+    private String deptName;
+
 
     /**
      * 用户名称

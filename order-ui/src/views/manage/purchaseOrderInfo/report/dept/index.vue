@@ -423,7 +423,7 @@ export default {
         this.queryParams.params['endUpdateTime'] = this.daterangeUpdateTime[1]
       }
       getDeptReport(this.queryParams).then(response => {
-        console.log(response.data)
+        // console.log(response.data)
         this.reportList = this.handleTree(response.data, 'deptId')
         this.loading = false
       })

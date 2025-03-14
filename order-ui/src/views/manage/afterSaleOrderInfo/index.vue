@@ -280,7 +280,7 @@
 
     <!-- 添加或修改售后订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="订单编号" prop="orderNumber">
           <el-input v-model="form.orderNumber" placeholder="请输入订单编号"/>
         </el-form-item>
@@ -299,6 +299,19 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="售后凭证" prop="afterSaleImage">
+            <!-- 自定义标签右侧提示 -->
+            <template slot="label">
+              <span class="custom-label">
+                 <span>售后凭证</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="支付账单凭证"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+            </template>
           <image-upload v-model="form.afterSaleImage"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">

@@ -664,6 +664,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             if (StringUtils.isNotNull(user)) {
                 report.setUserName(user.getUserName());
             }
+            SysDept dept = deptService.selectDeptById(user.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                report.setDeptName(dept.getDeptName());
+            }
         }
         return serviceReport;
     }
@@ -693,6 +697,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
                 if (StringUtils.isNotNull(service)) {
                     report.setServiceName(service.getUserName());
                 }
+                SysDept dept = deptService.selectDeptById(store.getDeptId());
+                if (StringUtils.isNotNull(dept)) {
+                    report.setDeptName(dept.getDeptName());
+                }
             }
         });
         return storeReport;
@@ -715,6 +723,10 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             SysUser user = userService.selectUserById(report.getUserId());
             if (StringUtils.isNotNull(user)) {
                 report.setUserName(user.getUserName());
+            }
+            SysDept dept = deptService.selectDeptById(user.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                report.setDeptName(dept.getDeptName());
             }
         }
         return operationReport;

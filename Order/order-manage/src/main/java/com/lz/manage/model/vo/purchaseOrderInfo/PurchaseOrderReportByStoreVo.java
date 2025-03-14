@@ -24,6 +24,11 @@ public class PurchaseOrderReportByStoreVo implements Serializable {
      */
     private Long storeId;
 
+    /**
+     * 部门名称
+     */
+    private String deptName;
+
 
     /**
      * 店铺名称

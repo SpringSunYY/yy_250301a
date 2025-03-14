@@ -225,11 +225,13 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="reportList" :border="true"
+    <el-table v-loading="loading" :data="reportList" :border="true" @sort-change="sortChange"
     >
+      <el-table-column label="排行" type="index"  width="50" align="center" />
       <el-table-column label="店铺" :show-overflow-tooltip="true" align="center"
                        prop="storeName"
       />
+      <el-table-column prop="deptName" label="部门名称"></el-table-column>
       <el-table-column label="主管" :show-overflow-tooltip="true" align="center"
                        prop="principalName"
       />
@@ -239,25 +241,25 @@
       <el-table-column label="客服" :show-overflow-tooltip="true" align="center"
                        prop="serviceName"
       />
-      <el-table-column label="订单总数" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="订单总数" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="orderCount"
       />
-      <el-table-column label="订单总利润" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="订单总利润" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="orderProfitCount"
       />
-      <el-table-column label="销售总数量" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总数量" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="salesNumberCount"
       />
-      <el-table-column label="销售总价格" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总价格" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="salesPriceCount"
       />
-      <el-table-column label="销售总进价" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总进价" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="purchasePriceCount"
       />
-      <el-table-column label="采购总补价" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="采购总补价" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="purchasePremiumCount"
       />
-      <el-table-column label="订单平均利润率" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="订单平均利润率" sortable="custom"  :show-overflow-tooltip="true" align="center"
                        prop="avgOrderProfitRate"
       >
         <template slot-scope="scope">
@@ -403,6 +405,15 @@ export default {
   methods: {
     parseTime,
     toPercentage,
+    // 自定义排序逻辑
+    sortChange({ column, prop, order }) {
+      const validData = this.reportList.filter(item => item[prop] != null)
+      const invalidData = this.reportList.filter(item => item[prop] == null)
+      validData.sort((a, b) =>
+        order === 'ascending' ? a[prop] - b[prop] : b[prop] - a[prop]
+      )
+      this.reportList = [...validData, ...invalidData]
+    },
     /** 转换采购渠道信息数据结构 */
     normalizerChannels(node) {
       if (node.children && !node.children.length) {

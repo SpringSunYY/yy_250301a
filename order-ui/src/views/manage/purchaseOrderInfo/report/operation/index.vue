@@ -163,84 +163,85 @@
       </el-form-item>
     </el-form>
 
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="20" style="margin-top:10px">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >总数：{{ purchaseOrderInfoCount.orderCount }}-->
-<!--        </el-button>-->
+    <!--    <el-row :gutter="10" class="mb8">-->
+    <!--      <el-col :span="20" style="margin-top:10px">-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >总数：{{ purchaseOrderInfoCount.orderCount }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}-->
-<!--        </el-button>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >订单总利润：{{ purchaseOrderInfoCount.orderProfitCount }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}-->
-<!--        </el-button>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >订单平均利润率：{{ toPercentage(purchaseOrderInfoCount.avgOrderProfitRate) }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}-->
-<!--        </el-button>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >总销售量：{{ purchaseOrderInfoCount.salesNumberCount }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}-->
-<!--        </el-button>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >总销售价：{{ purchaseOrderInfoCount.salesPriceCount }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}-->
-<!--        </el-button>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >采购总进价：{{ purchaseOrderInfoCount.purchasePriceCount }}-->
+    <!--        </el-button>-->
 
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
-<!--    </el-row>-->
+    <!--        <el-button-->
+    <!--          type="success"-->
+    <!--          plain-->
+    <!--          size="mini"-->
+    <!--        >采购总补价：{{ purchaseOrderInfoCount.purchasePremiumCount }}-->
+    <!--        </el-button>-->
+    <!--      </el-col>-->
+    <!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
+    <!--    </el-row>-->
 
-    <el-table v-loading="loading" :data="reportList" :border="true"
-    >
+    <el-table v-loading="loading" :data="reportList" :border="true" @sort-change="sortChange">
+      <el-table-column label="排行" type="index" width="50" align="center"/>
       <el-table-column label="运营" :show-overflow-tooltip="true" align="center"
                        prop="userName"
       />
-      <el-table-column label="店铺总数" :show-overflow-tooltip="true" align="center"
+      <el-table-column prop="deptName" label="部门名称"></el-table-column>
+      <el-table-column label="店铺总数" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="storeCount"
       />
-      <el-table-column label="订单总数" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="订单总数" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="orderCount"
       />
-      <el-table-column label="订单总利润" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="订单总利润" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="orderProfitCount"
       />
-      <el-table-column label="销售总数量" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总数量" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="salesNumberCount"
       />
-      <el-table-column label="销售总价格" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总价格" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="salesPriceCount"
       />
-      <el-table-column label="销售总进价" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="销售总进价" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="purchasePriceCount"
       />
-      <el-table-column label="采购总补价" sortable :show-overflow-tooltip="true" align="center"
+      <el-table-column label="采购总补价" sortable="custom" :show-overflow-tooltip="true" align="center"
                        prop="purchasePremiumCount"
       />
       <el-table-column label="订单平均利润率" sortable :show-overflow-tooltip="true" align="center"
@@ -389,6 +390,15 @@ export default {
   methods: {
     parseTime,
     toPercentage,
+    // 自定义排序逻辑
+    sortChange({ column, prop, order }) {
+      const validData = this.reportList.filter(item => item[prop] != null)
+      const invalidData = this.reportList.filter(item => item[prop] == null)
+      validData.sort((a, b) =>
+        order === 'ascending' ? a[prop] - b[prop] : b[prop] - a[prop]
+      )
+      this.reportList = [...validData, ...invalidData]
+    },
     /**
      * 获取运营用户列表推荐
      * @param query
