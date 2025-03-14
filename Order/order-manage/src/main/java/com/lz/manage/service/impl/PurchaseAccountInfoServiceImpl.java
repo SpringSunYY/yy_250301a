@@ -118,11 +118,12 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         if (StringUtils.isNull(purchaseAccountInfo.getUserId())) {
             purchaseAccountInfo.setUserId(SecurityUtils.getUserId());
         }
-        PurchaseAccountInfo purchaseAccount = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
-        if (StringUtils.isNotNull(purchaseAccount)) {
-            throw new ServiceException("账号已存在!!!");
-        }
         checkPurchaseAccountInfo(purchaseAccountInfo);
+        PurchaseAccountInfo purchaseAccount = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount())
+                .eq("purchase_channels_id", purchaseAccountInfo.getPurchaseChannelsId()));
+        if (StringUtils.isNotNull(purchaseAccount)) {
+            throw new ServiceException("该渠道已存在此账号!!!");
+        }
         purchaseAccountInfo.setCreateTime(DateUtils.getNowDate());
         return purchaseAccountInfoMapper.insertPurchaseAccountInfo(purchaseAccountInfo);
     }
@@ -155,12 +156,15 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
         if (StringUtils.isNull(myOld)) {
             throw new ServiceException("数据不存在!!!");
         }
-        PurchaseAccountInfo old = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount()));
-        //说明不是自己 且更新
-        if (StringUtils.isNotNull(old) && !old.getPurchaseAccount().equals(myOld.getPurchaseAccount())) {
-            throw new ServiceException("账号已存在!!!");
-        }
         checkPurchaseAccountInfo(purchaseAccountInfo);
+        PurchaseAccountInfo old = this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccountInfo.getPurchaseAccount())
+                .eq("purchase_channels_id", purchaseAccountInfo.getPurchaseChannelsId()));
+        //如果数据库老的数据存在并且我的老的和数据库老的采购账号不一样说明数据库存在此账号则抛出异常
+        //或者我传过来的渠道不等于我的老的渠道且数据库存在这个渠道的账号则抛出异常
+        if (StringUtils.isNotNull(old) && !old.getPurchaseAccount().equals(myOld.getPurchaseAccount())
+                || !purchaseAccountInfo.getPurchaseChannelsId().equals(myOld.getPurchaseChannelsId()) && purchaseAccountInfo.getPurchaseChannelsId().equals(old.getPurchaseChannelsId())) {
+            throw new ServiceException("该渠道已经存在此账号!!!");
+        }
         purchaseAccountInfo.setUpdateBy(SecurityUtils.getUsername());
         purchaseAccountInfo.setUpdateTime(DateUtils.getNowDate());
         return purchaseAccountInfoMapper.updatePurchaseAccountInfo(purchaseAccountInfo);

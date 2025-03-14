@@ -185,7 +185,6 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             throw new ServiceException("客服和店铺部门不一致！！！");
         }
 
-
         PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoById(purchaseOrderInfo.getPurchaseAccountId());
         if (StringUtils.isNull(purchaseAccountInfo)) {
             throw new ServiceException("采购账号不存在！！！");
@@ -199,9 +198,15 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         if (StringUtils.isNull(purchaseChannelInfo)) {
             throw new ServiceException("采购渠道不存在！！！");
         }
+
         if (!purchaseChannelInfo.getChannelType().equals(purchaseAccountInfo.getAccountType())) {
             throw new ServiceException("渠道类型与账号类型不一致!!!");
         }
+
+        if (!purchaseAccountInfo.getPurchaseChannelsId().equals(purchaseOrderInfo.getPurchaseChannelsId())) {
+            throw new ServiceException("该采购账号不是该渠道下的!!!");
+        }
+
         if (!purchaseChannelInfo.getChannelType().equals(purchaseOrderInfo.getPurchaseChannelType())) {
             throw new ServiceException("渠道类型与订单类型不一致!!!");
         }

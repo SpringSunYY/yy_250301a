@@ -846,8 +846,22 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="采购渠道" prop="purchaseChannelsId">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>采购渠道</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="如果提交后提示该采购账号不是该渠道下的，请重新选择渠道再选择账号，因为网络可能延迟，数据可能未更新，慢一点选择采购账号让他更新数据"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
               <treeselect v-model="form.purchaseChannelsId" :options="purchaseChannelInfoOptions"
                           :normalizer="normalizerChannels" placeholder="请选择渠道"
+                          @select="channelsChange"
               />
             </el-form-item>
           </el-col>
@@ -1470,10 +1484,17 @@ export default {
     },
     channelsTypeSelectChange() {
       this.purchaseChannelQuery.channelType = this.form.purchaseChannelType
+      this.purchaseChannelQuery.purchaseChannelsId = null
       this.form.purchaseChannelsId = null
       this.getChannelsTreeselect()
       this.purchaseAccountInfoQueryParams.accountType = this.form.purchaseChannelType
       this.form.purchaseAccountId = null
+      this.getPurchaseAccountInfoList()
+    },
+    channelsChange(node, instanceId) {
+      this.purchaseAccountInfoQueryParams.accountType = this.form.purchaseChannelType
+      this.form.purchaseAccountId = null
+      this.purchaseAccountInfoQueryParams.purchaseChannelsId = node.id
       this.getPurchaseAccountInfoList()
     },
     /** 转换采购渠道信息数据结构 */
@@ -1600,10 +1621,11 @@ export default {
       if (this.form.purchaseAccountId != null) {
         this.purchaseAccountInfoQueryParams.id = this.form.purchaseAccountId
       }
-
-      if (this.purchaseAccountInfoQueryParams.purchaseAccount !== '') {
+      if (this.purchaseAccountInfoQueryParams.purchaseAccount !== undefined || this.purchaseAccountInfoQueryParams.purchaseAccount !== '') {
         this.purchaseAccountInfoQueryParams.id = null
       }
+      //获取数据前先清空数据
+      this.purchaseAccountInfoList = []
       listPurchaseAccountInfo(this.purchaseAccountInfoQueryParams).then(res => {
         this.purchaseAccountInfoList = res?.rows
         this.purchaseAccountInfoLoading = false
@@ -1790,6 +1812,7 @@ export default {
           channelType: this.form.purchaseChannelType
         }
         this.getChannelsTreeselect()
+        this.purchaseAccountInfoQueryParams = {}
         this.purchaseAccountInfoQueryParams.accountType = this.form.purchaseChannelType
         this.getPurchaseAccountInfoList()
         this.open = true
