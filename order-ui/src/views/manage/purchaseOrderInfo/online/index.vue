@@ -486,7 +486,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item label="白嫖退款金额">
-                  <span>{{ props.row.bPPrice }}</span>
+                  <span>{{ props.row.bpprice }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -1431,7 +1431,7 @@ export default {
           { required: true, message: '销售量不能为空', trigger: 'blur' }
         ],
         shipmentsOrder: [
-          { required: true, message: '发货单号不能为空', trigger: 'blur' }
+          { required: false, message: '发货单号不能为空', trigger: 'blur' }
         ],
         userId: [
           { required: true, message: '客服不能为空', trigger: 'blur' }

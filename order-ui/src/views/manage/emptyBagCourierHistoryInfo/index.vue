@@ -205,7 +205,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改空包/快递充值记录对话框 -->
+    <!-- 添加或修改其它支出费用记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="日期" prop="dateTime">
@@ -349,7 +349,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 空包/快递充值记录表格数据
+      // 其它支出费用记录表格数据
       emptyBagCourierHistoryInfoList: [],
       // 弹出层标题
       title: '',
@@ -462,7 +462,7 @@ export default {
         children: node.children
       }
     },
-    /** 查询空包/快递充值记录列表 */
+    /** 查询其它支出费用记录列表 */
     getList() {
       this.loading = true
       this.queryParams.params = {}
@@ -535,7 +535,7 @@ export default {
       this.reset()
       this.form.userId = this.$store.state.user.id;
       this.open = true
-      this.title = '添加空包/快递充值记录'
+      this.title = '添加其它支出费用记录'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -545,7 +545,7 @@ export default {
         this.form = response.data
         this.getUserInfoList()
         this.open = true
-        this.title = '修改空包/快递充值记录'
+        this.title = '修改其它支出费用记录'
       })
     },
     /** 提交按钮 */
@@ -571,7 +571,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除空包/快递充值记录编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除其它支出费用记录编号为"' + ids + '"的数据项？').then(function() {
         return delEmptyBagCourierHistoryInfo(ids)
       }).then(() => {
         this.getList()
@@ -587,7 +587,7 @@ export default {
     },
     /** 导入按钮操作 */
     handleImport() {
-      this.upload.title = '空包/快递订单导入'
+      this.upload.title = '其它支出费用记录导入'
       this.upload.open = true
     },
     /** 下载模板操作 */

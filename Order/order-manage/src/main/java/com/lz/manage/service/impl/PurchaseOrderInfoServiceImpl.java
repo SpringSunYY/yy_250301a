@@ -722,6 +722,9 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
         }
         storeInfo.setId(purchaseOrderInfo.getStoreId());
         List<StoreInfo> storeInfos = storeInfoService.selectStoreInfoList(storeInfo);
+        if (StringUtils.isEmpty(storeInfos)) {
+            return new ArrayList<PurchaseOrderReportByUserVo>();
+        }
         purchaseOrderInfo.setStoreIds(storeInfos.stream().map(StoreInfo::getId).collect(Collectors.toList()));
         List<PurchaseOrderReportByUserVo> operationReport = purchaseOrderInfoMapper.getOperationReport(purchaseOrderInfo);
         for (PurchaseOrderReportByUserVo report : operationReport) {

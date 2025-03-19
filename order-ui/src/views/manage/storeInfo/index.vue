@@ -124,10 +124,10 @@
       <!--          @keyup.enter.native="handleQuery"-->
       <!--        />-->
       <!--      </el-form-item>-->
-      <el-form-item label="服务商" prop="serviceProvider">
+      <el-form-item label="所属平台" prop="serviceProvider">
         <el-input
           v-model="queryParams.serviceProvider"
-          placeholder="请输入服务商"
+          placeholder="请输入服务器所属平台"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -389,7 +389,7 @@
       <el-table-column label="支付宝提供人" :show-overflow-tooltip="true" align="center" v-if="columns[13].visible"
                        prop="alipayProvider"
       />
-      <el-table-column label="服务商" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
+      <el-table-column label="服务器所属平台" :show-overflow-tooltip="true" align="center" v-if="columns[14].visible"
                        prop="serviceProvider"
       />
       <el-table-column label="服务器IP" :show-overflow-tooltip="true" align="center" v-if="columns[15].visible"
@@ -428,22 +428,61 @@
           <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="店铺订单是否处理完毕" align="center" v-if="columns[25].visible" prop="isOrderAccomplish">
+      <el-table-column label="店铺订单" align="center" v-if="columns[25].visible" prop="isOrderAccomplish">
+        <template slot="header">
+          <div class="custom-header">
+            <span>店铺订单</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="店铺订单是否处理完成"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isOrderAccomplish"/>
         </template>
       </el-table-column>
-      <el-table-column label="诚意赊是否关闭" align="center" v-if="columns[26].visible" prop="isBonaFideRedemption">
+      <el-table-column label="诚意赊" align="center" v-if="columns[26].visible" prop="isBonaFideRedemption">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBonaFideRedemption"/>
         </template>
       </el-table-column>
-      <el-table-column label="保证金是否退出" align="center" v-if="columns[27].visible" prop="isBail">
+      <el-table-column label="保证金" align="center" v-if="columns[27].visible" prop="isBail">
+        <template slot="header">
+          <div class="custom-header">
+            <span>保证金</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="保证金是否清空"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBail"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付宝是否解绑" align="center" v-if="columns[28].visible" prop="isAlipay">
+      <el-table-column label="支付宝" align="center" v-if="columns[28].visible" prop="isAlipay">
+        <template slot="header">
+          <div class="custom-header">
+            <span>支付宝</span>
+            <el-tooltip
+              effect="light"
+              placement="top"
+              content="支付宝是否解绑"
+            >
+              <!-- 红色问号图标 -->
+              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
+            </el-tooltip>
+          </div>
+        </template>
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isAlipay"/>
         </template>
@@ -641,8 +680,8 @@
         </el-row>
         <el-row :gutter="10">
           <el-col :span="6">
-            <el-form-item label="服务商" prop="serviceProvider">
-              <el-input v-model="form.serviceProvider" placeholder="请输入服务商"/>
+            <el-form-item label="服务器所属平台" prop="serviceProvider">
+              <el-input v-model="form.serviceProvider" placeholder="请输入服务器所属平台"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -699,6 +738,19 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="到期时间" prop="expireTime">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>到期时间</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="不填入默认是下店时间的一年后，填入则是填入的时间"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
               <el-date-picker clearable
                               v-model="form.expireTime"
                               type="date"
@@ -729,6 +781,19 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="店铺订单" prop="isOrderAccomplish">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>店铺订单</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="店铺订单是否处理完成"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
               <el-radio-group v-model="form.isOrderAccomplish">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
@@ -753,6 +818,19 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="保证金" prop="isBail">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>保证金</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="保证金是否清空"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
               <el-radio-group v-model="form.isBail">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
@@ -765,6 +843,19 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="支付宝" prop="isAlipay">
+              <!-- 自定义标签右侧提示 -->
+              <template slot="label">
+              <span class="custom-label">
+                 <span>支付宝</span>
+                      <el-tooltip
+                        effect="light"
+                        placement="top"
+                        content="支付宝是否解绑"
+                      >
+                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
+                </el-tooltip>
+              </span>
+              </template>
               <el-radio-group v-model="form.isAlipay">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
@@ -880,7 +971,7 @@ export default {
         { key: 11, label: '支付宝手机号', visible: false },
         { key: 12, label: '支付宝认证人', visible: false },
         { key: 13, label: '支付宝提供人', visible: false },
-        { key: 14, label: '服务商', visible: false },
+        { key: 14, label: '服务器所属平台', visible: false },
         { key: 15, label: '服务器IP', visible: false },
         { key: 16, label: '服务器费用', visible: false },
         { key: 17, label: '服务器密码', visible: false },
@@ -891,10 +982,10 @@ export default {
         { key: 22, label: '营业执照名称', visible: false },
         { key: 23, label: '法人', visible: false },
         { key: 24, label: '到期时间', visible: false },
-        { key: 25, label: '店铺订单是否处理完毕', visible: false },
-        { key: 26, label: '诚意赊是否关闭', visible: false },
-        { key: 27, label: '保证金是否退出', visible: false },
-        { key: 28, label: '支付宝是否解绑', visible: false },
+        { key: 25, label: '店铺订单', visible: false },
+        { key: 26, label: '诚意赊', visible: false },
+        { key: 27, label: '保证金', visible: false },
+        { key: 28, label: '支付宝', visible: false },
         { key: 29, label: '部门', visible: true },
         { key: 30, label: '创建人', visible: false },
         { key: 31, label: '创建时间', visible: false },
@@ -1003,7 +1094,7 @@ export default {
           { required: true, message: '支付宝提供人不能为空', trigger: 'blur' }
         ],
         serviceProvider: [
-          { required: true, message: '服务商不能为空', trigger: 'blur' }
+          { required: true, message: '服务器所属平台不能为空', trigger: 'blur' }
         ],
         serverIp: [
           { required: true, message: '服务器IP不能为空', trigger: 'blur' }
@@ -1033,7 +1124,7 @@ export default {
           { required: true, message: '法人不能为空', trigger: 'blur' }
         ],
         expireTime: [
-          { required: true, message: '到期时间不能为空', trigger: 'blur' }
+          { required: false, message: '到期时间不能为空', trigger: 'blur' }
         ],
         isOrderAccomplish: [
           { required: true, message: '店铺订单是否处理完毕不能为空', trigger: 'change' }

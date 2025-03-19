@@ -349,7 +349,7 @@
             ${params.dataScope}
         </where>
         group by userId
-        order by salesPriceCount desc
+        order by orderProfitCount desc
     </select>
     <select id="getStoreReport"
             resultType="com.lz.manage.model.vo.purchaseOrderInfo.PurchaseOrderReportByStoreVo">
@@ -423,7 +423,7 @@
             ${params.dataScope}
         </where>
         group by storeId
-        order by salesPriceCount desc;
+        order by orderProfitCount desc;
     </select>
     <select id="getOperationReport"
             parameterType="com.lz.manage.model.dto.purchaseOrderInfo.PurchaseOrderInfoAndStoreQuery"
@@ -505,10 +505,15 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and dept_id in
+                <foreach collection="deptIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
         </where>
         GROUP BY userId
-        ORDER BY salesPriceCount DESC;
-
+        ORDER BY orderProfitCount DESC;
     </select>
 
     <insert id="insertPurchaseOrderInfo" parameterType="PurchaseOrderInfo" useGeneratedKeys="true" keyProperty="id">
