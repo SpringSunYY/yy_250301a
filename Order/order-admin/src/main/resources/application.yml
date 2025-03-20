@@ -117,7 +117,8 @@ mybatis-plus:
     cache-enabled: true
     use-generated-keys: true
     default-executor-type: simple
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+#    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 
 # PageHelper分页插件
 pagehelper:

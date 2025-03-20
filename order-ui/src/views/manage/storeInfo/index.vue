@@ -428,20 +428,7 @@
           <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="店铺订单" align="center" v-if="columns[25].visible" prop="isOrderAccomplish">
-        <template slot="header">
-          <div class="custom-header">
-            <span>店铺订单</span>
-            <el-tooltip
-              effect="light"
-              placement="top"
-              content="店铺订单是否处理完成"
-            >
-              <!-- 红色问号图标 -->
-              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
-            </el-tooltip>
-          </div>
-        </template>
+      <el-table-column label="店铺订单是否处理完成" align="center" v-if="columns[25].visible" prop="isOrderAccomplish">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isOrderAccomplish"/>
         </template>
@@ -451,38 +438,12 @@
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBonaFideRedemption"/>
         </template>
       </el-table-column>
-      <el-table-column label="保证金" align="center" v-if="columns[27].visible" prop="isBail">
-        <template slot="header">
-          <div class="custom-header">
-            <span>保证金</span>
-            <el-tooltip
-              effect="light"
-              placement="top"
-              content="保证金是否清空"
-            >
-              <!-- 红色问号图标 -->
-              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
-            </el-tooltip>
-          </div>
-        </template>
+      <el-table-column label="保证金是否清空" align="center" v-if="columns[27].visible" prop="isBail">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isBail"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付宝" align="center" v-if="columns[28].visible" prop="isAlipay">
-        <template slot="header">
-          <div class="custom-header">
-            <span>支付宝</span>
-            <el-tooltip
-              effect="light"
-              placement="top"
-              content="支付宝是否解绑"
-            >
-              <!-- 红色问号图标 -->
-              <i class="el-icon-question" style="color:#F56C6C;margin-left:5px;cursor:pointer"/>
-            </el-tooltip>
-          </div>
-        </template>
+      <el-table-column label="支付宝是否解绑" align="center" v-if="columns[28].visible" prop="isAlipay">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.o_common_whether" :value="scope.row.isAlipay"/>
         </template>
@@ -780,31 +741,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="店铺订单" prop="isOrderAccomplish">
-              <!-- 自定义标签右侧提示 -->
-              <template slot="label">
-              <span class="custom-label">
-                 <span>店铺订单</span>
-                      <el-tooltip
-                        effect="light"
-                        placement="top"
-                        content="店铺订单是否处理完成"
-                      >
-                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
-                </el-tooltip>
-              </span>
-              </template>
-              <el-radio-group v-model="form.isOrderAccomplish">
-                <el-radio
-                  v-for="dict in dict.type.o_common_whether"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="诚意赊" prop="isBonaFideRedemption">
               <el-radio-group v-model="form.isBonaFideRedemption">
                 <el-radio
@@ -817,20 +753,19 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="保证金" prop="isBail">
-              <!-- 自定义标签右侧提示 -->
-              <template slot="label">
-              <span class="custom-label">
-                 <span>保证金</span>
-                      <el-tooltip
-                        effect="light"
-                        placement="top"
-                        content="保证金是否清空"
-                      >
-                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
-                </el-tooltip>
-              </span>
-              </template>
+            <el-form-item label="店铺订单是否处理完成" prop="isOrderAccomplish">
+              <el-radio-group v-model="form.isOrderAccomplish">
+                <el-radio
+                  v-for="dict in dict.type.o_common_whether"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="保证金是否清空" prop="isBail">
               <el-radio-group v-model="form.isBail">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
@@ -842,20 +777,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="支付宝" prop="isAlipay">
-              <!-- 自定义标签右侧提示 -->
-              <template slot="label">
-              <span class="custom-label">
-                 <span>支付宝</span>
-                      <el-tooltip
-                        effect="light"
-                        placement="top"
-                        content="支付宝是否解绑"
-                      >
-                  <i class="el-icon-question" style="color:#F56C6C;margin-left:5px"/>
-                </el-tooltip>
-              </span>
-              </template>
+            <el-form-item label="支付宝是否解绑" prop="isAlipay">
               <el-radio-group v-model="form.isAlipay">
                 <el-radio
                   v-for="dict in dict.type.o_common_whether"
@@ -982,10 +904,10 @@ export default {
         { key: 22, label: '营业执照名称', visible: false },
         { key: 23, label: '法人', visible: false },
         { key: 24, label: '到期时间', visible: false },
-        { key: 25, label: '店铺订单', visible: false },
+        { key: 25, label: '店铺订单是否处理完成', visible: false },
         { key: 26, label: '诚意赊', visible: false },
-        { key: 27, label: '保证金', visible: false },
-        { key: 28, label: '支付宝', visible: false },
+        { key: 27, label: '保证金是否清空', visible: false },
+        { key: 28, label: '支付宝是否解绑', visible: false },
         { key: 29, label: '部门', visible: true },
         { key: 30, label: '创建人', visible: false },
         { key: 31, label: '创建时间', visible: false },

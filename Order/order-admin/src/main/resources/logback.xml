@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 日志存放路径 -->
-	<property name="log.path" value="/home/ruoyi/logs" />
+	<property name="log.path" value="/code/order/logs" />
     <!-- 日志输出格式 -->
 	<property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
@@ -82,6 +82,7 @@
 	
 	<!--系统操作日志-->
     <root level="info">
+        <appender-ref ref="console" />
         <appender-ref ref="file_info" />
         <appender-ref ref="file_error" />
     </root>
@@ -90,4 +91,11 @@
     <logger name="sys-user" level="info">
         <appender-ref ref="sys-user"/>
     </logger>
+
+    <!-- 禁用 MyBatis 和相关 SQL 日志 -->
+    <logger name="org.mybatis" level="ERROR" />
+    <logger name="com.alibaba.druid.sql" level="ERROR" />
+    <logger name="java.sql.Connection" level="ERROR" />
+    <logger name="java.sql.Statement" level="ERROR" />
+    <logger name="java.sql.PreparedStatement" level="ERROR" />
 </configuration> 
