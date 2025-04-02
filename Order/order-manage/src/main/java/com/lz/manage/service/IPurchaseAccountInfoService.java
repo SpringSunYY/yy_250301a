@@ -103,5 +103,5 @@ public interface IPurchaseAccountInfoService extends IService<PurchaseAccountInf
      * param: purchaseAccount
      * return: com.lz.manage.model.domain.PurchaseAccountInfo
      **/
-    PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount);
+    PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount, Long channelId);
 }

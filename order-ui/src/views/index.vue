@@ -41,7 +41,8 @@
               订单总利润
             </div>
             <count-to :start-val="0"
-                      :end-val="Number(Number(onlineOrderCount.orderProfitCount)+Number(offlineOrderCount.orderProfitCount))"
+                      :decimals="2"
+                      :end-val="parseFloat(parseFloat(onlineOrderCount.orderProfitCount)+parseFloat(offlineOrderCount.orderProfitCount))"
                       :duration="3000"
                       class="card-panel-num"
             />
@@ -58,7 +59,8 @@
               总销售价
             </div>
             <count-to :start-val="0"
-                      :end-val="Number(Number(onlineOrderCount.salesPriceCount)+Number(offlineOrderCount.salesPriceCount))"
+                      :decimals="2"
+                      :end-val="parseFloat(parseFloat(onlineOrderCount.salesPriceCount)+parseFloat(offlineOrderCount.salesPriceCount))"
                       :duration="3200"
                       class="card-panel-num"
             />
@@ -106,7 +108,8 @@
             <div class="card-panel-text">
               线上订单总利润
             </div>
-            <count-to :start-val="0" :end-val="Number(onlineOrderCount.orderProfitCount)" :duration="3000"
+            <count-to :decimals="2" :start-val="0" :end-val="parseFloat(onlineOrderCount.orderProfitCount)"
+                      :duration="3000"
                       class="card-panel-num"
             />
           </div>
@@ -121,7 +124,8 @@
             <div class="card-panel-text">
               线上总销售价
             </div>
-            <count-to :start-val="0" :end-val="Number(onlineOrderCount.salesPriceCount)" :duration="3200"
+            <count-to :decimals="2" :start-val="0" :end-val="parseFloat(onlineOrderCount.salesPriceCount)"
+                      :duration="3200"
                       class="card-panel-num"
             />
           </div>
@@ -169,7 +173,8 @@
             <div class="card-panel-text">
               线下订单总利润
             </div>
-            <count-to :start-val="0" :end-val="Number(offlineOrderCount.orderProfitCount)" :duration="3000"
+            <count-to :start-val="0" :decimals="2" :end-val="parseFloat(offlineOrderCount.orderProfitCount)"
+                      :duration="3000"
                       class="card-panel-num"
             />
           </div>
@@ -184,8 +189,8 @@
             <div class="card-panel-text">
               线下总销售价
             </div>
-            <count-to :start-val="0" :end-val="Number(offlineOrderCount.salesPriceCount)" :duration="3200"
-                      class="card-panel-num"
+            <count-to :start-val="0" :decimals="2" :end-val="parseFloat(offlineOrderCount.salesPriceCount)"
+                      :duration="3200" class="card-panel-num"
             />
           </div>
         </div>

@@ -246,7 +246,7 @@ export default {
       // 重新渲染表格状态
       refreshTable: true,
       // 备注时间范围
-      daterangeCreateTime: (() => currentMonth())(),
+      daterangeCreateTime: [],
       // 备注时间范围
       daterangeUpdateTime: [],
       // 查询参数

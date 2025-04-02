@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
@@ -284,8 +285,8 @@ public class PurchaseAccountInfoServiceImpl extends ServiceImpl<PurchaseAccountI
     }
 
     @Override
-    public PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount) {
-        return this.getOne(new LambdaQueryWrapper<PurchaseAccountInfo>().eq(PurchaseAccountInfo::getPurchaseAccount, purchaseAccount));
+    public PurchaseAccountInfo selectPurchaseAccountInfoByAccount(String purchaseAccount, Long channelId) {
+        return this.getOne(new QueryWrapper<PurchaseAccountInfo>().eq("purchase_account", purchaseAccount)
+                .eq("purchase_channels_id", channelId));
     }
-
 }

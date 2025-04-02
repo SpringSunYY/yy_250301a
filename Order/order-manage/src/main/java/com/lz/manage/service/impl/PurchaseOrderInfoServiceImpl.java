@@ -481,23 +481,22 @@ public class PurchaseOrderInfoServiceImpl extends ServiceImpl<PurchaseOrderInfoM
             }
             info.setUserId(user.getUserId());
 
-            PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoByAccount(info.getPurchaseAccount());
+            PurchaseAccountInfo purchaseAccountInfo = accountInfoService.selectPurchaseAccountInfoByAccount(info.getPurchaseAccount(), info.getPurchaseChannelsId());
             if (StringUtils.isNull(purchaseAccountInfo)) {
-                return StringUtils.format("第{}行填入了采购账号信息，但是账号不存在", index);
+                return StringUtils.format("第{}行填入了采购账号信息，但是账号不存在,请注意是否与渠道一致", index);
             }
             if (!purchaseAccountInfo.getAccountType().equals(info.getPurchaseChannelType())) {
-                throw new ServiceException("渠道类型与账号类型不一致!!!");
+                return StringUtils.format("第{}行请注意订单类型是否与账号渠道类型一致", index);
             }
-
             PurchaseChannelInfo purchaseChannelInfo = channelInfoService.selectPurchaseChannelInfoById(info.getPurchaseChannelsId());
             if (StringUtils.isNull(purchaseChannelInfo)) {
-                throw new ServiceException("采购渠道不存在！！！");
+                return StringUtils.format("第{}行渠道,不存在", index);
             }
             if (!purchaseChannelInfo.getChannelType().equals(purchaseAccountInfo.getAccountType())) {
-                throw new ServiceException("渠道类型与账号类型不一致!!!");
+                return StringUtils.format("第{}行渠道和账号所属渠道不一致,请注意是否与渠道类型一致", index);
             }
             if (!purchaseChannelInfo.getChannelType().equals(info.getPurchaseChannelType())) {
-                throw new ServiceException("渠道类型与订单类型不一致!!!");
+                return StringUtils.format("第{}行渠道类型与订单类型不一致,请注意是否与渠道类型一致", index);
             }
             info.setPurchaseAccountId(purchaseAccountInfo.getId());
 

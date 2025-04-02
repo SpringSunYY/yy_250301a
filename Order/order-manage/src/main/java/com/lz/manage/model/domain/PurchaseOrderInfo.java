@@ -114,11 +114,13 @@ public class PurchaseOrderInfo implements Serializable {
             prompt = "只能线上、线下")
     private String purchaseChannelType;
 
-    /** 采购渠道 */
-    @Excel(name = "采购渠道",type = Excel.Type.EXPORT)
+    /**
+     * 采购渠道
+     */
+    @Excel(name = "采购渠道", type = Excel.Type.EXPORT)
     @TableField(exist = false)
     private String purchaseChannelsName;
-    @Excel(name = "采购渠道",prompt = "采购渠道编号")
+    @Excel(name = "采购渠道", prompt = "采购渠道编号", scale = 25)
     private Long purchaseChannelsId;
     @TableField(exist = false)
     private List<Long> purchaseChannelsIds;
